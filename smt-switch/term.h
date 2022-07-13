@@ -1,0 +1,191 @@
+/*********************                                                        */
+/*! \file term.h
+** \verbatim
+** Top contributors (to current version):
+**   Makai Mann, Clark Barrett
+** This file is part of the smt-switch project.
+** Copyright (c) 2020 by the authors listed in the file AUTHORS
+** in the top-level source directory) and their institutional affiliations.
+** All rights reserved.  See the file LICENSE in the top-level source
+** directory for licensing information.\endverbatim
+**
+** \brief Abstract interface for SMT terms.
+**
+**
+**/
+
+#pragma once
+
+#include <iostream>
+#include <iterator>
+#include <list>
+#include <string>
+#include <unordered_map>
+#include <unordered_set>
+#include <vector>
+
+#include "ops.h"
+#include "smt_defs.h"
+#include "sort.h"
+
+namespace smt {
+
+class TermIter;
+
+// Abstract class for term
+class AbsTerm
+{
+ public:
+  AbsTerm(){};
+  virtual ~AbsTerm(){};
+  /** Returns a hash for this term */
+  virtual std::size_t hash() const = 0;
+  /** Returns a unique id for this term */
+  virtual std::size_t get_id() const = 0;
+  /* Should return true iff the terms are identical */
+  virtual bool compare(const Term& absterm) const = 0;
+  // Term methods
+  /* get the Op used to create this term */
+  virtual Op get_op() const = 0;
+  /* get the sort */
+  virtual Sort get_sort() const = 0;
+  /* to_string in smt2 format */
+  virtual std::string to_string() = 0;
+  /* returns true iff this term is a symbol */
+  virtual bool is_symbol() const = 0;
+  /* returns true iff this term is a parameter (to be bound by a quantifier) */
+  virtual bool is_param() const = 0;
+  /* returns true iff this term is a symbolic constant */
+  virtual bool is_symbolic_const() const = 0;
+  /* returns true iff this term is an interpreted constant */
+  virtual bool is_value() const = 0;
+  /** converts a constant that can be represented as an int to an int
+   *  otherwise, throws an IncorrectUsageException
+   */
+  virtual uint64_t to_int() const = 0;
+  /** begin iterator
+   *  starts iteration through Term's children
+   */
+  virtual TermIter begin() = 0;
+  /** end iterator
+   *  ends iteration through Term's children
+   */
+  virtual TermIter end() = 0;
+
+  // Methods used for strange edge-cases e.g. in the logging solver
+
+  /** Print a value term in a specific form
+   *  NOTE: this *only* exists for use in LoggingSolver
+   *        it is to handle printing of values from solvers that alias
+   *        sorts. For example, if Bool and (_ BitVec 1) are aliased,
+   *        this can be used to print #b1 as true.
+   *
+   *  This method canNOT be used to convert arbitrarily, e.g.
+   *  it cannot print a bitvector as an integer.
+   *
+   *  Thus, solvers that don't alias sorts can just use their to_string
+   *  to implement this method
+   *
+   *  @param sk the SortKind to print the term as
+   *  @param a string representation of the term
+   *
+   *  throws an exception if the term is not a value
+   */
+  virtual std::string print_value_as(SortKind sk) = 0;
+};
+
+inline bool operator==(const Term & t1, const Term & t2)
+{
+  return t1->compare(t2);
+}
+inline bool operator!=(const Term & t1, const Term & t2)
+{
+  return !t1->compare(t2);
+}
+inline bool operator<(const Term & t1, const Term & t2)
+{
+  return t1->get_id() < t2->get_id();
+}
+inline bool operator>(const Term & t1, const Term & t2)
+{
+  return t1->get_id() > t2->get_id();
+}
+inline bool operator<=(const Term & t1, const Term & t2)
+{
+  return t1->get_id() <= t2->get_id();
+}
+inline bool operator>=(const Term & t1, const Term & t2)
+{
+  return t1->get_id() >= t2->get_id();
+}
+
+std::ostream& operator<<(std::ostream& output, const Term t);
+
+// term iterators
+// impelementation based on
+// https://www.codeproject.com/Articles/92671/How-to-write-abstract-iterators-in-Cplusplus
+class TermIterBase
+{
+ public:
+  TermIterBase() {}
+  virtual ~TermIterBase() {}
+  virtual void operator++() {}
+  const virtual Term operator*();
+  virtual TermIterBase * clone() const = 0;
+  bool operator==(const TermIterBase& other) const;
+
+ protected:
+  virtual bool equal(const TermIterBase & other) const = 0;
+};
+
+class TermIter
+{
+ public:
+  // typedefs for marking as an input iterator
+  // based on iterator_traits: https://en.cppreference.com/w/cpp/iterator/iterator_traits
+  // used by the compiler for statements such as: TermVec children(term->begin(), term->end())
+  typedef Term value_type;
+  typedef std::ptrdiff_t difference_type;
+  typedef Term * pointer;
+  typedef Term & reference;
+  typedef std::input_iterator_tag iterator_category;
+
+  TermIter() : iter_(0) {}
+  TermIter(TermIterBase* tib) : iter_(tib) {}
+  ~TermIter() { delete iter_; }
+  TermIter(const TermIter& other) : iter_(other.iter_->clone()) {}
+  TermIter& operator=(const TermIter& other);
+  TermIter& operator++();
+  TermIter operator++(int junk);
+  Term operator*() const { return *(*iter_); }
+  bool operator==(const TermIter& other) const;
+  bool operator!=(const TermIter& other) const;
+
+ protected:
+  TermIterBase* iter_;
+};
+
+// useful typedefs for data structures
+using TermVec = std::vector<Term>;
+using TermList = std::list<Term>;
+using UnorderedTermSet = std::unordered_set<Term>;
+using UnorderedTermMap = std::unordered_map<Term, Term>;
+// range-based iteration
+inline TermIter begin(Term & t) { return t->begin(); }
+inline TermIter end(Term & t) { return t->end(); }
+
+}  // namespace smt
+
+namespace std
+{
+  // Specialize the hash function for data structures
+  template<>
+  struct hash<smt::Term>
+  {
+    size_t operator()(const smt::Term & t) const
+    {
+      return t->hash();
+    }
+  };
+}
+
