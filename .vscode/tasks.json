@@ -1,7 +1,7 @@
 {
 	"version": "2.0.0",
 	"options": {
-		"cwd": "/data/wenjifang/wsyms/build"
+		"cwd": "/data/wenjifang/btor-paser-cpp/build"
 	},
 	"tasks": [
 		{

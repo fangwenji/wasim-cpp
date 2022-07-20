@@ -6,5 +6,5 @@ CXX_FLAGS =  -std=c++17 -g -g
 
 CXX_DEFINES = 
 
-CXX_INCLUDES = -I/data/wenjifang/wsyms/deps/smt-switch/local/include -I/data/wenjifang/wsyms/framework -I/data/wenjifang/wsyms/deps/btor2tools/src -I/data/wenjifang/wsyms/utils 
+CXX_INCLUDES = -I/data/wenjifang/btor-paser-cpp/deps/smt-switch/local/include -I/data/wenjifang/btor-paser-cpp/framework -I/data/wenjifang/btor-paser-cpp/deps/btor2tools/src -I/data/wenjifang/btor-paser-cpp/utils 
 

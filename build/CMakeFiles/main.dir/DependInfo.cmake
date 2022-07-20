@@ -4,10 +4,10 @@ set(CMAKE_DEPENDS_LANGUAGES
   )
 # The set of files for implicit dependencies of each language:
 set(CMAKE_DEPENDS_CHECK_CXX
-  "/data/wenjifang/wsyms/framework/btor2_encoder.cpp" "/data/wenjifang/wsyms/build/CMakeFiles/main.dir/framework/btor2_encoder.cpp.o"
-  "/data/wenjifang/wsyms/framework/ts.cpp" "/data/wenjifang/wsyms/build/CMakeFiles/main.dir/framework/ts.cpp.o"
-  "/data/wenjifang/wsyms/main.cpp" "/data/wenjifang/wsyms/build/CMakeFiles/main.dir/main.cpp.o"
-  "/data/wenjifang/wsyms/utils/logger.cpp" "/data/wenjifang/wsyms/build/CMakeFiles/main.dir/utils/logger.cpp.o"
+  "/data/wenjifang/btor-paser-cpp/framework/btor2_encoder.cpp" "/data/wenjifang/btor-paser-cpp/build/CMakeFiles/main.dir/framework/btor2_encoder.cpp.o"
+  "/data/wenjifang/btor-paser-cpp/framework/ts.cpp" "/data/wenjifang/btor-paser-cpp/build/CMakeFiles/main.dir/framework/ts.cpp.o"
+  "/data/wenjifang/btor-paser-cpp/main.cpp" "/data/wenjifang/btor-paser-cpp/build/CMakeFiles/main.dir/main.cpp.o"
+  "/data/wenjifang/btor-paser-cpp/utils/logger.cpp" "/data/wenjifang/btor-paser-cpp/build/CMakeFiles/main.dir/utils/logger.cpp.o"
   )
 set(CMAKE_CXX_COMPILER_ID "GNU")
 

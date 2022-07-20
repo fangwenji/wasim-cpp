@@ -19,52 +19,52 @@ CMakeFiles/main.dir/framework/btor2_encoder.cpp.o
  ../fmt/format.h
  ../utils/exceptions.h
  ../utils/logger.h
- /data/wenjifang/wsyms/deps/smt-switch/local/include/smt-switch/cvc4_factory.h
- /data/wenjifang/wsyms/deps/smt-switch/local/include/smt-switch/smt.h
- /data/wenjifang/wsyms/framework/btor2_encoder.cpp
- /data/wenjifang/wsyms/framework/btor2_encoder.h
- /data/wenjifang/wsyms/framework/ts.h
- /data/wenjifang/wsyms/utils/exceptions.h
+ /data/wenjifang/btor-paser-cpp/deps/smt-switch/local/include/smt-switch/cvc4_factory.h
+ /data/wenjifang/btor-paser-cpp/deps/smt-switch/local/include/smt-switch/smt.h
+ /data/wenjifang/btor-paser-cpp/framework/btor2_encoder.cpp
+ /data/wenjifang/btor-paser-cpp/framework/btor2_encoder.h
+ /data/wenjifang/btor-paser-cpp/framework/ts.h
+ /data/wenjifang/btor-paser-cpp/utils/exceptions.h
 CMakeFiles/main.dir/framework/ts.cpp.o
  ../deps/smt-switch/local/include/smt-switch/identity_walker.h
  ../deps/smt-switch/local/include/smt-switch/smt.h
  ../deps/smt-switch/local/include/smt-switch/substitution_walker.h
  ../deps/smt-switch/local/include/smt-switch/utils.h
- /data/wenjifang/wsyms/deps/smt-switch/local/include/smt-switch/cvc4_factory.h
- /data/wenjifang/wsyms/deps/smt-switch/local/include/smt-switch/datatype.h
- /data/wenjifang/wsyms/deps/smt-switch/local/include/smt-switch/exceptions.h
- /data/wenjifang/wsyms/deps/smt-switch/local/include/smt-switch/ops.h
- /data/wenjifang/wsyms/deps/smt-switch/local/include/smt-switch/result.h
- /data/wenjifang/wsyms/deps/smt-switch/local/include/smt-switch/smt.h
- /data/wenjifang/wsyms/deps/smt-switch/local/include/smt-switch/smt_defs.h
- /data/wenjifang/wsyms/deps/smt-switch/local/include/smt-switch/solver.h
- /data/wenjifang/wsyms/deps/smt-switch/local/include/smt-switch/solver_enums.h
- /data/wenjifang/wsyms/deps/smt-switch/local/include/smt-switch/sort.h
- /data/wenjifang/wsyms/deps/smt-switch/local/include/smt-switch/term.h
- /data/wenjifang/wsyms/deps/smt-switch/local/include/smt-switch/term_translator.h
- /data/wenjifang/wsyms/framework/ts.cpp
- /data/wenjifang/wsyms/framework/ts.h
- /data/wenjifang/wsyms/utils/exceptions.h
+ /data/wenjifang/btor-paser-cpp/deps/smt-switch/local/include/smt-switch/cvc4_factory.h
+ /data/wenjifang/btor-paser-cpp/deps/smt-switch/local/include/smt-switch/datatype.h
+ /data/wenjifang/btor-paser-cpp/deps/smt-switch/local/include/smt-switch/exceptions.h
+ /data/wenjifang/btor-paser-cpp/deps/smt-switch/local/include/smt-switch/ops.h
+ /data/wenjifang/btor-paser-cpp/deps/smt-switch/local/include/smt-switch/result.h
+ /data/wenjifang/btor-paser-cpp/deps/smt-switch/local/include/smt-switch/smt.h
+ /data/wenjifang/btor-paser-cpp/deps/smt-switch/local/include/smt-switch/smt_defs.h
+ /data/wenjifang/btor-paser-cpp/deps/smt-switch/local/include/smt-switch/solver.h
+ /data/wenjifang/btor-paser-cpp/deps/smt-switch/local/include/smt-switch/solver_enums.h
+ /data/wenjifang/btor-paser-cpp/deps/smt-switch/local/include/smt-switch/sort.h
+ /data/wenjifang/btor-paser-cpp/deps/smt-switch/local/include/smt-switch/term.h
+ /data/wenjifang/btor-paser-cpp/deps/smt-switch/local/include/smt-switch/term_translator.h
+ /data/wenjifang/btor-paser-cpp/framework/ts.cpp
+ /data/wenjifang/btor-paser-cpp/framework/ts.h
+ /data/wenjifang/btor-paser-cpp/utils/exceptions.h
 CMakeFiles/main.dir/main.cpp.o
  ../deps/btor2tools/src/btor2parser/btor2parser.h
  ../deps/smt-switch/local/include/smt-switch/smt.h
  ../utils/exceptions.h
- /data/wenjifang/wsyms/deps/smt-switch/local/include/smt-switch/boolector_factory.h
- /data/wenjifang/wsyms/deps/smt-switch/local/include/smt-switch/cvc4_factory.h
- /data/wenjifang/wsyms/deps/smt-switch/local/include/smt-switch/datatype.h
- /data/wenjifang/wsyms/deps/smt-switch/local/include/smt-switch/ops.h
- /data/wenjifang/wsyms/deps/smt-switch/local/include/smt-switch/result.h
- /data/wenjifang/wsyms/deps/smt-switch/local/include/smt-switch/smt.h
- /data/wenjifang/wsyms/deps/smt-switch/local/include/smt-switch/smt_defs.h
- /data/wenjifang/wsyms/deps/smt-switch/local/include/smt-switch/solver.h
- /data/wenjifang/wsyms/deps/smt-switch/local/include/smt-switch/solver_enums.h
- /data/wenjifang/wsyms/deps/smt-switch/local/include/smt-switch/sort.h
- /data/wenjifang/wsyms/deps/smt-switch/local/include/smt-switch/term.h
- /data/wenjifang/wsyms/deps/smt-switch/local/include/smt-switch/term_translator.h
- /data/wenjifang/wsyms/framework/btor2_encoder.h
- /data/wenjifang/wsyms/framework/ts.h
- /data/wenjifang/wsyms/main.cpp
- /data/wenjifang/wsyms/utils/exceptions.h
+ /data/wenjifang/btor-paser-cpp/deps/smt-switch/local/include/smt-switch/boolector_factory.h
+ /data/wenjifang/btor-paser-cpp/deps/smt-switch/local/include/smt-switch/cvc4_factory.h
+ /data/wenjifang/btor-paser-cpp/deps/smt-switch/local/include/smt-switch/datatype.h
+ /data/wenjifang/btor-paser-cpp/deps/smt-switch/local/include/smt-switch/ops.h
+ /data/wenjifang/btor-paser-cpp/deps/smt-switch/local/include/smt-switch/result.h
+ /data/wenjifang/btor-paser-cpp/deps/smt-switch/local/include/smt-switch/smt.h
+ /data/wenjifang/btor-paser-cpp/deps/smt-switch/local/include/smt-switch/smt_defs.h
+ /data/wenjifang/btor-paser-cpp/deps/smt-switch/local/include/smt-switch/solver.h
+ /data/wenjifang/btor-paser-cpp/deps/smt-switch/local/include/smt-switch/solver_enums.h
+ /data/wenjifang/btor-paser-cpp/deps/smt-switch/local/include/smt-switch/sort.h
+ /data/wenjifang/btor-paser-cpp/deps/smt-switch/local/include/smt-switch/term.h
+ /data/wenjifang/btor-paser-cpp/deps/smt-switch/local/include/smt-switch/term_translator.h
+ /data/wenjifang/btor-paser-cpp/framework/btor2_encoder.h
+ /data/wenjifang/btor-paser-cpp/framework/ts.h
+ /data/wenjifang/btor-paser-cpp/main.cpp
+ /data/wenjifang/btor-paser-cpp/utils/exceptions.h
 CMakeFiles/main.dir/utils/logger.cpp.o
  ../deps/smt-switch/local/include/smt-switch/datatype.h
  ../deps/smt-switch/local/include/smt-switch/ops.h
@@ -79,6 +79,6 @@ CMakeFiles/main.dir/utils/logger.cpp.o
  ../fmt/core.h
  ../fmt/format-inl.h
  ../fmt/format.h
- /data/wenjifang/wsyms/utils/exceptions.h
- /data/wenjifang/wsyms/utils/logger.cpp
- /data/wenjifang/wsyms/utils/logger.h
+ /data/wenjifang/btor-paser-cpp/utils/exceptions.h
+ /data/wenjifang/btor-paser-cpp/utils/logger.cpp
+ /data/wenjifang/btor-paser-cpp/utils/logger.h

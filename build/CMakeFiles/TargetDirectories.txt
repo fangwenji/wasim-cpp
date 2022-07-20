@@ -1,7 +1,7 @@
-/data/wenjifang/wsyms/build/CMakeFiles/install/strip.dir
-/data/wenjifang/wsyms/build/CMakeFiles/install/local.dir
-/data/wenjifang/wsyms/build/CMakeFiles/install.dir
-/data/wenjifang/wsyms/build/CMakeFiles/list_install_components.dir
-/data/wenjifang/wsyms/build/CMakeFiles/rebuild_cache.dir
-/data/wenjifang/wsyms/build/CMakeFiles/edit_cache.dir
-/data/wenjifang/wsyms/build/CMakeFiles/main.dir
+/data/wenjifang/btor-paser-cpp/build/CMakeFiles/install/strip.dir
+/data/wenjifang/btor-paser-cpp/build/CMakeFiles/install/local.dir
+/data/wenjifang/btor-paser-cpp/build/CMakeFiles/install.dir
+/data/wenjifang/btor-paser-cpp/build/CMakeFiles/list_install_components.dir
+/data/wenjifang/btor-paser-cpp/build/CMakeFiles/rebuild_cache.dir
+/data/wenjifang/btor-paser-cpp/build/CMakeFiles/edit_cache.dir
+/data/wenjifang/btor-paser-cpp/build/CMakeFiles/main.dir

@@ -43,10 +43,10 @@ RM = /usr/bin/cmake -E remove -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /data/wenjifang/wsyms
+CMAKE_SOURCE_DIR = /data/wenjifang/btor-paser-cpp
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /data/wenjifang/wsyms/build
+CMAKE_BINARY_DIR = /data/wenjifang/btor-paser-cpp/build
 
 # Include any dependencies generated for this target.
 include CMakeFiles/main.dir/depend.make
@@ -59,55 +59,55 @@ include CMakeFiles/main.dir/flags.make
 
 CMakeFiles/main.dir/main.cpp.o: CMakeFiles/main.dir/flags.make
 CMakeFiles/main.dir/main.cpp.o: ../main.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/data/wenjifang/wsyms/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object CMakeFiles/main.dir/main.cpp.o"
-	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/main.dir/main.cpp.o -c /data/wenjifang/wsyms/main.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/data/wenjifang/btor-paser-cpp/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object CMakeFiles/main.dir/main.cpp.o"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/main.dir/main.cpp.o -c /data/wenjifang/btor-paser-cpp/main.cpp
 
 CMakeFiles/main.dir/main.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/main.dir/main.cpp.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /data/wenjifang/wsyms/main.cpp > CMakeFiles/main.dir/main.cpp.i
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /data/wenjifang/btor-paser-cpp/main.cpp > CMakeFiles/main.dir/main.cpp.i
 
 CMakeFiles/main.dir/main.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/main.dir/main.cpp.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /data/wenjifang/wsyms/main.cpp -o CMakeFiles/main.dir/main.cpp.s
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /data/wenjifang/btor-paser-cpp/main.cpp -o CMakeFiles/main.dir/main.cpp.s
 
 CMakeFiles/main.dir/framework/ts.cpp.o: CMakeFiles/main.dir/flags.make
 CMakeFiles/main.dir/framework/ts.cpp.o: ../framework/ts.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/data/wenjifang/wsyms/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building CXX object CMakeFiles/main.dir/framework/ts.cpp.o"
-	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/main.dir/framework/ts.cpp.o -c /data/wenjifang/wsyms/framework/ts.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/data/wenjifang/btor-paser-cpp/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building CXX object CMakeFiles/main.dir/framework/ts.cpp.o"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/main.dir/framework/ts.cpp.o -c /data/wenjifang/btor-paser-cpp/framework/ts.cpp
 
 CMakeFiles/main.dir/framework/ts.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/main.dir/framework/ts.cpp.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /data/wenjifang/wsyms/framework/ts.cpp > CMakeFiles/main.dir/framework/ts.cpp.i
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /data/wenjifang/btor-paser-cpp/framework/ts.cpp > CMakeFiles/main.dir/framework/ts.cpp.i
 
 CMakeFiles/main.dir/framework/ts.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/main.dir/framework/ts.cpp.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /data/wenjifang/wsyms/framework/ts.cpp -o CMakeFiles/main.dir/framework/ts.cpp.s
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /data/wenjifang/btor-paser-cpp/framework/ts.cpp -o CMakeFiles/main.dir/framework/ts.cpp.s
 
 CMakeFiles/main.dir/framework/btor2_encoder.cpp.o: CMakeFiles/main.dir/flags.make
 CMakeFiles/main.dir/framework/btor2_encoder.cpp.o: ../framework/btor2_encoder.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/data/wenjifang/wsyms/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building CXX object CMakeFiles/main.dir/framework/btor2_encoder.cpp.o"
-	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/main.dir/framework/btor2_encoder.cpp.o -c /data/wenjifang/wsyms/framework/btor2_encoder.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/data/wenjifang/btor-paser-cpp/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building CXX object CMakeFiles/main.dir/framework/btor2_encoder.cpp.o"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/main.dir/framework/btor2_encoder.cpp.o -c /data/wenjifang/btor-paser-cpp/framework/btor2_encoder.cpp
 
 CMakeFiles/main.dir/framework/btor2_encoder.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/main.dir/framework/btor2_encoder.cpp.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /data/wenjifang/wsyms/framework/btor2_encoder.cpp > CMakeFiles/main.dir/framework/btor2_encoder.cpp.i
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /data/wenjifang/btor-paser-cpp/framework/btor2_encoder.cpp > CMakeFiles/main.dir/framework/btor2_encoder.cpp.i
 
 CMakeFiles/main.dir/framework/btor2_encoder.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/main.dir/framework/btor2_encoder.cpp.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /data/wenjifang/wsyms/framework/btor2_encoder.cpp -o CMakeFiles/main.dir/framework/btor2_encoder.cpp.s
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /data/wenjifang/btor-paser-cpp/framework/btor2_encoder.cpp -o CMakeFiles/main.dir/framework/btor2_encoder.cpp.s
 
 CMakeFiles/main.dir/utils/logger.cpp.o: CMakeFiles/main.dir/flags.make
 CMakeFiles/main.dir/utils/logger.cpp.o: ../utils/logger.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/data/wenjifang/wsyms/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Building CXX object CMakeFiles/main.dir/utils/logger.cpp.o"
-	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/main.dir/utils/logger.cpp.o -c /data/wenjifang/wsyms/utils/logger.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/data/wenjifang/btor-paser-cpp/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Building CXX object CMakeFiles/main.dir/utils/logger.cpp.o"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/main.dir/utils/logger.cpp.o -c /data/wenjifang/btor-paser-cpp/utils/logger.cpp
 
 CMakeFiles/main.dir/utils/logger.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/main.dir/utils/logger.cpp.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /data/wenjifang/wsyms/utils/logger.cpp > CMakeFiles/main.dir/utils/logger.cpp.i
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /data/wenjifang/btor-paser-cpp/utils/logger.cpp > CMakeFiles/main.dir/utils/logger.cpp.i
 
 CMakeFiles/main.dir/utils/logger.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/main.dir/utils/logger.cpp.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /data/wenjifang/wsyms/utils/logger.cpp -o CMakeFiles/main.dir/utils/logger.cpp.s
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /data/wenjifang/btor-paser-cpp/utils/logger.cpp -o CMakeFiles/main.dir/utils/logger.cpp.s
 
 # Object files for target main
 main_OBJECTS = \
@@ -125,7 +125,7 @@ main: CMakeFiles/main.dir/framework/btor2_encoder.cpp.o
 main: CMakeFiles/main.dir/utils/logger.cpp.o
 main: CMakeFiles/main.dir/build.make
 main: CMakeFiles/main.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/data/wenjifang/wsyms/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Linking CXX executable main"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/data/wenjifang/btor-paser-cpp/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Linking CXX executable main"
 	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/main.dir/link.txt --verbose=$(VERBOSE)
 
 # Rule to build all files generated by this target.
@@ -138,6 +138,6 @@ CMakeFiles/main.dir/clean:
 .PHONY : CMakeFiles/main.dir/clean
 
 CMakeFiles/main.dir/depend:
-	cd /data/wenjifang/wsyms/build && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /data/wenjifang/wsyms /data/wenjifang/wsyms /data/wenjifang/wsyms/build /data/wenjifang/wsyms/build /data/wenjifang/wsyms/build/CMakeFiles/main.dir/DependInfo.cmake --color=$(COLOR)
+	cd /data/wenjifang/btor-paser-cpp/build && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /data/wenjifang/btor-paser-cpp /data/wenjifang/btor-paser-cpp /data/wenjifang/btor-paser-cpp/build /data/wenjifang/btor-paser-cpp/build /data/wenjifang/btor-paser-cpp/build/CMakeFiles/main.dir/DependInfo.cmake --color=$(COLOR)
 .PHONY : CMakeFiles/main.dir/depend
 

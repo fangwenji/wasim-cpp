@@ -15,7 +15,7 @@ include_directories(${PROJECT_SOURCE_DIR}/utils)
 # include_directories(${PROJECT_SOURCE_DIR}/fmt)
 
 install(DIRECTORY "${PROJECT_SOURCE_DIR}/fmt/"
-        DESTINATION include/wsyms/fmt
+        DESTINATION include/btor-paser-cpp/fmt
         FILES_MATCHING PATTERN "*.h")
 
 

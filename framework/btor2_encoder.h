@@ -53,10 +53,7 @@ class BTOR2Encoder
   {
     return no_next_states_;
   }
-  // preprocess a btor2 file
-  void preprocess(const std::string & filename);
-  // parse a btor2 file
-  void parse(const std::string filename);
+  
 
  protected:
   // converts booleans to bitvector of size one
@@ -68,7 +65,10 @@ class BTOR2Encoder
   // and lazily converts them to the majority
   smt::TermVec lazy_convert(const smt::TermVec &) const;
   
-  
+  // preprocess a btor2 file
+  void preprocess(const std::string & filename);
+  // parse a btor2 file
+  void parse(const std::string filename);
   
 
   // Important members

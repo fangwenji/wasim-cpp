@@ -36,19 +36,19 @@ exception
 string
 -
 
-/data/wenjifang/wsyms/deps/smt-switch/local/include/smt-switch/boolector_factory.h
+/data/wenjifang/btor-paser-cpp/deps/smt-switch/local/include/smt-switch/boolector_factory.h
 smt_defs.h
-/data/wenjifang/wsyms/deps/smt-switch/local/include/smt-switch/smt_defs.h
+/data/wenjifang/btor-paser-cpp/deps/smt-switch/local/include/smt-switch/smt_defs.h
 
-/data/wenjifang/wsyms/deps/smt-switch/local/include/smt-switch/cvc4_factory.h
+/data/wenjifang/btor-paser-cpp/deps/smt-switch/local/include/smt-switch/cvc4_factory.h
 smt_defs.h
-/data/wenjifang/wsyms/deps/smt-switch/local/include/smt-switch/smt_defs.h
+/data/wenjifang/btor-paser-cpp/deps/smt-switch/local/include/smt-switch/smt_defs.h
 
-/data/wenjifang/wsyms/deps/smt-switch/local/include/smt-switch/datatype.h
+/data/wenjifang/btor-paser-cpp/deps/smt-switch/local/include/smt-switch/datatype.h
 smt_defs.h
-/data/wenjifang/wsyms/deps/smt-switch/local/include/smt-switch/smt_defs.h
+/data/wenjifang/btor-paser-cpp/deps/smt-switch/local/include/smt-switch/smt_defs.h
 
-/data/wenjifang/wsyms/deps/smt-switch/local/include/smt-switch/ops.h
+/data/wenjifang/btor-paser-cpp/deps/smt-switch/local/include/smt-switch/ops.h
 iostream
 -
 string
@@ -60,53 +60,53 @@ unordered_set
 functional
 -
 
-/data/wenjifang/wsyms/deps/smt-switch/local/include/smt-switch/result.h
+/data/wenjifang/btor-paser-cpp/deps/smt-switch/local/include/smt-switch/result.h
 
-/data/wenjifang/wsyms/deps/smt-switch/local/include/smt-switch/smt.h
+/data/wenjifang/btor-paser-cpp/deps/smt-switch/local/include/smt-switch/smt.h
 exceptions.h
-/data/wenjifang/wsyms/deps/smt-switch/local/include/smt-switch/exceptions.h
+/data/wenjifang/btor-paser-cpp/deps/smt-switch/local/include/smt-switch/exceptions.h
 smt_defs.h
-/data/wenjifang/wsyms/deps/smt-switch/local/include/smt-switch/smt_defs.h
+/data/wenjifang/btor-paser-cpp/deps/smt-switch/local/include/smt-switch/smt_defs.h
 ops.h
-/data/wenjifang/wsyms/deps/smt-switch/local/include/smt-switch/ops.h
+/data/wenjifang/btor-paser-cpp/deps/smt-switch/local/include/smt-switch/ops.h
 sort.h
-/data/wenjifang/wsyms/deps/smt-switch/local/include/smt-switch/sort.h
+/data/wenjifang/btor-paser-cpp/deps/smt-switch/local/include/smt-switch/sort.h
 term.h
-/data/wenjifang/wsyms/deps/smt-switch/local/include/smt-switch/term.h
+/data/wenjifang/btor-paser-cpp/deps/smt-switch/local/include/smt-switch/term.h
 term_translator.h
-/data/wenjifang/wsyms/deps/smt-switch/local/include/smt-switch/term_translator.h
+/data/wenjifang/btor-paser-cpp/deps/smt-switch/local/include/smt-switch/term_translator.h
 solver.h
-/data/wenjifang/wsyms/deps/smt-switch/local/include/smt-switch/solver.h
+/data/wenjifang/btor-paser-cpp/deps/smt-switch/local/include/smt-switch/solver.h
 solver_enums.h
-/data/wenjifang/wsyms/deps/smt-switch/local/include/smt-switch/solver_enums.h
+/data/wenjifang/btor-paser-cpp/deps/smt-switch/local/include/smt-switch/solver_enums.h
 
-/data/wenjifang/wsyms/deps/smt-switch/local/include/smt-switch/smt_defs.h
+/data/wenjifang/btor-paser-cpp/deps/smt-switch/local/include/smt-switch/smt_defs.h
 memory
 -
 
-/data/wenjifang/wsyms/deps/smt-switch/local/include/smt-switch/solver.h
+/data/wenjifang/btor-paser-cpp/deps/smt-switch/local/include/smt-switch/solver.h
 string
 -
 vector
 -
 exceptions.h
-/data/wenjifang/wsyms/deps/smt-switch/local/include/smt-switch/exceptions.h
+/data/wenjifang/btor-paser-cpp/deps/smt-switch/local/include/smt-switch/exceptions.h
 result.h
-/data/wenjifang/wsyms/deps/smt-switch/local/include/smt-switch/result.h
+/data/wenjifang/btor-paser-cpp/deps/smt-switch/local/include/smt-switch/result.h
 smt_defs.h
-/data/wenjifang/wsyms/deps/smt-switch/local/include/smt-switch/smt_defs.h
+/data/wenjifang/btor-paser-cpp/deps/smt-switch/local/include/smt-switch/smt_defs.h
 solver_enums.h
-/data/wenjifang/wsyms/deps/smt-switch/local/include/smt-switch/solver_enums.h
+/data/wenjifang/btor-paser-cpp/deps/smt-switch/local/include/smt-switch/solver_enums.h
 sort.h
-/data/wenjifang/wsyms/deps/smt-switch/local/include/smt-switch/sort.h
+/data/wenjifang/btor-paser-cpp/deps/smt-switch/local/include/smt-switch/sort.h
 term.h
-/data/wenjifang/wsyms/deps/smt-switch/local/include/smt-switch/term.h
+/data/wenjifang/btor-paser-cpp/deps/smt-switch/local/include/smt-switch/term.h
 
-/data/wenjifang/wsyms/deps/smt-switch/local/include/smt-switch/solver_enums.h
+/data/wenjifang/btor-paser-cpp/deps/smt-switch/local/include/smt-switch/solver_enums.h
 unordered_set
 -
 
-/data/wenjifang/wsyms/deps/smt-switch/local/include/smt-switch/sort.h
+/data/wenjifang/btor-paser-cpp/deps/smt-switch/local/include/smt-switch/sort.h
 string
 -
 unordered_set
@@ -114,13 +114,13 @@ unordered_set
 vector
 -
 ops.h
-/data/wenjifang/wsyms/deps/smt-switch/local/include/smt-switch/ops.h
+/data/wenjifang/btor-paser-cpp/deps/smt-switch/local/include/smt-switch/ops.h
 datatype.h
-/data/wenjifang/wsyms/deps/smt-switch/local/include/smt-switch/datatype.h
+/data/wenjifang/btor-paser-cpp/deps/smt-switch/local/include/smt-switch/datatype.h
 smt_defs.h
-/data/wenjifang/wsyms/deps/smt-switch/local/include/smt-switch/smt_defs.h
+/data/wenjifang/btor-paser-cpp/deps/smt-switch/local/include/smt-switch/smt_defs.h
 
-/data/wenjifang/wsyms/deps/smt-switch/local/include/smt-switch/term.h
+/data/wenjifang/btor-paser-cpp/deps/smt-switch/local/include/smt-switch/term.h
 iostream
 -
 iterator
@@ -136,27 +136,27 @@ unordered_set
 vector
 -
 ops.h
-/data/wenjifang/wsyms/deps/smt-switch/local/include/smt-switch/ops.h
+/data/wenjifang/btor-paser-cpp/deps/smt-switch/local/include/smt-switch/ops.h
 smt_defs.h
-/data/wenjifang/wsyms/deps/smt-switch/local/include/smt-switch/smt_defs.h
+/data/wenjifang/btor-paser-cpp/deps/smt-switch/local/include/smt-switch/smt_defs.h
 sort.h
-/data/wenjifang/wsyms/deps/smt-switch/local/include/smt-switch/sort.h
+/data/wenjifang/btor-paser-cpp/deps/smt-switch/local/include/smt-switch/sort.h
 
-/data/wenjifang/wsyms/deps/smt-switch/local/include/smt-switch/term_translator.h
+/data/wenjifang/btor-paser-cpp/deps/smt-switch/local/include/smt-switch/term_translator.h
 unordered_map
 -
 smt_defs.h
-/data/wenjifang/wsyms/deps/smt-switch/local/include/smt-switch/smt_defs.h
+/data/wenjifang/btor-paser-cpp/deps/smt-switch/local/include/smt-switch/smt_defs.h
 solver.h
-/data/wenjifang/wsyms/deps/smt-switch/local/include/smt-switch/solver.h
+/data/wenjifang/btor-paser-cpp/deps/smt-switch/local/include/smt-switch/solver.h
 sort.h
-/data/wenjifang/wsyms/deps/smt-switch/local/include/smt-switch/sort.h
+/data/wenjifang/btor-paser-cpp/deps/smt-switch/local/include/smt-switch/sort.h
 term.h
-/data/wenjifang/wsyms/deps/smt-switch/local/include/smt-switch/term.h
+/data/wenjifang/btor-paser-cpp/deps/smt-switch/local/include/smt-switch/term.h
 
-/data/wenjifang/wsyms/framework/btor2_encoder.h
+/data/wenjifang/btor-paser-cpp/framework/btor2_encoder.h
 btor2parser/btor2parser.h
-/data/wenjifang/wsyms/framework/btor2parser/btor2parser.h
+/data/wenjifang/btor-paser-cpp/framework/btor2parser/btor2parser.h
 stdio.h
 -
 iostream
@@ -168,37 +168,37 @@ string
 unordered_map
 -
 assert.h
-/data/wenjifang/wsyms/framework/assert.h
+/data/wenjifang/btor-paser-cpp/framework/assert.h
 ts.h
-/data/wenjifang/wsyms/framework/ts.h
+/data/wenjifang/btor-paser-cpp/framework/ts.h
 exceptions.h
-/data/wenjifang/wsyms/framework/exceptions.h
+/data/wenjifang/btor-paser-cpp/framework/exceptions.h
 smt-switch/smt.h
-/data/wenjifang/wsyms/framework/smt-switch/smt.h
+/data/wenjifang/btor-paser-cpp/framework/smt-switch/smt.h
 
-/data/wenjifang/wsyms/framework/ts.h
+/data/wenjifang/btor-paser-cpp/framework/ts.h
 string
 -
 unordered_map
 -
 ../deps/smt-switch/local/include/smt-switch/cvc4_factory.h
-/data/wenjifang/wsyms/deps/smt-switch/local/include/smt-switch/cvc4_factory.h
+/data/wenjifang/btor-paser-cpp/deps/smt-switch/local/include/smt-switch/cvc4_factory.h
 ../deps/smt-switch/local/include/smt-switch/smt.h
-/data/wenjifang/wsyms/deps/smt-switch/local/include/smt-switch/smt.h
+/data/wenjifang/btor-paser-cpp/deps/smt-switch/local/include/smt-switch/smt.h
 ../utils/exceptions.h
-/data/wenjifang/wsyms/utils/exceptions.h
+/data/wenjifang/btor-paser-cpp/utils/exceptions.h
 
-/data/wenjifang/wsyms/main.cpp
+/data/wenjifang/btor-paser-cpp/main.cpp
 framework/ts.h
-/data/wenjifang/wsyms/framework/ts.h
+/data/wenjifang/btor-paser-cpp/framework/ts.h
 framework/btor2_encoder.h
-/data/wenjifang/wsyms/framework/btor2_encoder.h
+/data/wenjifang/btor-paser-cpp/framework/btor2_encoder.h
 deps/smt-switch/local/include/smt-switch/boolector_factory.h
-/data/wenjifang/wsyms/deps/smt-switch/local/include/smt-switch/boolector_factory.h
+/data/wenjifang/btor-paser-cpp/deps/smt-switch/local/include/smt-switch/boolector_factory.h
 assert.h
-/data/wenjifang/wsyms/assert.h
+/data/wenjifang/btor-paser-cpp/assert.h
 
-/data/wenjifang/wsyms/utils/exceptions.h
+/data/wenjifang/btor-paser-cpp/utils/exceptions.h
 exception
 -
 string

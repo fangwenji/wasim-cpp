@@ -24,8 +24,20 @@ int main(int argc, char** argv){
     SmtSolver s = BoolectorSolverFactory::create(false);
     pono::TransitionSystem ts(s);
     BTOR2Encoder btor_paser(input_file, ts);
-    btor_paser.preprocess(input_file);
-    btor_paser.parse(input_file);
+    
+    cout << "TS init: " << ts.init() << endl;
+    cout << "\nTS trans: " << ts.trans() << endl;
+    cout << "\nTS input vars: " << endl;
+    for(auto var: ts.inputvars()){
+        cout << var << endl;
+    }
+    cout << "\nTS state vars: " << endl;
+    for(auto var: ts.statevars()){
+        cout << var << endl;
+    }
+
+    // btor_paser.preprocess(input_file);
+    // btor_paser.parse(input_file);
     
 
 
