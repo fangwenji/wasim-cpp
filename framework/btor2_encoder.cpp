@@ -13,11 +13,11 @@
  **
  **
  **/
-#include <stdio.h>
-#include "../smt-switch/utils.h"
+
+#include "smt-switch/utils.h"
 
 #include "btor2_encoder.h"
-#include "../utils/logger.h"
+#include "logger.h"
 
 #include <iostream>
 #include "assert.h"

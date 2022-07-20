@@ -5,30 +5,26 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "(gdb) Launch",
+            "name": "g++ debug",
             "type": "cppdbg",
             "request": "launch",
-            "program": "/data/wenjifang/wsyms/framework/catbtor",
+            "program": "/data/wenjifang/wsyms/build/main",
             "args": ["/data/wenjifang/wsyms/design/testcase1-simple_pipe/simple_pipe.btor2"],
-            "stopAtEntry": true,
-            "cwd": "${fileDirname}",
+            "stopAtEntry": false,
+            "cwd": "${workspaceFolder}",
             "environment": [],
             "externalConsole": false,
             "MIMode": "gdb",
             "setupCommands": [
                 {
-                    "description": "Enable pretty-printing for gdb",
-                    "text": "-enable-pretty-printing",
-                    "ignoreFailures": true
-                },
-                {
-                    "description":  "Set Disassembly Flavor to Intel",
-                    "text": "-gdb-set disassembly-flavor intel",
-                    "ignoreFailures": true
+                    "description": "aaa",
+                    "text": "aa",
+                    "ignoreFailures": true,
                 }
-            ]
+            ],
+            "preLaunchTask": "Build",
+            "miDebuggerPath": "/usr/bin/gdb"
+
         }
-
-
     ]
 }
