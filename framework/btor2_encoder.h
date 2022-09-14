@@ -33,7 +33,7 @@ extern "C" {
 
 #include "smt-switch/smt.h"
 
-namespace pono {
+namespace wasim {
 class BTOR2Encoder
 {
  public:
@@ -73,7 +73,7 @@ class BTOR2Encoder
 
   // Important members
   const smt::SmtSolver & solver_;
-  pono::TransitionSystem & ts_;
+  wasim::TransitionSystem & ts_;
 
   // vectors of inputs and states
   // maintains the order from the btor file
@@ -101,4 +101,4 @@ class BTOR2Encoder
   bool negated_;
   size_t witness_id_{ 0 };  ///< id of any introduced witnesses for properties
 };
-}  // namespace pono
+}  // namespace wasim

@@ -29,8 +29,8 @@ std::string remove_curly_brackets(std::string s)
 }
 
 // declare a global logger
-namespace pono {
+namespace wasim {
 Log logger;
 
 void set_global_logger_verbosity(size_t v) { logger.set_verbosity(v); }
-}  // namespace pono
+}  // namespace wasim

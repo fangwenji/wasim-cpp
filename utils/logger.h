@@ -129,7 +129,7 @@ struct fmt::formatter<smt::Result>
  * ************************************************/
 // Meant to be used as a singleton class -- instantiated as logger below
 
-namespace pono {
+namespace wasim {
 
 class Log
 {
@@ -197,4 +197,4 @@ extern Log logger;
 
 void set_global_logger_verbosity(size_t v);
 
-}  // namespace pono
+}  // namespace wasim

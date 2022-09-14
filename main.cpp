@@ -3,7 +3,7 @@
 #include "deps/smt-switch/local/include/smt-switch/boolector_factory.h"
 #include "assert.h"
 
-using namespace pono;
+using namespace wasim;
 using namespace smt;
 using namespace std;
 
@@ -22,8 +22,8 @@ int main(int argc, char** argv){
     
 
     SmtSolver s = BoolectorSolverFactory::create(false);
-    pono::TransitionSystem ts(s);
-    BTOR2Encoder btor_paser(input_file, ts);
+    wasim::TransitionSystem ts(s);
+    BTOR2Encoder btor_parser(input_file, ts);
     
     cout << "TS init: " << ts.init() << endl;
     cout << "\nTS trans: " << ts.trans() << endl;
@@ -35,7 +35,7 @@ int main(int argc, char** argv){
     for(auto var: ts.statevars()){
         cout << var << endl;
     }
-
+    
     // btor_paser.preprocess(input_file);
     // btor_paser.parse(input_file);
     

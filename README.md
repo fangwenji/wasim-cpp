@@ -1,1 +1,1 @@
-Btor2 parser from Pono
+Btor2 parser adapted from Pono

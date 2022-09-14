@@ -25,7 +25,7 @@
 
 #include "../utils/exceptions.h"
 
-namespace pono {
+namespace wasim {
 
 class TransitionSystem
 {
@@ -559,4 +559,4 @@ class TransitionSystem
   virtual bool known_symbols(const smt::Term & term) const;
 };
 
-}  // namespace pono
+}  // namespace wasim

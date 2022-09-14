@@ -25,7 +25,7 @@
 using namespace smt;
 using namespace std;
 
-namespace pono {
+namespace wasim {
 
 // Maps for use in conversion
 const unordered_map<Btor2Tag, int> basemap({ { BTOR2_TAG_const, 2 },
@@ -758,4 +758,4 @@ void BTOR2Encoder::parse(const std::string filename)
   fclose(input_file);
   btor2parser_delete(reader_);
 }
-}  // namespace pono
+}  // namespace wasim

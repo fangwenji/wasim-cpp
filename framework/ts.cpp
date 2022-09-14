@@ -25,7 +25,7 @@
 using namespace smt;
 using namespace std;
 
-namespace pono {
+namespace wasim {
 
 void swap(TransitionSystem & ts1, TransitionSystem & ts2)
 {
@@ -754,4 +754,4 @@ bool TransitionSystem::known_symbols(const Term & term) const
       UnorderedTermSetPtrVec{ &statevars_, &inputvars_, &next_statevars_ });
 }
 
-}  // namespace pono
+}  // namespace wasim
