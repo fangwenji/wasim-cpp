@@ -27,6 +27,30 @@ using namespace std;
 
 namespace wasim {
 
+void StateAsmpt::print(){
+  std::map<char,Term> prev_sv;
+  prev_sv = this->_sv;
+  std::cout << "sv rhs" << std::endl;
+  std::cout << "-----" << std::endl;
+
+  for(auto s_v : prev_sv)
+  {
+    std::cout << s_v.first << ":" << s_v.second << std::endl;
+  }
+}
+
+void StateAsmpt::print_assumptions(){
+  vector<std::string> prev_asmpt;
+  vector<std::string> prev_asmpt_interp;
+  prev_asmpt = this->_asmpt;
+  prev_asmpt_interp = this->_assumption_interp;
+  int idx = 0;
+  for(auto asmpt: prev_asmpt){
+    std::cout << idx << prev_asmpt_interp[idx] << std::endl;
+    std::cout << idx << asmpt << std::endl;
+  } 
+}
+
 void swap(TransitionSystem & ts1, TransitionSystem & ts2)
 {
   std::swap(ts1.solver_, ts2.solver_);

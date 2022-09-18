@@ -19,13 +19,39 @@
 #include <string>
 #include <unordered_map>
 
-#include "../deps/smt-switch/local/include/smt-switch/cvc4_factory.h"
+#include "../deps/smt-switch/local/include/smt-switch/boolector_factory.h"
 
 #include "../deps/smt-switch/local/include/smt-switch/smt.h"
 
 #include "../utils/exceptions.h"
 
+#include <iostream>
+#include <map>
+#include <vector>
+
 namespace wasim {
+
+class StateAsmpt
+{
+public:
+  StateAsmpt(std::map<char,Term> sv, std::vector<std::string> asmpt, std::vector<std::string> assumption_interp){
+    this->_solver = smt::BoolectorSolverFactory::create(false);
+    this->_sv = sv;
+    this->_asmpt = asmpt;
+    this->_assumption_interp = assumption_interp;
+  }
+  void print();
+  void print_assumptions();
+
+  // ~StateAsmpt();
+private:
+  SmtSolver _solver;
+  std::map<char,Term> _sv;
+  std::vector<std::string> _asmpt;
+  std::vector<std::string> _assumption_interp;
+
+
+};
 
 class TransitionSystem
 {
@@ -35,7 +61,7 @@ class TransitionSystem
    * sorts
    *  this makes it a great candidate for representing the TransitionSystem */
   TransitionSystem()
-      : solver_(smt::CVC4SolverFactory::create(false)),
+      : solver_(smt::BoolectorSolverFactory::create(false)),
         init_(solver_->make_term(true)),
         trans_(solver_->make_term(true)),
         functional_(false),
