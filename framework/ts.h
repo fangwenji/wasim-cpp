@@ -34,21 +34,20 @@ namespace wasim {
 class StateAsmpt
 {
 public:
-  StateAsmpt(std::map<char,Term> sv, std::vector<std::string> asmpt, std::vector<std::string> assumption_interp){
-    this->_solver = smt::BoolectorSolverFactory::create(false);
-    this->_sv = sv;
-    this->_asmpt = asmpt;
-    this->_assumption_interp = assumption_interp;
+  StateAsmpt(smt::UnorderedTermMap sv, smt::TermVec asmpt, std::vector<std::string> assumption_interp){
+    // this->_solver = smt::BoolectorSolverFactory::create(false);
+    this->sv_ = sv;
+    this->asmpt_ = asmpt;
+    this->assumption_interp_ = assumption_interp;
   }
   void print();
   void print_assumptions();
 
   // ~StateAsmpt();
-private:
-  SmtSolver _solver;
-  std::map<char,Term> _sv;
-  std::vector<std::string> _asmpt;
-  std::vector<std::string> _assumption_interp;
+// private:
+  smt::UnorderedTermMap sv_;
+  smt::TermVec asmpt_;
+  std::vector<std::string> assumption_interp_;
 
 
 };
@@ -504,8 +503,10 @@ class TransitionSystem
   void rebuild_trans_based_on_coi(
       const smt::UnorderedTermSet & state_vars_in_coi,
       const smt::UnorderedTermSet & input_vars_in_coi);
+  
+  
 
- protected:
+//  protected:
   // solver
   smt::SmtSolver solver_;
 

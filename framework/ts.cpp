@@ -28,8 +28,7 @@ using namespace std;
 namespace wasim {
 
 void StateAsmpt::print(){
-  std::map<char,Term> prev_sv;
-  prev_sv = this->_sv;
+  auto prev_sv = this->sv_;
   std::cout << "sv rhs" << std::endl;
   std::cout << "-----" << std::endl;
 
@@ -40,10 +39,10 @@ void StateAsmpt::print(){
 }
 
 void StateAsmpt::print_assumptions(){
-  vector<std::string> prev_asmpt;
+  smt::TermVec prev_asmpt;
   vector<std::string> prev_asmpt_interp;
-  prev_asmpt = this->_asmpt;
-  prev_asmpt_interp = this->_assumption_interp;
+  prev_asmpt = this->asmpt_;
+  prev_asmpt_interp = this->assumption_interp_;
   int idx = 0;
   for(auto asmpt: prev_asmpt){
     std::cout << idx << prev_asmpt_interp[idx] << std::endl;

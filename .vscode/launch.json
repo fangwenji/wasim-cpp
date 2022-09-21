@@ -8,8 +8,8 @@
             "name": "g++ debug",
             "type": "cppdbg",
             "request": "launch",
-            "program": "/data/wenjifang/btor-paser-cpp/build/main",
-            "args": ["/data/wenjifang/btor-paser-cpp/design/testcase1-simple_pipe/simple_pipe.btor2"],
+            "program": "/data/wenjifang/wasim-cpp/build/symsim_test",
+            "args": [],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",
             "environment": [],
@@ -17,13 +17,14 @@
             "MIMode": "gdb",
             "setupCommands": [
                 {
-                    "description": "aaa",
-                    "text": "aa",
+                    "description": "enable pretty printing",
+                    "text": "-enable-pretty-printing", 
                     "ignoreFailures": true,
                 }
             ],
             "preLaunchTask": "Build",
-            "miDebuggerPath": "/usr/bin/gdb"
+            "miDebuggerPath": "/usr/bin/gdb",
+
 
         }
     ]

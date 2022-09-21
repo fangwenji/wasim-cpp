@@ -1,4 +1,4 @@
-# Install script for directory: /data/wenjifang/btor-paser-cpp
+# Install script for directory: /data/wenjifang/wasim-cpp
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
@@ -38,7 +38,7 @@ if(NOT DEFINED CMAKE_CROSSCOMPILING)
 endif()
 
 if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
-  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/include/btor-paser-cpp/fmt" TYPE DIRECTORY FILES "/data/wenjifang/btor-paser-cpp/fmt/" FILES_MATCHING REGEX "/[^/]*\\.h$")
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/include/btor-paser-cpp/fmt" TYPE DIRECTORY FILES "/data/wenjifang/wasim-cpp/fmt/" FILES_MATCHING REGEX "/[^/]*\\.h$")
 endif()
 
 if(CMAKE_INSTALL_COMPONENT)
@@ -49,5 +49,5 @@ endif()
 
 string(REPLACE ";" "\n" CMAKE_INSTALL_MANIFEST_CONTENT
        "${CMAKE_INSTALL_MANIFEST_FILES}")
-file(WRITE "/data/wenjifang/btor-paser-cpp/build/${CMAKE_INSTALL_MANIFEST}"
+file(WRITE "/data/wenjifang/wasim-cpp/build/${CMAKE_INSTALL_MANIFEST}"
      "${CMAKE_INSTALL_MANIFEST_CONTENT}")

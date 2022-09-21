@@ -24,16 +24,17 @@ install(DIRECTORY "${PROJECT_SOURCE_DIR}/fmt/"
 link_directories(${SMT_SWITCH_DIR}/local/lib)
 
 set(exe_list 
-   "main.cpp" 
+   "symsim_test.cpp" 
    "framework/ts.cpp"
    "framework/btor2_encoder.cpp"
+   "framework/symsim.cpp"
    "utils/logger.cpp")
 
-add_executable(main ${exe_list})
+add_executable(symsim_test ${exe_list})
 
 set(lib_list 
     "libsmt-switch-btor.a"
     "libsmt-switch.a"
     "pthread")
 
-target_link_libraries(main ${lib_list})
+target_link_libraries(symsim_test ${lib_list})
