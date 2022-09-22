@@ -5,7 +5,7 @@
 #include "assert.h"
 
 using namespace wasim;
-using namespace smt;
+// using namespace smt;
 using namespace std;
 
 int main(){
@@ -13,7 +13,7 @@ int main(){
 
     std::string input_file = "/data/wenjifang/vpipe-mc/btor-bmc/example/pipe-no-stall.btor2";
     
-    SmtSolver s = BoolectorSolverFactory::create(false);
+    smt::SmtSolver s = smt::BoolectorSolverFactory::create(false);
     wasim::TransitionSystem ts(s);
     BTOR2Encoder btor_parser(input_file, ts);
 
@@ -28,6 +28,7 @@ int main(){
     // cout << "TS init: " << ts.init() << endl;
     cout << "\nTS trans: " << ts.trans() << endl;
     // cout << "\nTS input vars: " << endl;
+    cout << " " << endl;
     for(auto var: ts.inputvars()){
         cout << var << endl;
     }
@@ -36,10 +37,15 @@ int main(){
         cout << var.first << "  -->-- " << var.second << endl;
     }
     
-    // cout << "\nTS constrains: " << endl;
-    // for (auto vect : ts.constraints_){
-    //     cout << vect.first << "bool: "<< vect.second << endl;
-    //     }
+    cout << "\nTS constrains: " << endl;
+    for (auto vect : ts.constraints_){
+        cout << vect.first << "bool: "<< vect.second << endl;
+        }
+    
+    cout << "\nTS prop: " << endl;
+    for (auto vect : btor_parser.propvec()){
+        cout << vect << endl;
+        }
     
     // // btor_paser.preprocess(input_file);
     // // btor_paser.parse(input_file);

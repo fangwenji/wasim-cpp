@@ -56,6 +56,18 @@ CMAKE_BINARY_DIR = /data/wenjifang/wasim-cpp/build
 #=============================================================================
 # Targets provided globally by CMake.
 
+# Special rule for the target install/strip
+install/strip: preinstall
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Installing the project stripped..."
+	/usr/bin/cmake -DCMAKE_INSTALL_DO_STRIP=1 -P cmake_install.cmake
+.PHONY : install/strip
+
+# Special rule for the target install/strip
+install/strip/fast: preinstall/fast
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Installing the project stripped..."
+	/usr/bin/cmake -DCMAKE_INSTALL_DO_STRIP=1 -P cmake_install.cmake
+.PHONY : install/strip/fast
+
 # Special rule for the target install/local
 install/local: preinstall
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Installing only the local directory..."
@@ -67,6 +79,17 @@ install/local/fast: preinstall/fast
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Installing only the local directory..."
 	/usr/bin/cmake -DCMAKE_INSTALL_LOCAL_ONLY=1 -P cmake_install.cmake
 .PHONY : install/local/fast
+
+# Special rule for the target edit_cache
+edit_cache:
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "No interactive CMake dialog available..."
+	/usr/bin/cmake -E echo No\ interactive\ CMake\ dialog\ available.
+.PHONY : edit_cache
+
+# Special rule for the target edit_cache
+edit_cache/fast: edit_cache
+
+.PHONY : edit_cache/fast
 
 # Special rule for the target install
 install: preinstall
@@ -101,29 +124,6 @@ rebuild_cache/fast: rebuild_cache
 
 .PHONY : rebuild_cache/fast
 
-# Special rule for the target edit_cache
-edit_cache:
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "No interactive CMake dialog available..."
-	/usr/bin/cmake -E echo No\ interactive\ CMake\ dialog\ available.
-.PHONY : edit_cache
-
-# Special rule for the target edit_cache
-edit_cache/fast: edit_cache
-
-.PHONY : edit_cache/fast
-
-# Special rule for the target install/strip
-install/strip: preinstall
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Installing the project stripped..."
-	/usr/bin/cmake -DCMAKE_INSTALL_DO_STRIP=1 -P cmake_install.cmake
-.PHONY : install/strip
-
-# Special rule for the target install/strip
-install/strip/fast: preinstall/fast
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Installing the project stripped..."
-	/usr/bin/cmake -DCMAKE_INSTALL_DO_STRIP=1 -P cmake_install.cmake
-.PHONY : install/strip/fast
-
 # The main all target
 all: cmake_check_build_system
 	$(CMAKE_COMMAND) -E cmake_progress_start /data/wenjifang/wasim-cpp/build/CMakeFiles /data/wenjifang/wasim-cpp/build/CMakeFiles/progress.marks
@@ -157,17 +157,17 @@ depend:
 .PHONY : depend
 
 #=============================================================================
-# Target rules for targets named symsim_test
+# Target rules for targets named independence_check_test
 
 # Build rule for target.
-symsim_test: cmake_check_build_system
-	$(MAKE) -f CMakeFiles/Makefile2 symsim_test
-.PHONY : symsim_test
+independence_check_test: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 independence_check_test
+.PHONY : independence_check_test
 
 # fast build rule for target.
-symsim_test/fast:
-	$(MAKE) -f CMakeFiles/symsim_test.dir/build.make CMakeFiles/symsim_test.dir/build
-.PHONY : symsim_test/fast
+independence_check_test/fast:
+	$(MAKE) -f CMakeFiles/independence_check_test.dir/build.make CMakeFiles/independence_check_test.dir/build
+.PHONY : independence_check_test/fast
 
 framework/btor2_encoder.o: framework/btor2_encoder.cpp.o
 
@@ -175,7 +175,7 @@ framework/btor2_encoder.o: framework/btor2_encoder.cpp.o
 
 # target to build an object file
 framework/btor2_encoder.cpp.o:
-	$(MAKE) -f CMakeFiles/symsim_test.dir/build.make CMakeFiles/symsim_test.dir/framework/btor2_encoder.cpp.o
+	$(MAKE) -f CMakeFiles/independence_check_test.dir/build.make CMakeFiles/independence_check_test.dir/framework/btor2_encoder.cpp.o
 .PHONY : framework/btor2_encoder.cpp.o
 
 framework/btor2_encoder.i: framework/btor2_encoder.cpp.i
@@ -184,7 +184,7 @@ framework/btor2_encoder.i: framework/btor2_encoder.cpp.i
 
 # target to preprocess a source file
 framework/btor2_encoder.cpp.i:
-	$(MAKE) -f CMakeFiles/symsim_test.dir/build.make CMakeFiles/symsim_test.dir/framework/btor2_encoder.cpp.i
+	$(MAKE) -f CMakeFiles/independence_check_test.dir/build.make CMakeFiles/independence_check_test.dir/framework/btor2_encoder.cpp.i
 .PHONY : framework/btor2_encoder.cpp.i
 
 framework/btor2_encoder.s: framework/btor2_encoder.cpp.s
@@ -193,8 +193,35 @@ framework/btor2_encoder.s: framework/btor2_encoder.cpp.s
 
 # target to generate assembly for a file
 framework/btor2_encoder.cpp.s:
-	$(MAKE) -f CMakeFiles/symsim_test.dir/build.make CMakeFiles/symsim_test.dir/framework/btor2_encoder.cpp.s
+	$(MAKE) -f CMakeFiles/independence_check_test.dir/build.make CMakeFiles/independence_check_test.dir/framework/btor2_encoder.cpp.s
 .PHONY : framework/btor2_encoder.cpp.s
+
+framework/independence_check.o: framework/independence_check.cpp.o
+
+.PHONY : framework/independence_check.o
+
+# target to build an object file
+framework/independence_check.cpp.o:
+	$(MAKE) -f CMakeFiles/independence_check_test.dir/build.make CMakeFiles/independence_check_test.dir/framework/independence_check.cpp.o
+.PHONY : framework/independence_check.cpp.o
+
+framework/independence_check.i: framework/independence_check.cpp.i
+
+.PHONY : framework/independence_check.i
+
+# target to preprocess a source file
+framework/independence_check.cpp.i:
+	$(MAKE) -f CMakeFiles/independence_check_test.dir/build.make CMakeFiles/independence_check_test.dir/framework/independence_check.cpp.i
+.PHONY : framework/independence_check.cpp.i
+
+framework/independence_check.s: framework/independence_check.cpp.s
+
+.PHONY : framework/independence_check.s
+
+# target to generate assembly for a file
+framework/independence_check.cpp.s:
+	$(MAKE) -f CMakeFiles/independence_check_test.dir/build.make CMakeFiles/independence_check_test.dir/framework/independence_check.cpp.s
+.PHONY : framework/independence_check.cpp.s
 
 framework/symsim.o: framework/symsim.cpp.o
 
@@ -202,7 +229,7 @@ framework/symsim.o: framework/symsim.cpp.o
 
 # target to build an object file
 framework/symsim.cpp.o:
-	$(MAKE) -f CMakeFiles/symsim_test.dir/build.make CMakeFiles/symsim_test.dir/framework/symsim.cpp.o
+	$(MAKE) -f CMakeFiles/independence_check_test.dir/build.make CMakeFiles/independence_check_test.dir/framework/symsim.cpp.o
 .PHONY : framework/symsim.cpp.o
 
 framework/symsim.i: framework/symsim.cpp.i
@@ -211,7 +238,7 @@ framework/symsim.i: framework/symsim.cpp.i
 
 # target to preprocess a source file
 framework/symsim.cpp.i:
-	$(MAKE) -f CMakeFiles/symsim_test.dir/build.make CMakeFiles/symsim_test.dir/framework/symsim.cpp.i
+	$(MAKE) -f CMakeFiles/independence_check_test.dir/build.make CMakeFiles/independence_check_test.dir/framework/symsim.cpp.i
 .PHONY : framework/symsim.cpp.i
 
 framework/symsim.s: framework/symsim.cpp.s
@@ -220,7 +247,7 @@ framework/symsim.s: framework/symsim.cpp.s
 
 # target to generate assembly for a file
 framework/symsim.cpp.s:
-	$(MAKE) -f CMakeFiles/symsim_test.dir/build.make CMakeFiles/symsim_test.dir/framework/symsim.cpp.s
+	$(MAKE) -f CMakeFiles/independence_check_test.dir/build.make CMakeFiles/independence_check_test.dir/framework/symsim.cpp.s
 .PHONY : framework/symsim.cpp.s
 
 framework/ts.o: framework/ts.cpp.o
@@ -229,7 +256,7 @@ framework/ts.o: framework/ts.cpp.o
 
 # target to build an object file
 framework/ts.cpp.o:
-	$(MAKE) -f CMakeFiles/symsim_test.dir/build.make CMakeFiles/symsim_test.dir/framework/ts.cpp.o
+	$(MAKE) -f CMakeFiles/independence_check_test.dir/build.make CMakeFiles/independence_check_test.dir/framework/ts.cpp.o
 .PHONY : framework/ts.cpp.o
 
 framework/ts.i: framework/ts.cpp.i
@@ -238,7 +265,7 @@ framework/ts.i: framework/ts.cpp.i
 
 # target to preprocess a source file
 framework/ts.cpp.i:
-	$(MAKE) -f CMakeFiles/symsim_test.dir/build.make CMakeFiles/symsim_test.dir/framework/ts.cpp.i
+	$(MAKE) -f CMakeFiles/independence_check_test.dir/build.make CMakeFiles/independence_check_test.dir/framework/ts.cpp.i
 .PHONY : framework/ts.cpp.i
 
 framework/ts.s: framework/ts.cpp.s
@@ -247,35 +274,35 @@ framework/ts.s: framework/ts.cpp.s
 
 # target to generate assembly for a file
 framework/ts.cpp.s:
-	$(MAKE) -f CMakeFiles/symsim_test.dir/build.make CMakeFiles/symsim_test.dir/framework/ts.cpp.s
+	$(MAKE) -f CMakeFiles/independence_check_test.dir/build.make CMakeFiles/independence_check_test.dir/framework/ts.cpp.s
 .PHONY : framework/ts.cpp.s
 
-symsim_test.o: symsim_test.cpp.o
+independence_check_test.o: independence_check_test.cpp.o
 
-.PHONY : symsim_test.o
+.PHONY : independence_check_test.o
 
 # target to build an object file
-symsim_test.cpp.o:
-	$(MAKE) -f CMakeFiles/symsim_test.dir/build.make CMakeFiles/symsim_test.dir/symsim_test.cpp.o
-.PHONY : symsim_test.cpp.o
+independence_check_test.cpp.o:
+	$(MAKE) -f CMakeFiles/independence_check_test.dir/build.make CMakeFiles/independence_check_test.dir/independence_check_test.cpp.o
+.PHONY : independence_check_test.cpp.o
 
-symsim_test.i: symsim_test.cpp.i
+independence_check_test.i: independence_check_test.cpp.i
 
-.PHONY : symsim_test.i
+.PHONY : independence_check_test.i
 
 # target to preprocess a source file
-symsim_test.cpp.i:
-	$(MAKE) -f CMakeFiles/symsim_test.dir/build.make CMakeFiles/symsim_test.dir/symsim_test.cpp.i
-.PHONY : symsim_test.cpp.i
+independence_check_test.cpp.i:
+	$(MAKE) -f CMakeFiles/independence_check_test.dir/build.make CMakeFiles/independence_check_test.dir/independence_check_test.cpp.i
+.PHONY : independence_check_test.cpp.i
 
-symsim_test.s: symsim_test.cpp.s
+independence_check_test.s: independence_check_test.cpp.s
 
-.PHONY : symsim_test.s
+.PHONY : independence_check_test.s
 
 # target to generate assembly for a file
-symsim_test.cpp.s:
-	$(MAKE) -f CMakeFiles/symsim_test.dir/build.make CMakeFiles/symsim_test.dir/symsim_test.cpp.s
-.PHONY : symsim_test.cpp.s
+independence_check_test.cpp.s:
+	$(MAKE) -f CMakeFiles/independence_check_test.dir/build.make CMakeFiles/independence_check_test.dir/independence_check_test.cpp.s
+.PHONY : independence_check_test.cpp.s
 
 utils/logger.o: utils/logger.cpp.o
 
@@ -283,7 +310,7 @@ utils/logger.o: utils/logger.cpp.o
 
 # target to build an object file
 utils/logger.cpp.o:
-	$(MAKE) -f CMakeFiles/symsim_test.dir/build.make CMakeFiles/symsim_test.dir/utils/logger.cpp.o
+	$(MAKE) -f CMakeFiles/independence_check_test.dir/build.make CMakeFiles/independence_check_test.dir/utils/logger.cpp.o
 .PHONY : utils/logger.cpp.o
 
 utils/logger.i: utils/logger.cpp.i
@@ -292,7 +319,7 @@ utils/logger.i: utils/logger.cpp.i
 
 # target to preprocess a source file
 utils/logger.cpp.i:
-	$(MAKE) -f CMakeFiles/symsim_test.dir/build.make CMakeFiles/symsim_test.dir/utils/logger.cpp.i
+	$(MAKE) -f CMakeFiles/independence_check_test.dir/build.make CMakeFiles/independence_check_test.dir/utils/logger.cpp.i
 .PHONY : utils/logger.cpp.i
 
 utils/logger.s: utils/logger.cpp.s
@@ -301,7 +328,7 @@ utils/logger.s: utils/logger.cpp.s
 
 # target to generate assembly for a file
 utils/logger.cpp.s:
-	$(MAKE) -f CMakeFiles/symsim_test.dir/build.make CMakeFiles/symsim_test.dir/utils/logger.cpp.s
+	$(MAKE) -f CMakeFiles/independence_check_test.dir/build.make CMakeFiles/independence_check_test.dir/utils/logger.cpp.s
 .PHONY : utils/logger.cpp.s
 
 # Help Target
@@ -310,25 +337,28 @@ help:
 	@echo "... all (the default if no target is provided)"
 	@echo "... clean"
 	@echo "... depend"
+	@echo "... install/strip"
 	@echo "... install/local"
+	@echo "... edit_cache"
 	@echo "... install"
 	@echo "... list_install_components"
 	@echo "... rebuild_cache"
-	@echo "... edit_cache"
-	@echo "... install/strip"
-	@echo "... symsim_test"
+	@echo "... independence_check_test"
 	@echo "... framework/btor2_encoder.o"
 	@echo "... framework/btor2_encoder.i"
 	@echo "... framework/btor2_encoder.s"
+	@echo "... framework/independence_check.o"
+	@echo "... framework/independence_check.i"
+	@echo "... framework/independence_check.s"
 	@echo "... framework/symsim.o"
 	@echo "... framework/symsim.i"
 	@echo "... framework/symsim.s"
 	@echo "... framework/ts.o"
 	@echo "... framework/ts.i"
 	@echo "... framework/ts.s"
-	@echo "... symsim_test.o"
-	@echo "... symsim_test.i"
-	@echo "... symsim_test.s"
+	@echo "... independence_check_test.o"
+	@echo "... independence_check_test.i"
+	@echo "... independence_check_test.s"
 	@echo "... utils/logger.o"
 	@echo "... utils/logger.i"
 	@echo "... utils/logger.s"

@@ -29,7 +29,7 @@ int main(int argc, char** argv){
     cout << "TS init: " << ts.init() << endl;
     cout << "\nTS trans: " << ts.trans() << endl;
     cout << "\nTS input vars: " << endl;
-    for(auto var: ts.inputvars()){
+    for(auto var: ts.inputvars_){
         cout << var << endl;
     }
     cout << "\nTS state vars: " << endl;

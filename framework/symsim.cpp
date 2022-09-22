@@ -1,5 +1,4 @@
 #include "symsim.h"
-#include "assert.h"
 
 namespace wasim {
 
@@ -191,6 +190,7 @@ void SymbolicExecutor::print_current_step_assumptions(){
             cout << "A" << i << ", "<< j << " " << interp << endl;
             cout << "A" << i << ", "<< j << " " << a << endl;
             j++;
+            
         }
         i++;
     }
