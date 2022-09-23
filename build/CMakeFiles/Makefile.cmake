@@ -45,5 +45,5 @@ set(CMAKE_MAKEFILE_PRODUCTS
 
 # Dependency information for all targets:
 set(CMAKE_DEPEND_INFO_FILES
-  "CMakeFiles/independence_check_test.dir/DependInfo.cmake"
+  "CMakeFiles/symsim_test.dir/DependInfo.cmake"
   )

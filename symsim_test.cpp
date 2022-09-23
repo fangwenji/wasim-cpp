@@ -3,6 +3,7 @@
 #include "symsim.h"
 #include "deps/smt-switch/local/include/smt-switch/boolector_factory.h"
 #include "assert.h"
+#include "framework/term_manip.h"
 
 using namespace wasim;
 // using namespace smt;
@@ -98,6 +99,41 @@ int main(){
 
     executor.print_current_step();
     executor.print_current_step_assumptions();
+
+    cout << "\n\n\n" << endl;
+    auto cons = ts.constraints_[1].first;
+    cout << cons << endl;
+
+    for(auto v : cons){
+        cout << "v: " <<v << endl;
+        for (auto v0 : v){
+            cout << "v0: " << v0 << endl;
+            cout << v0->is_symbol() << endl;
+            for(auto v00 : v0){
+                cout << "v00: "<<v00 << endl;
+            }
+        }
+    }
+
+    cout << "\n\n" << endl;
+    auto arg1 = arg(cons);
+    cout << arg1.size() << endl;
+
+
+    auto cons1 = ts.init_;
+    cout << "expr: " << cons1 << endl;
+    auto free_var = get_free_variable(cons1);
+    cout << "free_var_num: " << free_var.size() << endl;
+    for(auto v : free_var){
+        cout << v << endl;
+    }
+
+    
+    
+    
+    // // cout << cons->begin() << endl;
+    // cout << cons->get_sort()->to_string() << endl;
+    
 
     return 0;
     

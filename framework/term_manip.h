@@ -1,0 +1,41 @@
+#pragma once
+// #include "assert.h"
+// #include <string>
+// #include <iomanip>
+// #include <unordered_map>
+// #include <boost/variant.hpp>
+
+#include "../deps/smt-switch/local/include/smt-switch/boolector_factory.h"
+// #include "../deps/smt-switch/local/include/smt-switch/boolector_extensions.h"
+
+#include "../deps/smt-switch/local/include/smt-switch/smt.h"
+// #include "../deps/smt-switch/local/include/smt-switch/generic_sort.h"
+
+// #include "../utils/exceptions.h"
+
+#include "ts.h"
+
+// #include <iostream>
+// #include <unordered_map>
+// #include <utility>
+// #include <functional>
+// #include <vector>
+// #include <set>
+#include <vector>
+#include <iostream>
+#include <iterator>
+#include <algorithm>
+#include <variant>
+
+using namespace std;
+
+namespace wasim
+{
+
+//  return the arguments of a term, <left, right>
+smt::TermVec arg(smt::Term term);
+
+// DFS of a term (arg), free var --> symbol
+smt::UnorderedTermSet get_free_variable(smt::Term term);                                                         
+
+}

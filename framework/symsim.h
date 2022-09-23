@@ -14,6 +14,7 @@
 #include "../utils/exceptions.h"
 
 #include "ts.h"
+#include "term_manip.h"
 
 #include <iostream>
 #include <unordered_map>
@@ -73,7 +74,7 @@ public:
 class SymbolicExecutor
 {
 public:
-    SymbolicExecutor(TransitionSystem ts, const smt::SmtSolver & s){
+    SymbolicExecutor(TransitionSystem ts, smt::SmtSolver & s){
         this->ts_ = ts; // transition system
         this->solver_ = s;
 
