@@ -40,11 +40,11 @@ void TraceManager::remove_base_var(smt::Term var){
     base_var_.erase(var);
 }
 
-bool TraceManager::record_state_w_asmpt(StateAsmpt state, wasim::type_record Xvar, smt::SmtSolver solver_){
+bool TraceManager::record_state_w_asmpt(StateAsmpt state, wasim::type_record Xvar){
     record_x_var(Xvar);
 
     for(auto s : abs_state_){
-        if(abs_eq(s, state, solver_)){
+        if(abs_eq(s, state)){
             return false;
         }
     }
@@ -52,11 +52,11 @@ bool TraceManager::record_state_w_asmpt(StateAsmpt state, wasim::type_record Xva
     return true;
 }
 
-bool TraceManager::record_state_w_asmpt3(std::vector<StateAsmpt> new_state_vec,StateAsmpt state, wasim::type_record Xvar, smt::SmtSolver solver_){
+bool TraceManager::record_state_w_asmpt3(std::vector<StateAsmpt> new_state_vec,StateAsmpt state, wasim::type_record Xvar){
     record_x_var(Xvar);
 
     for(auto s : new_state_vec){
-        if(abs_eq(abstract(s), state, solver_)){
+        if(abs_eq(abstract(s), state)){
             return false;
         }
     }
@@ -69,7 +69,7 @@ bool TraceManager::record_state_w_asmpt_one_step(StateAsmpt state){
     return true;
 }
 
-bool TraceManager::abs_eq(StateAsmpt s_abs, StateAsmpt s2, smt::SmtSolver solver_){
+bool TraceManager::abs_eq(StateAsmpt s_abs, StateAsmpt s2){
     for (const auto& sv : s_abs.sv_){
         if(s2.sv_.find(sv.first) == s2.sv_.end()){
             return false;
@@ -91,14 +91,14 @@ bool TraceManager::abs_eq(StateAsmpt s_abs, StateAsmpt s2, smt::SmtSolver solver
     }
 }
 
-bool TraceManager::check_reachable(StateAsmpt s_in, smt::SmtSolver solver_){
+bool TraceManager::check_reachable(StateAsmpt s_in){
     auto asmpt = s_in.asmpt_;
     auto r = solver_->check_sat_assuming(asmpt);
     auto current_asmpt_sat = r.is_sat();
     return current_asmpt_sat;
 }
 
-bool TraceManager::check_concrete_enough(StateAsmpt s_in, wasim::type_record Xs, smt::SmtSolver solver_){
+bool TraceManager::check_concrete_enough(StateAsmpt s_in, wasim::type_record Xs){
     record_x_var(Xs);
 
     if(base_var_.size() == 0){

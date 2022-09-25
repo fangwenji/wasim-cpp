@@ -135,7 +135,7 @@ public:
     std::any interpret_state_expr_on_curr_frame(std::any expr);
     void sim_one_step();
     void sim_one_step_direct();
-    auto get_Xs();
+    smt::UnorderedTermSet get_Xs();
     smt::Term new_var(int bitwdth, std::string vname = "var", bool x = true);
     StateAsmpt get_curr_state(smt::TermVec assumptions = {});
     auto set_var(int bitwdth, std::string vname = "var");

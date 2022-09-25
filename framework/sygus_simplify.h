@@ -1,5 +1,6 @@
 #pragma once
-// #include "assert.h"
+#include "assert.h"
+#include "math.h"
 // #include <string>
 // #include <iomanip>
 // #include <unordered_map>
@@ -9,12 +10,14 @@
 // #include "../deps/smt-switch/local/include/smt-switch/boolector_extensions.h"
 
 #include "../deps/smt-switch/local/include/smt-switch/smt.h"
+#include "term_manip.h"
 // #include "../deps/smt-switch/local/include/smt-switch/generic_sort.h"
 
-// #include "../utils/exceptions.h"
+#include "../utils/exceptions.h"
 
 #include "ts.h"
 #include "symsim.h"
+#include "tracemgr.h"
 
 // #include <iostream>
 // #include <unordered_map>
@@ -22,21 +25,12 @@
 // #include <functional>
 // #include <vector>
 // #include <set>
-#include <vector>
-#include <iostream>
-#include <iterator>
-#include <algorithm>
+// #include <any>
 #include <variant>
 
 using namespace std;
 
 namespace wasim
 {
-
-//  return the arguments of a term, <left, right>
-smt::TermVec arg(smt::Term term);
-
-// DFS of a term (arg), free var --> symbol
-smt::UnorderedTermSet get_free_variable(smt::Term term);
-
+bool expr_contians_X(smt::Term expr, smt::UnorderedTermSet set_of_xvar);
 }

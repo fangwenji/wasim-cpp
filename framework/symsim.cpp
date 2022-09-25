@@ -327,7 +327,7 @@ void SymbolicExecutor::sim_one_step_direct(){
     history_assumptions_interp_.push_back({});
 }
 
-auto SymbolicExecutor::get_Xs(){
+smt::UnorderedTermSet SymbolicExecutor::get_Xs(){
     return Xvar_;
 }
 

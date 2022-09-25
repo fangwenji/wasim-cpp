@@ -15,6 +15,7 @@
 
 #include "ts.h"
 #include "symsim.h"
+#include "symtraverse.h"
 
 // #include <iostream>
 // #include <unordered_map>
@@ -33,10 +34,8 @@ using namespace std;
 namespace wasim
 {
 
-//  return the arguments of a term, <left, right>
-smt::TermVec arg(smt::Term term);
+smt::TermVec tag2asmpt(std::string flag, SymbolicExecutor executor);
 
-// DFS of a term (arg), free var --> symbol
-smt::UnorderedTermSet get_free_variable(smt::Term term);
+void extend_branch_list(std::vector<std::vector<StateAsmpt>> branch_list, SymbolicExecutor executor, TransitionSystem sts, std::vector<std::string> base_sv, std::string flag);
 
 }
