@@ -10,35 +10,44 @@ smt::TermVec tag2asmpt_c1(std::string flag, SymbolicExecutor & executor, smt::Sm
     smt::Term rhs_1 = solver->make_term(1, solver->make_sort(smt::BV, 1));
     if(flag == "tag0_0"){
         lhs = executor.sv("stage1_go");
-        ret_term = solver->make_term(smt::Equal, lhs, rhs_0);    
+        ret_term = solver->make_term(smt::Equal, lhs, rhs_0);
+        ret.push_back(ret_term);  
     }
     else if(flag == "tag0_1"){
         lhs = executor.sv("stage1_go");
         ret_term = solver->make_term(smt::Equal, lhs, rhs_1);
+        ret.push_back(ret_term);
     }
     else if(flag == "tag1_1"){
         lhs = executor.sv("stage1_go");
         ret_term = solver->make_term(smt::Equal, lhs, rhs_0);
         lhs2 = executor.sv("stage2_go");
         ret_term2 = solver->make_term(smt::Equal, lhs2, rhs_0);
+        ret.push_back(ret_term);
+        ret.push_back(ret_term2);
     }
     else if(flag == "tag1_2"){
         lhs = executor.sv("stage2_go");
         ret_term = solver->make_term(smt::Equal, lhs, rhs_1);
+        ret.push_back(ret_term);
     }
     else if(flag == "tag2_2"){
         lhs = executor.sv("stage2_go");
         ret_term = solver->make_term(smt::Equal, lhs, rhs_0);
         lhs2 = executor.sv("stage3_go");
         ret_term2 = solver->make_term(smt::Equal, lhs2, rhs_0);
+        ret.push_back(ret_term);
+        ret.push_back(ret_term2);
     }
     else if(flag == "tag2_3"){
         lhs = executor.sv("stage3_go");
         ret_term = solver->make_term(smt::Equal, lhs, rhs_1);
+        ret.push_back(ret_term);
     }
     else if(flag == "tag3_3"){
         lhs = executor.sv("stage3_go");
         ret_term = solver->make_term(smt::Equal, lhs, rhs_0);
+        ret.push_back(ret_term);
     }
     else{
         cout << "<ERROR> Wrong tag transition format!" << endl;
@@ -46,15 +55,15 @@ smt::TermVec tag2asmpt_c1(std::string flag, SymbolicExecutor & executor, smt::Sm
     }
 
 
-    ret.push_back(ret_term);
-    ret.push_back(ret_term2);
+    
+
 
 
     
     return ret;
 }
 
-void extend_branch_list(std::vector<std::vector<StateAsmpt>> branch_list, SymbolicExecutor & executor, TransitionSystem & sts, std::vector<std::string> base_sv, std::string flag, smt::SmtSolver & s){
+void extend_branch_init(std::vector<std::vector<StateAsmpt>>& branch_list, SymbolicExecutor& executor, TransitionSystem & sts, std::vector<std::string> base_sv, std::string flag, std::vector<TraverseBranchingNode> order, smt::SmtSolver & s){
     auto branch_list_old(branch_list);
     branch_list.clear();
     auto executor_temp(executor);
@@ -63,7 +72,16 @@ void extend_branch_list(std::vector<std::vector<StateAsmpt>> branch_list, Symbol
         base_variable.insert(executor_temp.sv(n));
     }
     SymbolicTraverse traverse_temp(sts, executor_temp, s, base_variable);
-    // traverse_temp.traverse();9
+    auto assumptions = tag2asmpt_c1(flag, executor_temp, s);
+    traverse_temp.traverse(assumptions, order, {});
+    cout << "number of state " << flag << ": 1-> " << traverse_temp.tracemgr_.abs_state_.size() << endl;
+
+    for (const auto& nextstate : traverse_temp.tracemgr_.abs_state_){
+        std::vector<StateAsmpt> state_vec_extend;
+        state_vec_extend.push_back(nextstate);
+        branch_list.push_back(state_vec_extend);
+    }
+    cout << "number of state " << flag << " in total: " << branch_list_old.size() << " --> " << branch_list.size() << endl;
 }
 
 

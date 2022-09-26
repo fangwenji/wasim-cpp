@@ -34,8 +34,8 @@ using namespace std;
 namespace wasim
 {
 
-smt::TermVec tag2asmpt(std::string flag, SymbolicExecutor executor);
+smt::TermVec tag2asmpt_c1(std::string flag, SymbolicExecutor& executor, smt::SmtSolver & solver);
 
-void extend_branch_list(std::vector<std::vector<StateAsmpt>> branch_list, SymbolicExecutor executor, TransitionSystem sts, std::vector<std::string> base_sv, std::string flag);
+void extend_branch_init(std::vector<std::vector<StateAsmpt>>& branch_list, SymbolicExecutor & executor, TransitionSystem & sts, std::vector<std::string> base_sv, std::string flag, std::vector<TraverseBranchingNode> order, smt::SmtSolver & s);
 
 }

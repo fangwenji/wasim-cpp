@@ -1,7 +1,7 @@
 #include"independence_check.h"
 namespace wasim {
 //TODO: need to distinguish constant and op?
-bool e_is_always_valid(smt::Term e, smt::TermVec assumptions /*={}*/, smt::SmtSolver s){
+bool e_is_always_valid(smt::Term e, smt::TermVec assumptions /*={}*/, smt::SmtSolver& s){
     bool is_bool = (e->get_sort()->get_sort_kind() == smt::BOOL);
     bool is_bv = (e->get_sort()->get_sort_kind() == smt::BV);
 
@@ -21,7 +21,7 @@ bool e_is_always_valid(smt::Term e, smt::TermVec assumptions /*={}*/, smt::SmtSo
     return not(s->check_sat_assuming(assumptions).is_sat());
 }
 
-bool e_is_always_invalid(smt::Term e, smt::TermVec assumptions /*={}*/, smt::SmtSolver s){
+bool e_is_always_invalid(smt::Term e, smt::TermVec assumptions /*={}*/, smt::SmtSolver& s){
     bool is_bool = (e->get_sort()->get_sort_kind() == smt::BOOL);
     bool is_bv = (e->get_sort()->get_sort_kind() == smt::BV);
 
@@ -40,11 +40,36 @@ bool e_is_always_invalid(smt::Term e, smt::TermVec assumptions /*={}*/, smt::Smt
     return not(s->check_sat_assuming(assumptions).is_sat());
 }
 
-bool e_is_independent_of_v(smt::Term e, smt::Term v, smt::TermVec assumptions /*={}*/, smt::SmtSolver s){
+bool e_is_independent_of_v(smt::Term e, smt::Term v, smt::TermVec assumptions /*={}*/, smt::SmtSolver& s){
+    // auto s (solver);
     auto w = v->get_sort()->get_width();
     auto sort_w = s->make_sort(smt::BV, w);
-    auto v1 = s->make_symbol(v->to_string()+"1", sort_w);
-    auto v2 = s->make_symbol(v->to_string()+"2", sort_w);
+    smt::Term v1, v2;
+    try
+    {
+        v1 = s->get_symbol(v->to_string()+"1"); 
+    }
+    catch(const std::exception& e)
+    {
+        std::cerr << e.what() << '\n';
+        v1 = s->make_symbol(v->to_string()+"1", sort_w);
+    }
+
+    try
+    {
+        v2 = s->get_symbol(v->to_string()+"2"); 
+    }
+    catch(const std::exception& e)
+    {
+        std::cerr << e.what() << '\n';
+        v2 = s->make_symbol(v->to_string()+"2", sort_w);
+    }
+    
+
+    
+    // auto v1 = s->get_symbol(v->to_string()+"1");
+    // auto v1 = s->make_symbol(v->to_string()+"1", sort_w);
+    // auto v2 = s->make_symbol(v->to_string()+"2", sort_w);
 
     smt::UnorderedTermMap sub_map1, sub_map2;
     sub_map1 = {{v,v1}};
@@ -54,7 +79,7 @@ bool e_is_independent_of_v(smt::Term e, smt::Term v, smt::TermVec assumptions /*
 
     smt::TermVec assumptionSub;
     auto assumptionSub_expr = s->make_term(smt::Not, s->make_term(smt::Equal, e1, e2));
-    cout << "assump: " << assumptionSub_expr << endl;
+    // cout << "assump: " << assumptionSub_expr << endl;
     assumptionSub.push_back(assumptionSub_expr);
     for (auto a : assumptions){
         assumptionSub.push_back(s->substitute(a, sub_map1));
@@ -70,7 +95,7 @@ bool e_is_independent_of_v(smt::Term e, smt::Term v, smt::TermVec assumptions /*
     return ret;
 }
 
-smt::Term substitute_simplify(smt::Term e, smt::Term v, smt::TermVec assumptions /*={}*/, smt::SmtSolver s){
+smt::Term substitute_simplify(smt::Term e, smt::Term v, smt::TermVec assumptions /*={}*/, smt::SmtSolver& s){
     smt::Term val;
     if(assumptions.size() == 0){
         auto v_sort = v->get_sort();
@@ -86,7 +111,7 @@ smt::Term substitute_simplify(smt::Term e, smt::Term v, smt::TermVec assumptions
     return s->substitute(e, submap);
 }
 
-bool is_valid(smt::Term e, smt::SmtSolver s){
+bool is_valid(smt::Term e, smt::SmtSolver& s){
     smt::TermVec e_vec;
     e_vec.push_back(e);
     return s->check_sat_assuming(e_vec).is_sat();

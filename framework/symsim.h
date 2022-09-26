@@ -89,21 +89,21 @@ public:
         this->name_cnt_ = {};
         this->Xvar_ = {};
     }
-    SymbolicExecutor(TransitionSystem ts){
-        this->ts_ = ts; // transition system
-        this->solver_ = smt::BoolectorSolverFactory::create(false);
+    // SymbolicExecutor(TransitionSystem ts){
+    //     this->ts_ = ts; // transition system
+    //     this->solver_ = smt::BoolectorSolverFactory::create(false);
 
-        // input variables & state variables
-        this->invar_ = ts.inputvars_;
-        this->svar_ = ts.statevars_;
+    //     // input variables & state variables
+    //     this->invar_ = ts.inputvars_;
+    //     this->svar_ = ts.statevars_;
         
-        this->trace_ = {}; // vector of state var assignment. A var assignment is a unordered_map: v -> value
-        this->history_choice_ = {};
-        this->history_assumptions_ = {};
-        this->history_assumptions_interp_ = {};
-        this->name_cnt_ = {};
-        this->Xvar_ = {};
-    }
+    //     this->trace_ = {}; // vector of state var assignment. A var assignment is a unordered_map: v -> value
+    //     this->history_choice_ = {};
+    //     this->history_assumptions_ = {};
+    //     this->history_assumptions_interp_ = {};
+    //     this->name_cnt_ = {};
+    //     this->Xvar_ = {};
+    // }
 
     TransitionSystem ts_;
     smt::SmtSolver solver_;

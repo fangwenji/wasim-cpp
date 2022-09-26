@@ -201,7 +201,7 @@ void SymbolicExecutor::set_input(smt::UnorderedTermMap invar_assign, const smt::
 
 
     _check_only_invar(invar_assign);
-    const auto& prev_sv = trace_.back();
+    auto prev_sv (trace_.back());
     for(auto v : invar_){
          if (prev_sv.find(v) != prev_sv.end()){
             cout << "WARNING: ignore input assignment as assigned by prev-state " << v->to_string() << endl;
@@ -211,12 +211,14 @@ void SymbolicExecutor::set_input(smt::UnorderedTermMap invar_assign, const smt::
          }
     }
     ChoiceItem c(pre_assumptions, invar_assign);
+    
+    int len = static_cast<int> (history_assumptions_.back().size());
+    c.record_prev_assumption_len(len);
     history_choice_.push_back(c);
-    c.record_prev_assumption_len(history_assumptions_.back().size());
     assert(history_assumptions_.size() == history_assumptions_interp_.size());
     assert(history_assumptions_.back().size() == history_assumptions_interp_.back().size());
 
-    auto submap = prev_sv; // copy problem?
+    auto submap (prev_sv); // copy problem?
     submap.insert(invar_assign.begin(), invar_assign.end());
 
     // TODO: constraints here are different from those in COSA btor parser! (important)
@@ -227,7 +229,14 @@ void SymbolicExecutor::set_input(smt::UnorderedTermMap invar_assign, const smt::
         auto assmpt_temp = solver_->make_term(smt::Equal,vect_fir_subs, vect_sec_subs);
         assmpt_vec.push_back(assmpt_temp); 
     }
-    smt::Term assmpt = solver_->make_term(smt::And, assmpt_vec);
+    smt::Term assmpt;
+    if(assmpt_vec.size() == 1){
+        assmpt = assmpt_vec.back();
+    }
+    else{
+        smt::Term assmpt = solver_->make_term(smt::And, assmpt_vec);
+    }
+    
     // for(const auto& asmpt : assmpt_vec){
     //     assmpt = solver_->make_term(smt::And,assmpt,asmpt);
     // }
@@ -265,11 +274,11 @@ void SymbolicExecutor::undo_set_input(){
     history_choice_.pop_back();
     auto l = c.get_prev_assumption_len();
     smt::TermVec::const_iterator asmpt_fir = history_assumptions_.back().begin();
-    smt::TermVec::const_iterator asmpt_sec = history_assumptions_.back().begin() + 2;
+    smt::TermVec::const_iterator asmpt_sec = history_assumptions_.back().begin() + l;
     history_assumptions_.back().assign(asmpt_fir, asmpt_sec);
     auto asmpt_interp_fir = history_assumptions_interp_.back().begin();
-    auto asmpt_interp_sec = history_assumptions_interp_.back().begin() + 2;
-    history_assumptions_.back().assign(asmpt_fir, asmpt_sec);
+    auto asmpt_interp_sec = history_assumptions_interp_.back().begin() + l;
+    history_assumptions_interp_.back().assign(asmpt_interp_fir, asmpt_interp_sec);
 }
 
 std::any SymbolicExecutor::interpret_state_expr_on_curr_frame(std::any expr){

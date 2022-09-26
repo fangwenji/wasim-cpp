@@ -30,15 +30,15 @@ namespace wasim
 {
 // bool is_bv_constant(smt::Term e);
 
-bool e_is_always_valid(smt::Term e, smt::TermVec assumptions /*={}*/, smt::SmtSolver s); // no test
+bool e_is_always_valid(smt::Term e, smt::TermVec assumptions /*={}*/, smt::SmtSolver& s); // no test
 
-bool e_is_always_invalid(smt::Term e, smt::TermVec assumptions /*={}*/, smt::SmtSolver s); // no test
+bool e_is_always_invalid(smt::Term e, smt::TermVec assumptions /*={}*/, smt::SmtSolver& s); // no test
 
-bool e_is_independent_of_v(smt::Term e, smt::Term v, smt::TermVec assumptions /*={}*/, smt::SmtSolver s); // pass
+bool e_is_independent_of_v(smt::Term e, smt::Term v, smt::TermVec assumptions /*={}*/, smt::SmtSolver& solver); // pass
 
-smt::Term substitute_simplify(smt::Term e, smt::Term v, smt::TermVec assumptions /*={}*/, smt::SmtSolver s); // not sure
+smt::Term substitute_simplify(smt::Term e, smt::Term v, smt::TermVec assumptions /*={}*/, smt::SmtSolver& s); // not sure
 
-bool is_valid(smt::Term e, smt::SmtSolver s); // no test
+bool is_valid(smt::Term e, smt::SmtSolver& s); // no test
 
 } // namespace wasim
 

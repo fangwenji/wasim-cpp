@@ -70,25 +70,37 @@ bool TraceManager::record_state_w_asmpt_one_step(StateAsmpt state){
 }
 
 bool TraceManager::abs_eq(StateAsmpt s_abs, StateAsmpt s2){
+    smt::TermVec expr_vec;
     for (const auto& sv : s_abs.sv_){
         if(s2.sv_.find(sv.first) == s2.sv_.end()){
             return false;
         }
         auto v2 = s2.sv_.at(sv.first);
-        smt::Term expr = solver_->make_term(smt::And, expr, solver_->make_term(smt::Equal, sv.second, v2)); //TODO: need test, expr no initialization
-
-        smt::TermVec assumptions;
-        assumptions.insert(assumptions.end(), s_abs.asmpt_.begin(), s_abs.asmpt_.end());
-        assumptions.insert(assumptions.end(), s2.asmpt_.begin(), s2.asmpt_.end());
-
-        auto r = solver_->check_sat_assuming(assumptions);
-        if(not(r.is_sat())){
-            return false;
-        }
-        auto valid = e_is_always_valid(expr, assumptions, solver_);
-        return valid;
-
+        
+        auto expr_tmp = solver_->make_term(smt::Equal, sv.second, v2); //TODO: need test, expr no initialization
+        expr_vec.push_back(expr_tmp);
     }
+
+    smt::Term expr;
+    if(expr_vec.size()>1){
+        expr = solver_->make_term(smt::And, expr_vec);
+    }
+    else{
+        expr = expr_vec.back();
+    }
+    
+    smt::TermVec assumptions;
+    assumptions.insert(assumptions.end(), s_abs.asmpt_.begin(), s_abs.asmpt_.end());
+    assumptions.insert(assumptions.end(), s2.asmpt_.begin(), s2.asmpt_.end());
+
+    auto r = solver_->check_sat_assuming(assumptions);
+    if(not(r.is_sat())){
+        return false;
+    }
+    auto valid = e_is_always_valid(expr, assumptions, solver_);
+    return valid;
+
+    
 }
 
 bool TraceManager::check_reachable(StateAsmpt s_in){
@@ -113,9 +125,19 @@ bool TraceManager::check_concrete_enough(StateAsmpt s_in, wasim::type_record Xs)
             continue;
         }
         smt::UnorderedTermSet allv_in_v = get_free_variable(v);
-        allv_in_v.insert(Xvar_.begin(), Xvar_.end());
+        smt::UnorderedTermSet intersec_res;
+        // std::set_intersection(allv_in_v.begin(), allv_in_v.end(), Xvar_.begin(), Xvar_.end(), inserter(intersec_res, intersec_res.begin()));
+        
+        for(const auto var : allv_in_v){
+            if(Xvar_.find(var) != Xvar_.end()){
+                intersec_res.insert(var);
+                // cout << var->to_string() << endl;
+            }
+        }
 
-        for (const auto& X : allv_in_v){
+        // allv_in_v.insert(Xvar_.begin(), Xvar_.end());
+
+        for (const auto& X : intersec_res){
             auto ind = e_is_independent_of_v(v, X, s_in.asmpt_, solver_);
             if(not ind){
                 return false;

@@ -4,6 +4,7 @@
 #include "term_manip.h"
 #include "ts.h"
 #include <variant>
+#include <set>
 
 using namespace std;
 

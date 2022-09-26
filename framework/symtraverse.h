@@ -79,12 +79,13 @@ public:
 class PerStateStack
 {
 public:
-    PerStateStack(std::vector<TraverseBranchingNode> branching_point, SymbolicExecutor & executor, smt::SmtSolver & s) : simulator_(executor), solver_(s)
+    PerStateStack(std::vector<TraverseBranchingNode> branching_point, SymbolicExecutor & executor, smt::SmtSolver & s) : simulator_(executor)
     {
         this->stack_ = {};
         this->ptr_ = 0;
         this->branching_point_ = branching_point;
         this->no_next_choice_ = false;
+        this->solver_ = s;
         // this->simulator_ = executor;
     }
 
@@ -118,7 +119,7 @@ public:
 class SymbolicTraverse
 {
 public:
-    SymbolicTraverse(TransitionSystem & ts, SymbolicExecutor executor, smt::SmtSolver & s, smt::UnorderedTermSet base_variable) :executor_(executor), tracemgr_(ts, s)
+    SymbolicTraverse(TransitionSystem & ts, SymbolicExecutor & executor, smt::SmtSolver & s, smt::UnorderedTermSet base_variable) :executor_(executor), tracemgr_(ts, s)
     {
         this->sts_ = ts;
         this->base_variable_ = base_variable;
@@ -126,6 +127,7 @@ public:
         this->new_state_vec_ = {};
         this->vec_of_state_vec_ = {};
         this->tracemgr_.record_base_var(base_variable);
+        this->solver_ = s;
 
     }
 
@@ -139,7 +141,7 @@ public:
     std::vector<std::vector<StateAsmpt>> vec_of_state_vec_;
 
     void traverse_one_step(smt::TermVec assumptions, std::vector<TraverseBranchingNode> branching_point, StateAsmpt s_init);
-    void traverse(smt::TermVec assumptions, std::vector<TraverseBranchingNode> branching_point, StateAsmpt s_init);
+    void traverse(smt::TermVec assumptions, std::vector<TraverseBranchingNode> branching_point, std::vector<StateAsmpt> s_init);
 
 };
 

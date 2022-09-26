@@ -25,7 +25,7 @@ TraverseBranchingNode TraverseBranchingNode::get_node(){
 }
 
 std::string TraverseBranchingNode::repr(){
-    auto ret_str = v_name_ + " == " + to_string(v_width_);
+    auto ret_str = v_name_ + " == " + to_string(v_width_) + " ";
     return ret_str;
 }
 
@@ -70,7 +70,8 @@ std::pair<smt::UnorderedTermMap, smt::TermVec> PerStateStack::get_iv_asmpt(smt::
                 l.push_back(p);
             }
             assert(l.size() == 1);
-            asmpt.push_back(solver_->make_term(smt::Equal, l.at(0).first, l.at(0).second));
+            auto asmpt_term = solver_->make_term(smt::Equal, l.at(0).first, l.at(0).second);
+            asmpt.push_back(asmpt_term);
         }
         asmpt.insert(asmpt.end(), assumptions.begin(), assumptions.end());
     }
@@ -205,11 +206,11 @@ void SymbolicTraverse::traverse_one_step(smt::TermVec assumptions, std::vector<T
 
 }
 
-void SymbolicTraverse::traverse(smt::TermVec assumptions, std::vector<TraverseBranchingNode> branching_point, StateAsmpt s_init){
+void SymbolicTraverse::traverse(smt::TermVec assumptions, std::vector<TraverseBranchingNode> branching_point, std::vector<StateAsmpt> s_init){
     auto state = executor_.get_curr_state(assumptions);
     auto reachable = tracemgr_.check_reachable(state);
     if(not reachable){
-        tracemgr_.abs_state_.push_back(s_init);
+        tracemgr_.abs_state_.insert(tracemgr_.abs_state_.end(), s_init.begin(), s_init.end());
         assert(tracemgr_.abs_state_.size() == 1);
         cout << "not reachable! skip!" << endl;
         cout << "==============================" << endl;
@@ -238,15 +239,15 @@ void SymbolicTraverse::traverse(smt::TermVec assumptions, std::vector<TraverseBr
     while (stack_per_state.size() != 0)
     {
         state = executor_.get_curr_state();
-        auto current_state_stack = stack_per_state.back();
-        cout << "Trace: " << executor_.tracelen() - init_tracelen << "Stack: " << stack_per_state.size();
-        cout << ">> " ;
-        for(auto & stack : stack_per_state){
-            cout << stack.repr();
+        // auto& current_state_stack = stack_per_state.back();
+        cout << "Trace: " << executor_.tracelen() - init_tracelen << " Stack: " << stack_per_state.size() << endl;
+        cout << ">> " << endl;
+        for(auto perstack : stack_per_state){
+            cout << perstack.repr() << " " << endl;
         }
         cout << " : " ;
 
-        if(not current_state_stack.has_valid_choice()){
+        if(not stack_per_state.back().has_valid_choice()){
             cout << " no new choices, back to prev state" << endl;
             stack_per_state.pop_back();
             if(stack_per_state.size() != 0){
@@ -260,7 +261,7 @@ void SymbolicTraverse::traverse(smt::TermVec assumptions, std::vector<TraverseBr
             }
             continue;
         }
-        auto iv_asmpt = current_state_stack.get_iv_asmpt(assumptions);
+        auto iv_asmpt = stack_per_state.back().get_iv_asmpt(assumptions);
         auto iv = iv_asmpt.first;
         auto asmpt = iv_asmpt.second;
         executor_.set_input(iv, asmpt);
@@ -271,7 +272,7 @@ void SymbolicTraverse::traverse(smt::TermVec assumptions, std::vector<TraverseBr
         auto reachable = tracemgr_.check_reachable(state);
         if(not reachable){
             cout << " not reachable." << endl;
-            current_state_stack.next_choice();
+            stack_per_state.back().next_choice();
             executor_.backtrack();
             executor_.undo_set_input();
             continue;
@@ -280,7 +281,7 @@ void SymbolicTraverse::traverse(smt::TermVec assumptions, std::vector<TraverseBr
         auto concrete_enough = tracemgr_.check_concrete_enough(state, executor_.get_Xs());
         if(not concrete_enough){
             cout << "not concrete. Retry with deeper choice." << endl;
-            auto succ = current_state_stack.deeper_choice();
+            auto succ = stack_per_state.back().deeper_choice();
             if(succ){
                 executor_.backtrack();
                 executor_.undo_set_input();
@@ -321,7 +322,7 @@ void SymbolicTraverse::traverse(smt::TermVec assumptions, std::vector<TraverseBr
         else{
             cout << " not new state. Go back. Try next." << endl;
 
-            current_state_stack.next_choice();
+            stack_per_state.back().next_choice();
             executor_.backtrack();
             executor_.undo_set_input();
         }

@@ -223,6 +223,33 @@ framework/independence_check.cpp.s:
 	$(MAKE) -f CMakeFiles/symtraverse_all_step1.dir/build.make CMakeFiles/symtraverse_all_step1.dir/framework/independence_check.cpp.s
 .PHONY : framework/independence_check.cpp.s
 
+framework/sygus_simplify.o: framework/sygus_simplify.cpp.o
+
+.PHONY : framework/sygus_simplify.o
+
+# target to build an object file
+framework/sygus_simplify.cpp.o:
+	$(MAKE) -f CMakeFiles/symtraverse_all_step1.dir/build.make CMakeFiles/symtraverse_all_step1.dir/framework/sygus_simplify.cpp.o
+.PHONY : framework/sygus_simplify.cpp.o
+
+framework/sygus_simplify.i: framework/sygus_simplify.cpp.i
+
+.PHONY : framework/sygus_simplify.i
+
+# target to preprocess a source file
+framework/sygus_simplify.cpp.i:
+	$(MAKE) -f CMakeFiles/symtraverse_all_step1.dir/build.make CMakeFiles/symtraverse_all_step1.dir/framework/sygus_simplify.cpp.i
+.PHONY : framework/sygus_simplify.cpp.i
+
+framework/sygus_simplify.s: framework/sygus_simplify.cpp.s
+
+.PHONY : framework/sygus_simplify.s
+
+# target to generate assembly for a file
+framework/sygus_simplify.cpp.s:
+	$(MAKE) -f CMakeFiles/symtraverse_all_step1.dir/build.make CMakeFiles/symtraverse_all_step1.dir/framework/sygus_simplify.cpp.s
+.PHONY : framework/sygus_simplify.cpp.s
+
 framework/symsim.o: framework/symsim.cpp.o
 
 .PHONY : framework/symsim.o
@@ -331,6 +358,33 @@ framework/tracemgr.cpp.s:
 	$(MAKE) -f CMakeFiles/symtraverse_all_step1.dir/build.make CMakeFiles/symtraverse_all_step1.dir/framework/tracemgr.cpp.s
 .PHONY : framework/tracemgr.cpp.s
 
+framework/traverse_manip.o: framework/traverse_manip.cpp.o
+
+.PHONY : framework/traverse_manip.o
+
+# target to build an object file
+framework/traverse_manip.cpp.o:
+	$(MAKE) -f CMakeFiles/symtraverse_all_step1.dir/build.make CMakeFiles/symtraverse_all_step1.dir/framework/traverse_manip.cpp.o
+.PHONY : framework/traverse_manip.cpp.o
+
+framework/traverse_manip.i: framework/traverse_manip.cpp.i
+
+.PHONY : framework/traverse_manip.i
+
+# target to preprocess a source file
+framework/traverse_manip.cpp.i:
+	$(MAKE) -f CMakeFiles/symtraverse_all_step1.dir/build.make CMakeFiles/symtraverse_all_step1.dir/framework/traverse_manip.cpp.i
+.PHONY : framework/traverse_manip.cpp.i
+
+framework/traverse_manip.s: framework/traverse_manip.cpp.s
+
+.PHONY : framework/traverse_manip.s
+
+# target to generate assembly for a file
+framework/traverse_manip.cpp.s:
+	$(MAKE) -f CMakeFiles/symtraverse_all_step1.dir/build.make CMakeFiles/symtraverse_all_step1.dir/framework/traverse_manip.cpp.s
+.PHONY : framework/traverse_manip.cpp.s
+
 framework/ts.o: framework/ts.cpp.o
 
 .PHONY : framework/ts.o
@@ -431,6 +485,9 @@ help:
 	@echo "... framework/independence_check.o"
 	@echo "... framework/independence_check.i"
 	@echo "... framework/independence_check.s"
+	@echo "... framework/sygus_simplify.o"
+	@echo "... framework/sygus_simplify.i"
+	@echo "... framework/sygus_simplify.s"
 	@echo "... framework/symsim.o"
 	@echo "... framework/symsim.i"
 	@echo "... framework/symsim.s"
@@ -443,6 +500,9 @@ help:
 	@echo "... framework/tracemgr.o"
 	@echo "... framework/tracemgr.i"
 	@echo "... framework/tracemgr.s"
+	@echo "... framework/traverse_manip.o"
+	@echo "... framework/traverse_manip.i"
+	@echo "... framework/traverse_manip.s"
 	@echo "... framework/ts.o"
 	@echo "... framework/ts.i"
 	@echo "... framework/ts.s"
