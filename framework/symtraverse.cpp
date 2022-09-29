@@ -25,7 +25,7 @@ TraverseBranchingNode TraverseBranchingNode::get_node(){
 }
 
 std::string TraverseBranchingNode::repr(){
-    auto ret_str = v_name_ + " == " + to_string(v_width_) + " ";
+    auto ret_str = v_name_ + " == " + to_string(value_) + " ";
     return ret_str;
 }
 
@@ -73,8 +73,9 @@ std::pair<smt::UnorderedTermMap, smt::TermVec> PerStateStack::get_iv_asmpt(smt::
             auto asmpt_term = solver_->make_term(smt::Equal, l.at(0).first, l.at(0).second);
             asmpt.push_back(asmpt_term);
         }
-        asmpt.insert(asmpt.end(), assumptions.begin(), assumptions.end());
     }
+    asmpt.insert(asmpt.end(), assumptions.begin(), assumptions.end());
+    
 
     auto ret = make_pair(iv, asmpt);
     return ret;
@@ -124,12 +125,12 @@ bool PerStateStack::check_stack(){
     }
 }
 
-void SymbolicTraverse::traverse_one_step(smt::TermVec assumptions, std::vector<TraverseBranchingNode> branching_point, StateAsmpt s_init){
+void SymbolicTraverse::traverse_one_step(smt::TermVec assumptions, std::vector<TraverseBranchingNode> branching_point, std::vector<wasim::StateAsmpt> s_init /*={}*/){
     auto state = executor_.get_curr_state(assumptions);
     StateAsmpt state_init (state); // shallow copy?
     auto reachable = tracemgr_.check_reachable(state);
     if(not reachable){
-        tracemgr_.abs_state_one_step_.push_back(s_init);
+        tracemgr_.abs_state_one_step_.insert(tracemgr_.abs_state_one_step_.end(), s_init.begin(), s_init.end());
         assert(tracemgr_.abs_state_one_step_.size() == 1);
         cout << "not reachable! skip!" << endl;
         cout << "==============================" << endl;
@@ -149,7 +150,8 @@ void SymbolicTraverse::traverse_one_step(smt::TermVec assumptions, std::vector<T
 
     while (init_choice.has_valid_choice())
     {
-        init_choice.repr();
+        
+        cout << ">> [" << init_choice.repr() << "]  ";
         auto iv_asmpt_pair = init_choice.get_iv_asmpt(assumptions);
         auto iv = iv_asmpt_pair.first;
         auto asmpt = iv_asmpt_pair.second;
@@ -206,7 +208,7 @@ void SymbolicTraverse::traverse_one_step(smt::TermVec assumptions, std::vector<T
 
 }
 
-void SymbolicTraverse::traverse(smt::TermVec assumptions, std::vector<TraverseBranchingNode> branching_point, std::vector<StateAsmpt> s_init){
+void SymbolicTraverse::traverse(smt::TermVec assumptions, std::vector<TraverseBranchingNode> branching_point, std::vector<StateAsmpt> s_init /*={}*/){
     auto state = executor_.get_curr_state(assumptions);
     auto reachable = tracemgr_.check_reachable(state);
     if(not reachable){
@@ -239,13 +241,16 @@ void SymbolicTraverse::traverse(smt::TermVec assumptions, std::vector<TraverseBr
     while (stack_per_state.size() != 0)
     {
         state = executor_.get_curr_state();
+        // state.print_assumptions();
+        // int i;
+        // cin >> i;
         // auto& current_state_stack = stack_per_state.back();
         cout << "Trace: " << executor_.tracelen() - init_tracelen << " Stack: " << stack_per_state.size() << endl;
-        cout << ">> " << endl;
+        cout << ">> [" ;
         for(auto perstack : stack_per_state){
-            cout << perstack.repr() << " " << endl;
+            cout << perstack.repr() << " " ;
         }
-        cout << " : " ;
+        cout << " ] : " ;
 
         if(not stack_per_state.back().has_valid_choice()){
             cout << " no new choices, back to prev state" << endl;
@@ -266,8 +271,8 @@ void SymbolicTraverse::traverse(smt::TermVec assumptions, std::vector<TraverseBr
         auto asmpt = iv_asmpt.second;
         executor_.set_input(iv, asmpt);
         executor_.sim_one_step();
-        auto state = executor_.get_curr_state();
-        auto curr_state = state;
+        state = executor_.get_curr_state();
+        auto& curr_state = state;
 
         auto reachable = tracemgr_.check_reachable(state);
         if(not reachable){
@@ -322,7 +327,7 @@ void SymbolicTraverse::traverse(smt::TermVec assumptions, std::vector<TraverseBr
         else{
             cout << " not new state. Go back. Try next." << endl;
 
-            stack_per_state.back().next_choice();
+            auto test = stack_per_state.back().next_choice();
             executor_.backtrack();
             executor_.undo_set_input();
         }

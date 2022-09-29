@@ -28,13 +28,16 @@ using namespace std;
 namespace wasim {
 
 void StateAsmpt::print(){
-  auto prev_sv = this->sv_;
+  const auto& prev_sv = this->sv_;
   std::cout << "sv rhs" << std::endl;
   std::cout << "-----" << std::endl;
 
-  for(auto s_v : prev_sv)
-  {
-    std::cout << s_v.first << ":" << s_v.second << std::endl;
+  cout << "--------------------------------" << endl;
+  cout  << "| " << setiosflags(ios::left) << setw(20) << "sv"  << "| " << setw(20) << "value" << endl;
+  cout << "--------------------------------" << endl;
+  for (const auto& sv : prev_sv){
+      cout << "| "  << setiosflags(ios::left) << setw(20) << sv.first->to_string() 
+      << "| "  << setw(20) << sv.second->to_string() << endl;
   }
 }
 
@@ -45,8 +48,9 @@ void StateAsmpt::print_assumptions(){
   prev_asmpt_interp = this->assumption_interp_;
   int idx = 0;
   for(auto asmpt: prev_asmpt){
-    std::cout << idx << prev_asmpt_interp[idx] << std::endl;
-    std::cout << idx << asmpt << std::endl;
+    std::cout << "A" << idx << ": " << prev_asmpt_interp[idx] << std::endl;
+    std::cout << "A" << idx << ": " << asmpt << std::endl;
+    idx++;
   } 
 }
 

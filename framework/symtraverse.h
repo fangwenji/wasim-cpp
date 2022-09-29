@@ -63,7 +63,7 @@ public:
         }
         this->v_name_ = iv_vec.back().first;
         this->v_width_ = iv_vec.back().second;
-        this->v_width_ = 0;
+        this->value_ = 0;
     }
 
     bool branch_on_inputvar_;
@@ -140,8 +140,8 @@ public:
     std::vector<StateAsmpt> new_state_vec_;
     std::vector<std::vector<StateAsmpt>> vec_of_state_vec_;
 
-    void traverse_one_step(smt::TermVec assumptions, std::vector<TraverseBranchingNode> branching_point, StateAsmpt s_init);
-    void traverse(smt::TermVec assumptions, std::vector<TraverseBranchingNode> branching_point, std::vector<StateAsmpt> s_init);
+    void traverse_one_step(smt::TermVec assumptions, std::vector<TraverseBranchingNode> branching_point, std::vector<wasim::StateAsmpt> s_init /*={}*/);
+    void traverse(smt::TermVec assumptions, std::vector<TraverseBranchingNode> branching_point, std::vector<StateAsmpt> s_init /*={}*/);
 
 };
 

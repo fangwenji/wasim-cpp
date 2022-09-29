@@ -51,7 +51,7 @@ bool e_is_independent_of_v(smt::Term e, smt::Term v, smt::TermVec assumptions /*
     }
     catch(const std::exception& e)
     {
-        std::cerr << e.what() << '\n';
+        // std::cerr << e.what() << '\n';
         v1 = s->make_symbol(v->to_string()+"1", sort_w);
     }
 
@@ -61,7 +61,7 @@ bool e_is_independent_of_v(smt::Term e, smt::Term v, smt::TermVec assumptions /*
     }
     catch(const std::exception& e)
     {
-        std::cerr << e.what() << '\n';
+        // std::cerr << e.what() << '\n';
         v2 = s->make_symbol(v->to_string()+"2", sort_w);
     }
     

@@ -151,16 +151,21 @@ void SymbolicExecutor::init(smt::UnorderedTermMap var_assignment /*={}*/){
 
 void SymbolicExecutor::set_current_state(StateAsmpt s, smt::UnorderedTermMap d){
     trace_.clear();
-    smt::UnorderedTermMap sv_copy;
-    std::copy(s.sv_.begin(), s.sv_.end(), std::inserter(sv_copy, sv_copy.end()));
+    smt::UnorderedTermMap sv_copy (s.sv_);
+    sv_copy.insert(d.begin(), d.end());
     // TODO: copy problem
-    auto var_assignment = sv_copy;
-    var_assignment.insert(d.begin(), d.end());
+    auto var_assignment (sv_copy);
 
     trace_.push_back(var_assignment);
 
-    smt::TermVec asmpt_copy(s.asmpt_.begin(), s.asmpt_.end());
-    std::vector<std::string> asmpt_interp_copy(s.assumption_interp_.begin(), s.assumption_interp_.end());
+    // smt::TermVec asmpt_copy(s.asmpt_.begin(), s.asmpt_.end());
+    // std::vector<std::string> asmpt_interp_copy(s.assumption_interp_.begin(), s.assumption_interp_.end());
+    auto asmpt_copy (s.asmpt_);
+    auto asmpt_interp_copy (s.assumption_interp_);
+    history_assumptions_.clear();
+    history_assumptions_.push_back(asmpt_copy);
+    history_assumptions_interp_.clear();
+    history_assumptions_interp_.push_back(asmpt_interp_copy);
     history_choice_.clear();
 }
 
@@ -234,7 +239,7 @@ void SymbolicExecutor::set_input(smt::UnorderedTermMap invar_assign, const smt::
         assmpt = assmpt_vec.back();
     }
     else{
-        smt::Term assmpt = solver_->make_term(smt::And, assmpt_vec);
+        assmpt = solver_->make_term(smt::And, assmpt_vec);
     }
     
     // for(const auto& asmpt : assmpt_vec){
@@ -243,23 +248,8 @@ void SymbolicExecutor::set_input(smt::UnorderedTermMap invar_assign, const smt::
     
     history_assumptions_.back().push_back(assmpt);
     history_assumptions_interp_.back().push_back("ts.asmpt @" + (std::to_string(trace_.size()-1)));
-
-    // smt::TermVec assmpt_vec;
-    // for(const auto& vect : ts_.constraints_){
-    //     auto vect_fir_subs = solver_->substitute(vect.first, submap);
-    //     auto vect_sec_subs = solver_->make_term(vect.second);
-    //     auto assmpt_temp = solver_->make_term(smt::Equal,vect_fir_subs, vect_sec_subs);
-    //     // assmpt_vec.push_back(assmpt_temp); 
-
-    //     history_assumptions_.back().push_back(assmpt_temp);
-    //     history_assumptions_interp_.back().push_back("ts.asmpt @" + (std::to_string(trace_.size()-1)));
-    
-    // }
     
     
-    
-
-
     for (auto vect : pre_assumptions){
         auto assmpt_temp = solver_->substitute(vect, submap);
         history_assumptions_.back().push_back(assmpt_temp);
@@ -349,18 +339,45 @@ smt::Term SymbolicExecutor::new_var(int bitwdth, std::string vname /*"=var"*/, b
     else{
         n = vname;
     }
-    int cnt;
-    auto iter = name_cnt_.find(n);
-    if(iter == name_cnt_.end()){
-        cnt = 1;
-    }
-    else{
-        const auto cur_cnt = iter->second;
-        cnt = cur_cnt + 1; 
-    }
-    name_cnt_[n] = cnt;
+    // int cnt;
+    // if(name_cnt_.find(n) == name_cnt_.end()){
+    //     cnt = 1;
+    // }
+    // else{
+    //     auto cur_cnt = name_cnt_[n];
+    //     // const auto cur_cnt = iter->second;
+    //     cnt = cur_cnt + 1; 
+    // }
+    // name_cnt_[n] = cnt;
     auto symb_sort = solver_->make_sort(smt::BV, bitwdth);
-    symb = solver_->make_symbol(n + std::to_string(cnt), symb_sort);
+
+    symb = free_make_symbol(n, symb_sort, name_cnt_, solver_);
+
+    
+    // srand((unsigned int)(time (NULL)));
+    // int rand_suf = rand();
+    // symb = solver_->make_symbol(n + std::to_string(cnt+rand_suf) , symb_sort);
+    // while (solver_->get_symbol(n + std::to_string(cnt)) != NULL)
+    // {
+    //     cnt++;
+    // }
+    // symb = solver_->make_symbol(n + std::to_string(cnt + 1), symb_sort);
+    // name_cnt_[n] = cnt;
+
+    // try
+    // {
+    //     symb = solver_->make_symbol(n + std::to_string(cnt), symb_sort);
+    // }
+    // catch(const std::exception& e)
+    // {
+    //     // auto cnt_new = cnt + rand_suf;
+    //     symb = solver_->get_symbol(n + std::to_string(cnt));
+    //     // symb = solver_->make_symbol(n + std::to_string(cnt_new), symb_sort);
+    //     name_cnt_[n] = cnt + 1;
+        
+    // }
+    // symb = solver_->make_symbol(n + std::to_string(cnt), symb_sort);
+    
     if(x){
         Xvar_.insert(symb);
     }

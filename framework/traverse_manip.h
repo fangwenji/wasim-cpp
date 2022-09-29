@@ -36,6 +36,10 @@ namespace wasim
 
 smt::TermVec tag2asmpt_c1(std::string flag, SymbolicExecutor& executor, smt::SmtSolver & solver);
 
-void extend_branch_init(std::vector<std::vector<StateAsmpt>>& branch_list, SymbolicExecutor & executor, TransitionSystem & sts, std::vector<std::string> base_sv, std::string flag, std::vector<TraverseBranchingNode> order, smt::SmtSolver & s);
+void extend_branch_init(std::vector<std::vector<StateAsmpt>>& branch_list, SymbolicExecutor & executor, TransitionSystem & sts, std::vector<std::string> base_sv, std::string flag, std::vector<TraverseBranchingNode> order, smt::SmtSolver & solver);
 
+void extend_branch_next_phase(std::vector<std::vector<StateAsmpt>>& branch_list, SymbolicExecutor & executor, TransitionSystem & sts, std::vector<std::string> base_sv, std::string flag, std::map<wasim::type_conv, wasim::type_conv> phase_maker, std::vector<TraverseBranchingNode> order, smt::SmtSolver & solver);
+
+
+void extend_branch_same_phase(std::vector<std::vector<StateAsmpt>>& branch_list, SymbolicExecutor & executor, TransitionSystem & sts, std::vector<std::string> base_sv, std::string flag, std::map<wasim::type_conv, wasim::type_conv> phase_maker, std::vector<TraverseBranchingNode> order, smt::SmtSolver & solver);
 }

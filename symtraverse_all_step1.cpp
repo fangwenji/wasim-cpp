@@ -7,12 +7,15 @@
 #include "framework/symtraverse.h"
 #include "term_manip.h"
 #include "traverse_manip.h"
+#include <chrono>
 
 using namespace wasim;
 // using namespace smt;
 using namespace std;
+using namespace chrono;
 
 int main(){
+    auto start = system_clock::now();
     std::vector<std::string> base_sv = {"wen_stage1", "wen_stage2", "stage1", "stage2", "stage3"};
     TraverseBranchingNode node0({make_pair("rst", 1)}, {});
     TraverseBranchingNode node1({}, {make_pair("stage1_go", 1)});
@@ -50,14 +53,37 @@ int main(){
 
     // step: tag0 --> tag0
     cout << "step: tag0 --> tag0" << endl;
-
     extend_branch_init(branch_list, executor, sts, base_sv, "tag0_0", order, solver);
 
-    
+    // step: tag0 --> tag1
+    cout << "\n\n\nstep: tag0 --> tag1" << endl;
+    extend_branch_next_phase(branch_list, executor, sts, base_sv, "tag0_1", {{"tag0",1}, {"tag1",0}, {"tag2",0}, {"tag3",0}}, order, solver);
+
+    // step: tag1 --> tag1
+    cout << "\n\n\nstep: tag1 --> tag1" << endl;
+    extend_branch_same_phase(branch_list, executor, sts, base_sv, "tag1_1", {{"tag0",0}, {"tag1",1}, {"tag2",0}, {"tag3",0}}, order, solver);
+
+    // step: tag1 --> tag2
+    cout << "\n\n\nstep: tag1 --> tag2" << endl;
+    extend_branch_next_phase(branch_list, executor, sts, base_sv, "tag1_2", {{"tag0",0}, {"tag1",1}, {"tag2",0}, {"tag3",0}}, order, solver);
+
+    // step: tag2 --> tag2
+    cout << "\n\n\nstep: tag2 --> tag2" << endl;
+    extend_branch_same_phase(branch_list, executor, sts, base_sv, "tag2_2", {{"tag0",0}, {"tag1",0}, {"tag2",1}, {"tag3",0}}, order, solver);
+
+    // step: tag2 --> tag3
+    cout << "\n\n\nstep: tag2 --> tag3" << endl;
+    extend_branch_next_phase(branch_list, executor, sts, base_sv, "tag2_3", {{"tag0",0}, {"tag1",0}, {"tag2",1}, {"tag3",0}}, order, solver);
+
+    // step: tag3 --> tag3
+    cout << "\n\n\nstep: tag3 --> tag3" << endl;
+    extend_branch_same_phase(branch_list, executor, sts, base_sv, "tag3_3", {{"tag0",0}, {"tag1",0}, {"tag2",0}, {"tag3",1}}, order, solver);
 
 
+    auto end = system_clock::now();
+    auto duration = duration_cast<seconds>(end-start);
 
-    
+    cout << "Program running time: " << double(duration.count())*seconds::period::num/seconds::period::den << " (s)" << endl;
 
 
     

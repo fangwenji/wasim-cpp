@@ -34,5 +34,30 @@ smt::UnorderedTermSet get_free_variable(smt::Term term){
     return free_var;
 }
 
+smt::Term free_make_symbol(std::string n, smt::Sort symb_sort, std::unordered_map<std::string, int>& name_cnt, smt::SmtSolver& solver){
+    int cnt;
+    if(name_cnt.find(n) == name_cnt.end()){
+        cnt = 1;
+    }
+    else{
+        auto cur_cnt = name_cnt[n];
+        // const auto cur_cnt = iter->second;
+        cnt = cur_cnt + 1; 
+    }
+
+    name_cnt[n] = cnt;
+    smt::Term symb;
+    try
+    {
+       symb =  solver->make_symbol(n + std::to_string(cnt), symb_sort);
+       
+    }
+    catch(const std::exception& e)
+    {
+        name_cnt[n] = cnt + 1;
+        symb = free_make_symbol(n, symb_sort, name_cnt, solver);
+    }
+    return symb;
+}
 
 } // namespace wasim
