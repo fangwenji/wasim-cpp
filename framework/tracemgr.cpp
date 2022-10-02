@@ -124,7 +124,7 @@ bool TraceManager::check_concrete_enough(StateAsmpt s_in, wasim::type_record Xs)
         if(base_var_.find(s) == base_var_.end()){
             continue;
         }
-        smt::UnorderedTermSet allv_in_v = get_free_variable(v);
+        smt::UnorderedTermSet allv_in_v = get_free_variables(v);
         smt::UnorderedTermSet intersec_res;
         // std::set_intersection(allv_in_v.begin(), allv_in_v.end(), Xvar_.begin(), Xvar_.end(), inserter(intersec_res, intersec_res.begin()));
         

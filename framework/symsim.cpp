@@ -72,7 +72,7 @@ void SymbolicExecutor::_check_only_invar(smt::UnorderedTermMap vdict){
 }
 
 bool SymbolicExecutor::_expr_only_sv(smt::Term expr){
-    smt::UnorderedTermSet var_set = get_free_variable(expr);
+    smt::UnorderedTermSet var_set = get_free_variables(expr);
 
     for (auto v : var_set){
         if (svar_.find(v) != svar_.end()){

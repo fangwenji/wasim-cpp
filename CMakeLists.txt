@@ -34,6 +34,7 @@ set(exe_list
    "framework/symtraverse.cpp"
    "framework/traverse_manip.cpp"
    "framework/sygus_simplify.cpp"
+   "framework/state_simplify.cpp"
    "utils/logger.cpp")
 
 add_executable(symtraverse_all_step1 ${exe_list})

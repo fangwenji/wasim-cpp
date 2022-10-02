@@ -203,6 +203,9 @@ void SymbolicTraverse::traverse_one_step(smt::TermVec assumptions, std::vector<T
     cout << "Get #state: " << tracemgr_.abs_state_one_step_.size() << endl;
 
     // TODO : simplification procedure
+    for(auto abs_state_one_step : tracemgr_.abs_state_one_step_){
+        state_simplify_xvar(abs_state_one_step, executor_.get_Xs(), solver_);
+    }
 
     
 
@@ -338,6 +341,9 @@ void SymbolicTraverse::traverse(smt::TermVec assumptions, std::vector<TraverseBr
     cout << "Get #state: " << tracemgr_.abs_state_.size() << endl;
 
     // TODO : simplification procedure
+    for(auto abs_state : tracemgr_.abs_state_){
+        state_simplify_xvar(abs_state, executor_.get_Xs(), solver_);
+    }
 }
 } // namespace wasim
 

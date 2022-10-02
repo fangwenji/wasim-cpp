@@ -223,6 +223,33 @@ framework/independence_check.cpp.s:
 	$(MAKE) -f CMakeFiles/symtraverse_all_step1.dir/build.make CMakeFiles/symtraverse_all_step1.dir/framework/independence_check.cpp.s
 .PHONY : framework/independence_check.cpp.s
 
+framework/state_simplify.o: framework/state_simplify.cpp.o
+
+.PHONY : framework/state_simplify.o
+
+# target to build an object file
+framework/state_simplify.cpp.o:
+	$(MAKE) -f CMakeFiles/symtraverse_all_step1.dir/build.make CMakeFiles/symtraverse_all_step1.dir/framework/state_simplify.cpp.o
+.PHONY : framework/state_simplify.cpp.o
+
+framework/state_simplify.i: framework/state_simplify.cpp.i
+
+.PHONY : framework/state_simplify.i
+
+# target to preprocess a source file
+framework/state_simplify.cpp.i:
+	$(MAKE) -f CMakeFiles/symtraverse_all_step1.dir/build.make CMakeFiles/symtraverse_all_step1.dir/framework/state_simplify.cpp.i
+.PHONY : framework/state_simplify.cpp.i
+
+framework/state_simplify.s: framework/state_simplify.cpp.s
+
+.PHONY : framework/state_simplify.s
+
+# target to generate assembly for a file
+framework/state_simplify.cpp.s:
+	$(MAKE) -f CMakeFiles/symtraverse_all_step1.dir/build.make CMakeFiles/symtraverse_all_step1.dir/framework/state_simplify.cpp.s
+.PHONY : framework/state_simplify.cpp.s
+
 framework/sygus_simplify.o: framework/sygus_simplify.cpp.o
 
 .PHONY : framework/sygus_simplify.o
@@ -485,6 +512,9 @@ help:
 	@echo "... framework/independence_check.o"
 	@echo "... framework/independence_check.i"
 	@echo "... framework/independence_check.s"
+	@echo "... framework/state_simplify.o"
+	@echo "... framework/state_simplify.i"
+	@echo "... framework/state_simplify.s"
 	@echo "... framework/sygus_simplify.o"
 	@echo "... framework/sygus_simplify.i"
 	@echo "... framework/sygus_simplify.s"

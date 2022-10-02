@@ -19,6 +19,7 @@
 #include "symsim.h"
 #include "tracemgr.h"
 #include "sygus_simplify.h"
+#include "state_simplify.h"
 
 // #include <iostream>
 // #include <unordered_map>

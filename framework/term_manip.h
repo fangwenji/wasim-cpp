@@ -34,10 +34,10 @@ namespace wasim
 {
 
 //  return the arguments of a term, <left, right>
-smt::TermVec arg(smt::Term term);
+smt::TermVec args(smt::Term term);
 
 // DFS of a term (arg), free var --> symbol
-smt::UnorderedTermSet get_free_variable(smt::Term term);
+smt::UnorderedTermSet get_free_variables(smt::Term term);
 
 smt::Term free_make_symbol(std::string n, smt::Sort symb_sort, std::unordered_map<std::string, int>& name_cnt, smt::SmtSolver& solver);
 }

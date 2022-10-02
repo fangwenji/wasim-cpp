@@ -2,7 +2,7 @@
 
 namespace wasim{
     
-smt::TermVec arg(smt::Term term){
+smt::TermVec args(smt::Term term){
     smt::TermVec arg_vec;
     for (const auto& a : term){
         arg_vec.push_back(a);
@@ -10,7 +10,7 @@ smt::TermVec arg(smt::Term term){
     return arg_vec;
 }
 
-smt::UnorderedTermSet get_free_variable(smt::Term term){
+smt::UnorderedTermSet get_free_variables(smt::Term term){
     smt::UnorderedTermSet free_var;
     smt::TermVec search_stack;
     if(term->is_symbol()){
@@ -25,7 +25,7 @@ smt::UnorderedTermSet get_free_variable(smt::Term term){
             if(node->is_symbol()){ // check
                 free_var.insert(node);
             }
-            auto children_vec = arg(node);
+            auto children_vec = args(node);
             std::reverse(std::begin(children_vec), std::end(children_vec));
             search_stack.insert(search_stack.end(), children_vec.begin(), children_vec.end());
         }

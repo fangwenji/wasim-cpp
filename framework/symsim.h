@@ -112,7 +112,7 @@ public:
     smt::UnorderedTermSet svar_;
     std::vector<smt::UnorderedTermMap> trace_;
     std::vector<ChoiceItem> history_choice_;
-    std::vector<std::vector<smt::Term>> history_assumptions_;
+    std::vector<smt::TermVec> history_assumptions_;
     std::vector<std::vector<std::string>> history_assumptions_interp_;
     std::unordered_map<std::string,int> name_cnt_;
     smt::UnorderedTermSet Xvar_;
