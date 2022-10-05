@@ -17,8 +17,8 @@ public:
     TraceManager(TransitionSystem ts, smt::SmtSolver & s){
         this->ts_ = ts;
         this->solver_ = s;
-        this->invar_ = ts.inputvars_;
-        this->svar_ = ts.statevars_;
+        this->invar_ = ts.inputvars();
+        this->svar_ = ts.statevars();
         this->Xvar_ = {};
 
         this->base_var_ = {};

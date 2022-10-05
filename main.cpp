@@ -10,16 +10,14 @@ using namespace std;
 
 int main(int argc, char** argv){
 
-    if(argv[1] == NULL){
+    if(argc < 2){
         cout << "NO Input File!" << endl; 
     }
     else{
         cout << "Input File: " << argv[1] << endl;
     }
 
-    std::string input_file;
-    input_file = argv[1];
-    
+    std::string input_file(argv[1]);
     
 
     SmtSolver s = BoolectorSolverFactory::create(false);
@@ -29,18 +27,18 @@ int main(int argc, char** argv){
     cout << "TS init: " << ts.init() << endl;
     cout << "\nTS trans: " << ts.trans() << endl;
     cout << "\nTS input vars: " << endl;
-    for(auto var: ts.inputvars_){
+    for(const auto & var: ts.inputvars()) {
         cout << var << endl;
     }
     cout << "\nTS state vars: " << endl;
-    for(auto var: ts.statevars()){
+    for(const auto & var: ts.statevars()) {
         cout << var << endl;
     }
     
     cout << "\nTS constrains: " << endl;
-    for (auto vect : ts.constraints_){
+    for (const auto & vect : ts.constraints()) {
         cout << vect.first << "bool: "<< vect.second << endl;
-        }
+    }
     
     // btor_paser.preprocess(input_file);
     // btor_paser.parse(input_file);

@@ -7,6 +7,7 @@
 #include "framework/symtraverse.h"
 #include "term_manip.h"
 #include "traverse_manip.h"
+#include "config/testpath.h"
 #include <chrono>
 
 using namespace wasim;
@@ -24,21 +25,21 @@ int main(){
 
     auto order = {node0, node1, node2, node3};
 
-    std::string input_file = "/data/wenjifang/WASIM/design/testcase1-simple_pipe/simple_pipe.btor2";
+    // This reference the reference path
+    std::string input_file =  PROJECT_SOURCE_DIR "/design/testcase1-simple_pipe/simple_pipe.btor2";
 
     
     smt::SmtSolver solver = smt::BoolectorSolverFactory::create(false);
     solver->set_logic("QF_UFBV");
     solver->set_opt("incremental", "true");
     solver->set_opt("produce-models", "true");
-    solver->set_opt("produce-unsat-assumptions",
-    "true");
-    wasim::TransitionSystem sts(solver);
+    solver->set_opt("produce-unsat-assumptions", "true");
+    TransitionSystem sts(solver);
     BTOR2Encoder btor_parser(input_file, sts);
 
     SymbolicExecutor executor(sts, solver);
 
-    std::map<wasim::type_conv, wasim::type_conv> init_map = {\
+    std::map<wasim::type_conv, wasim::type_conv> init_map = {
         {"wen_stage1","v1"},
         {"wen_stage2","v2"},
         {"stage1","a"},
@@ -84,10 +85,5 @@ int main(){
     auto duration = duration_cast<seconds>(end-start);
 
     cout << "Program running time: " << double(duration.count())*seconds::period::num/seconds::period::den << " (s)" << endl;
-
-
-    
-
-
 
 }

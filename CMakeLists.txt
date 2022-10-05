@@ -45,3 +45,7 @@ set(lib_list
     "pthread")
 
 target_link_libraries(symtraverse_all_step1 ${lib_list})
+
+# generate dependent header
+configure_file("${CMAKE_CURRENT_SOURCE_DIR}/config/testpath.h.in"  "${CMAKE_CURRENT_SOURCE_DIR}/config/testpath.h")
+

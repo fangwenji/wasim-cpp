@@ -80,8 +80,8 @@ public:
         this->solver_ = s;
 
         // input variables & state variables
-        this->invar_ = ts.inputvars_;
-        this->svar_ = ts.statevars_;
+        this->invar_ = ts.inputvars();
+        this->svar_ = ts.statevars();
         
         this->trace_ = {}; // vector of state var assignment. A var assignment is a unordered_map: v -> value
         this->history_choice_ = {};
@@ -120,9 +120,9 @@ public:
     int tracelen();
     auto all_assumptions();
     auto all_assumption_interp();
-    smt::Term sv(std::string n);
-    smt::Term cur(std::string n);
-    void _check_only_invar(smt::UnorderedTermMap vdict);
+    smt::Term sv(const std::string & n);
+    smt::Term cur(const std::string & n);
+    void _check_only_invar(const smt::UnorderedTermMap & vdict);
     bool _expr_only_sv(smt::Term expr);
     // smt::UnorderedTermMap convert(std::map<std::any, std::any> vdict);
     smt::UnorderedTermMap convert(std::map<wasim::type_conv, wasim::type_conv> vdict);

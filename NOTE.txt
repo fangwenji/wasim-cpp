@@ -1,0 +1,2 @@
+1. If you don't need to make a copy for the argument, then avoid it.
+2. Advocate the use of member functions

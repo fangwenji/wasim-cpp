@@ -44,11 +44,11 @@ auto SymbolicExecutor::all_assumption_interp(){
     return ret_vec;
 }
 
-smt::Term SymbolicExecutor::sv(std::string n){
-    return ts_.named_terms_[n];
+smt::Term SymbolicExecutor::sv(const std::string & n){
+    return ts_.named_terms().at(n);
 }
 
-smt::Term SymbolicExecutor::cur(std::string n){
+smt::Term SymbolicExecutor::cur(const std::string &  n){
     auto sv_mapping = trace_.back();
     smt::Term expr = sv(n);
     if(not _expr_only_sv(expr)){
@@ -65,8 +65,8 @@ smt::Term SymbolicExecutor::cur(std::string n){
     return expr;
 }
 
-void SymbolicExecutor::_check_only_invar(smt::UnorderedTermMap vdict){
-    for (auto v : vdict){
+void SymbolicExecutor::_check_only_invar(const smt::UnorderedTermMap & vdict){
+    for (const auto & v : vdict){
         assert(invar_.find(v.first) != invar_.end());
     }
 }
@@ -138,9 +138,9 @@ void SymbolicExecutor::init(smt::UnorderedTermMap var_assignment /*={}*/){
     trace_.push_back(var_assignment);
 
 
-    _expr_only_sv(ts_.init_);
+    _expr_only_sv(ts_.init());
 
-    auto init_constr = solver_->substitute(ts_.init_,var_assignment);
+    auto init_constr = solver_->substitute(ts_.init(),var_assignment);
     std::vector<smt::Term> init_vect;
     std::vector<std::string> init_vect_interp;
     init_vect.push_back(init_constr);
@@ -228,7 +228,7 @@ void SymbolicExecutor::set_input(smt::UnorderedTermMap invar_assign, const smt::
 
     // TODO: constraints here are different from those in COSA btor parser! (important)
     smt::TermVec assmpt_vec;
-    for(const auto& vect : ts_.constraints_){
+    for(const auto& vect : ts_.constraints()){
         auto vect_fir_subs = solver_->substitute(vect.first, submap);
         auto vect_sec_subs = solver_->make_term(vect.second);
         auto assmpt_temp = solver_->make_term(smt::Equal,vect_fir_subs, vect_sec_subs);
@@ -306,7 +306,7 @@ void SymbolicExecutor::sim_one_step(){
     smt::UnorderedTermMap svmap;
     auto submap = prev_sv; 
     submap.insert(invar_assign.begin(), invar_assign.end());
-    for(auto sv : ts_.state_updates_){
+    for(const auto & sv : ts_.state_updates()){
         svmap[sv.first] = solver_->substitute(sv.second, submap);
     }
     trace_.push_back(svmap);
@@ -318,7 +318,7 @@ void SymbolicExecutor::sim_one_step_direct(){
     auto prev_sv = trace_.back();
     smt::UnorderedTermMap svmap;
     auto submap = prev_sv; 
-    for(auto sv : ts_.state_updates_){
+    for(const auto & sv : ts_.state_updates()){
         svmap[sv.first] = solver_->substitute(sv.second, submap);
     }
     trace_.push_back(svmap);

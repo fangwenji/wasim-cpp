@@ -507,7 +507,7 @@ class TransitionSystem
   
   
 
-//  protected:
+protected:
   // solver
   smt::SmtSolver solver_;
 
