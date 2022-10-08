@@ -1,10 +1,10 @@
-#include "framework/ts.h"
-#include "framework/btor2_encoder.h"
-#include "framework/independence_check.h"
+#include "ts.h"
+#include "btor2_encoder.h"
+#include "independence_check.h"
 #include "symsim.h"
-#include "deps/smt-switch/local/include/smt-switch/boolector_factory.h"
 
-#include "assert.h"
+#include "smt-switch/boolector_factory.h"
+
 
 using namespace wasim;
 using namespace smt;
@@ -25,12 +25,9 @@ int main(){
     cout << "varA: " << varA << endl;
     cout << "varB: " << varB << endl;
     cout << "f: " << f << endl;
-    cout << e_is_independent_of_v(f, varA, {}, s) << endl;
-    cout << e_is_independent_of_v(f, varB, {}, s) << endl;
+    cout << e_is_independent_of_v(f, varA, {}) << endl;
+    cout << e_is_independent_of_v(f, varB, {}) << endl;
     cout << f << endl;
-
-    auto subf = substitute_simplify(f, varB, {}, s);
-    
 
     return 0;
     

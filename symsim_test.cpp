@@ -5,8 +5,12 @@
 #include "deps/smt-switch/local/include/smt-switch/smtlib_reader.h"
 #include "assert.h"
 #include "framework/term_manip.h"
+<<<<<<< HEAD
 #include "framework/sygus_simplify.h"
 #include <boost/process.hpp>
+=======
+#include "config/testpath.h"
+>>>>>>> 8b2700290fc027c1ead5de92a72e86967310189d
 
 using namespace wasim;
 // using namespace smt;
@@ -15,7 +19,7 @@ using namespace std;
 int main(){
 
 
-    std::string input_file = "/data/wenjifang/vpipe-mc/btor-bmc/example/pipe-no-stall.btor2";
+    std::string input_file = PROJECT_SOURCE_DIR "/example/pipe-no-stall.btor2";
     
     smt::SmtSolver s = smt::BoolectorSolverFactory::create(false);
     wasim::TransitionSystem ts(s);
@@ -33,21 +37,29 @@ int main(){
     cout << "\nTS trans: " << ts.trans() << endl;
     // cout << "\nTS input vars: " << endl;
     cout << " " << endl;
-    for(auto var: ts.inputvars()){
+    for(const auto & var: ts.inputvars()){
         cout << var << endl;
     }
     cout << "\nTS state vars: " << endl;
+<<<<<<< HEAD
     for(auto var: ts.state_updates()){
+=======
+    for(const auto & var: ts.state_updates()){
+>>>>>>> 8b2700290fc027c1ead5de92a72e86967310189d
         cout << var.first << "  -->-- " << var.second << endl;
     }
     
     cout << "\nTS constrains: " << endl;
+<<<<<<< HEAD
     for (auto vect : ts.constraints()){
+=======
+    for (const auto & vect : ts.constraints()){
+>>>>>>> 8b2700290fc027c1ead5de92a72e86967310189d
         cout << vect.first << "bool: "<< vect.second << endl;
         }
     
     cout << "\nTS prop: " << endl;
-    for (auto vect : btor_parser.propvec()){
+    for (const auto & vect : btor_parser.propvec()){
         cout << vect << endl;
         }
     
@@ -104,7 +116,11 @@ int main(){
     executor.print_current_step_assumptions();
 
     cout << "\n\n\n" << endl;
+<<<<<<< HEAD
     auto cons = ts.constraints()[1].first;
+=======
+    auto cons = ts.constraints().at(1).first;
+>>>>>>> 8b2700290fc027c1ead5de92a72e86967310189d
     cout << cons << endl;
 
     for(auto v : cons){

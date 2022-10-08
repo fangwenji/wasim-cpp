@@ -138,7 +138,7 @@ bool TraceManager::check_concrete_enough(StateAsmpt s_in, wasim::type_record Xs)
         // allv_in_v.insert(Xvar_.begin(), Xvar_.end());
 
         for (const auto& X : intersec_res){
-            auto ind = e_is_independent_of_v(v, X, s_in.asmpt_, solver_);
+            auto ind = e_is_independent_of_v(v, X, s_in.asmpt_);
             if(not ind){
                 return false;
             }
