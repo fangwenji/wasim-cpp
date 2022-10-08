@@ -5,3 +5,5 @@ Currently I don't understand why the function "concretize" is not used at all...
 (not even in the original Python WASIM)
 
 
+Long term plan: maybe thinking about merging states?
+

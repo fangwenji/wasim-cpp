@@ -11,25 +11,20 @@ using namespace std;
 namespace wasim
 {
 using type_record = std::variant<smt::TermVec, smt::UnorderedTermSet, smt::Term>;
+
+// TODO: we need to re-think about the interface around base_var here
 class TraceManager
 {
 public:
-    TraceManager(TransitionSystem ts, smt::SmtSolver & s){
-        this->ts_ = ts;
-        this->solver_ = s;
-        this->invar_ = ts.inputvars();
-        this->svar_ = ts.statevars();
-        this->Xvar_ = {};
-
-        this->base_var_ = {};
-        this->abs_state_ = {};
-        this->abs_state_one_step_ = {};
+    TraceManager(const TransitionSystem & ts, smt::SmtSolver & s) :
+        ts_(ts), solver_(s), invar_(ts.inputvars()), svar_(ts.statevars())
+     {
     }
 
-    TransitionSystem ts_;
+    const TransitionSystem & ts_;
     smt::SmtSolver solver_;
-    smt::UnorderedTermSet invar_;
-    smt::UnorderedTermSet svar_;
+    const smt::UnorderedTermSet & invar_;
+    const smt::UnorderedTermSet & svar_;
     smt::UnorderedTermSet Xvar_;
     smt::UnorderedTermSet base_var_;
     std::vector<StateAsmpt> abs_state_;
