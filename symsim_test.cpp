@@ -4,6 +4,7 @@
 #include "deps/smt-switch/local/include/smt-switch/boolector_factory.h"
 #include "assert.h"
 #include "framework/term_manip.h"
+#include "config/testpath.h"
 
 using namespace wasim;
 // using namespace smt;
@@ -12,7 +13,7 @@ using namespace std;
 int main(){
 
 
-    std::string input_file = "/data/wenjifang/vpipe-mc/btor-bmc/example/pipe-no-stall.btor2";
+    std::string input_file = PROJECT_SOURCE_DIR "/example/pipe-no-stall.btor2";
     
     smt::SmtSolver s = smt::BoolectorSolverFactory::create(false);
     wasim::TransitionSystem ts(s);
@@ -30,21 +31,21 @@ int main(){
     cout << "\nTS trans: " << ts.trans() << endl;
     // cout << "\nTS input vars: " << endl;
     cout << " " << endl;
-    for(auto var: ts.inputvars()){
+    for(const auto & var: ts.inputvars()){
         cout << var << endl;
     }
     cout << "\nTS state vars: " << endl;
-    for(auto var: ts.state_updates_){
+    for(const auto & var: ts.state_updates()){
         cout << var.first << "  -->-- " << var.second << endl;
     }
     
     cout << "\nTS constrains: " << endl;
-    for (auto vect : ts.constraints_){
+    for (const auto & vect : ts.constraints()){
         cout << vect.first << "bool: "<< vect.second << endl;
         }
     
     cout << "\nTS prop: " << endl;
-    for (auto vect : btor_parser.propvec()){
+    for (const auto & vect : btor_parser.propvec()){
         cout << vect << endl;
         }
     
@@ -67,7 +68,7 @@ int main(){
     executor.print_current_step();
     executor.print_current_step_assumptions();
 
-    cout << ts.init_ << endl;
+    cout << ts.init() << endl;
     // // tag1
     executor.set_input(
         executor.convert({{"rst",0}}), {}
@@ -101,7 +102,7 @@ int main(){
     executor.print_current_step_assumptions();
 
     cout << "\n\n\n" << endl;
-    auto cons = ts.constraints_[1].first;
+    auto cons = ts.constraints().at(1).first;
     cout << cons << endl;
 
     for(auto v : cons){
@@ -120,7 +121,7 @@ int main(){
     cout << arg1.size() << endl;
 
 
-    auto cons1 = ts.init_;
+    auto cons1 = ts.init();
     cout << "expr: " << cons1 << endl;
     auto free_var = get_free_variable(cons1);
     cout << "free_var_num: " << free_var.size() << endl;

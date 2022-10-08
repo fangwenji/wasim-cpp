@@ -1,2 +1,7 @@
 1. If you don't need to make a copy for the argument, then avoid it.
 2. Advocate the use of member functions
+
+Currently I don't understand why the function "concretize" is not used at all...
+(not even in the original Python WASIM)
+
+

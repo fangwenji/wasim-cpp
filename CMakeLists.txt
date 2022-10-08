@@ -23,28 +23,39 @@ install(DIRECTORY "${PROJECT_SOURCE_DIR}/fmt/"
 
 link_directories(${SMT_SWITCH_DIR}/local/lib)
 
-set(exe_list 
-   "symtraverse_all_step1.cpp" 
-   "framework/ts.cpp"
-   "framework/btor2_encoder.cpp"
-   "framework/symsim.cpp"
-   "framework/independence_check.cpp"
-   "framework/term_manip.cpp"
-   "framework/tracemgr.cpp"
-   "framework/symtraverse.cpp"
-   "framework/traverse_manip.cpp"
-   "framework/sygus_simplify.cpp"
-   "framework/state_simplify.cpp"
-   "utils/logger.cpp")
-
-add_executable(symtraverse_all_step1 ${exe_list})
+set(framework
+    "framework/ts.cpp"
+    "framework/btor2_encoder.cpp"
+    "framework/symsim.cpp"
+    "framework/independence_check.cpp"
+    "framework/term_manip.cpp"
+    "framework/tracemgr.cpp"
+    "framework/symtraverse.cpp"
+    "framework/traverse_manip.cpp"
+    "framework/sygus_simplify.cpp"
+    "framework/state_simplify.cpp"
+    "utils/logger.cpp"
+)
 
 set(lib_list 
     "libsmt-switch-btor.a"
     "libsmt-switch.a"
     "pthread")
 
-target_link_libraries(symtraverse_all_step1 ${lib_list})
+add_library(wasim ${framework})
+target_link_libraries(wasim ${lib_list})
+
+add_executable(symtraverse_all_step1 "symtraverse_all_step1.cpp")
+target_link_libraries(symtraverse_all_step1 wasim)
+
+add_executable(independence_check_test "independence_check_test.cpp")
+target_link_libraries(independence_check_test wasim)
+
+add_executable(solver_test "solver_test.cpp")
+target_link_libraries(solver_test wasim)
+
+add_executable(symsim_test "symsim_test.cpp")
+target_link_libraries(symsim_test wasim)
 
 # generate dependent header
 configure_file("${CMAKE_CURRENT_SOURCE_DIR}/config/testpath.h.in"  "${CMAKE_CURRENT_SOURCE_DIR}/config/testpath.h")
