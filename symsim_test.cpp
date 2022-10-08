@@ -2,8 +2,11 @@
 #include "framework/btor2_encoder.h"
 #include "symsim.h"
 #include "deps/smt-switch/local/include/smt-switch/boolector_factory.h"
+#include "deps/smt-switch/local/include/smt-switch/smtlib_reader.h"
 #include "assert.h"
 #include "framework/term_manip.h"
+#include "framework/sygus_simplify.h"
+#include <boost/process.hpp>
 
 using namespace wasim;
 // using namespace smt;
@@ -34,12 +37,12 @@ int main(){
         cout << var << endl;
     }
     cout << "\nTS state vars: " << endl;
-    for(auto var: ts.state_updates_){
+    for(auto var: ts.state_updates()){
         cout << var.first << "  -->-- " << var.second << endl;
     }
     
     cout << "\nTS constrains: " << endl;
-    for (auto vect : ts.constraints_){
+    for (auto vect : ts.constraints()){
         cout << vect.first << "bool: "<< vect.second << endl;
         }
     
@@ -67,7 +70,7 @@ int main(){
     executor.print_current_step();
     executor.print_current_step_assumptions();
 
-    cout << ts.init_ << endl;
+    cout << ts.init() << endl;
     // // tag1
     executor.set_input(
         executor.convert({{"rst",0}}), {}
@@ -101,7 +104,7 @@ int main(){
     executor.print_current_step_assumptions();
 
     cout << "\n\n\n" << endl;
-    auto cons = ts.constraints_[1].first;
+    auto cons = ts.constraints()[1].first;
     cout << cons << endl;
 
     for(auto v : cons){
@@ -116,24 +119,50 @@ int main(){
     }
 
     cout << "\n\n" << endl;
-    auto arg1 = arg(cons);
+    auto arg1 = args(cons);
     cout << arg1.size() << endl;
 
 
-    auto cons1 = ts.init_;
+    auto cons1 = ts.init();
     cout << "expr: " << cons1 << endl;
-    auto free_var = get_free_variable(cons1);
+    auto free_var = get_free_variables(cons1);
     cout << "free_var_num: " << free_var.size() << endl;
     for(auto v : free_var){
         cout << v << endl;
+        cout << v->get_sort()->to_string() << endl;
     }
+    cout << cons1->get_sort()->to_string() << endl;
 
     
-    
+    cout << GetTimeStamp() << endl;
     
     // // cout << cons->begin() << endl;
     // cout << cons->get_sort()->to_string() << endl;
     
+    ofstream f;
+    f.open("test.txt", ios::out | ios::app);
+    auto line1 = "(set-logic BV)\n\n\n(synth-fun FunNew \n   (\n";
+    f<<line1 << endl;;
+    f.close();
+
+
+    // std::string cmd = "sleep 20";
+    // int timeout = 5;
+
+    // boost::process::child c(cmd);
+    // std::error_code ec;
+    // if (!c.wait_for(std::chrono::seconds(timeout), ec)) {
+    //     std::cout << "nTimeout reached. Process terminated after "
+    //             << timeout << " seconds.\n";
+    //     c.terminate(ec);
+
+// }   
+
+    // smt::SmtLibReader reader(s);
+    // auto test = "/data/wenjifang/vpipe-mc/SyGuS-Simplify/test.txt" ;
+    // reader.parse(test);
+    // auto res = reader.pop_scope();
+
 
     return 0;
     

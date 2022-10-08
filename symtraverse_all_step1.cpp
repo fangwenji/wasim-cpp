@@ -56,29 +56,29 @@ int main(){
     cout << "step: tag0 --> tag0" << endl;
     extend_branch_init(branch_list, executor, sts, base_sv, "tag0_0", order, solver);
 
-    // step: tag0 --> tag1
-    cout << "\n\n\nstep: tag0 --> tag1" << endl;
-    extend_branch_next_phase(branch_list, executor, sts, base_sv, "tag0_1", {{"tag0",1}, {"tag1",0}, {"tag2",0}, {"tag3",0}}, order, solver);
+    // // step: tag0 --> tag1
+    // cout << "\n\n\nstep: tag0 --> tag1" << endl;
+    // extend_branch_next_phase(branch_list, executor, sts, base_sv, "tag0_1", {{"tag0",1}, {"tag1",0}, {"tag2",0}, {"tag3",0}}, order, solver);
 
-    // step: tag1 --> tag1
-    cout << "\n\n\nstep: tag1 --> tag1" << endl;
-    extend_branch_same_phase(branch_list, executor, sts, base_sv, "tag1_1", {{"tag0",0}, {"tag1",1}, {"tag2",0}, {"tag3",0}}, order, solver);
+    // // step: tag1 --> tag1
+    // cout << "\n\n\nstep: tag1 --> tag1" << endl;
+    // extend_branch_same_phase(branch_list, executor, sts, base_sv, "tag1_1", {{"tag0",0}, {"tag1",1}, {"tag2",0}, {"tag3",0}}, order, solver);
 
-    // step: tag1 --> tag2
-    cout << "\n\n\nstep: tag1 --> tag2" << endl;
-    extend_branch_next_phase(branch_list, executor, sts, base_sv, "tag1_2", {{"tag0",0}, {"tag1",1}, {"tag2",0}, {"tag3",0}}, order, solver);
+    // // step: tag1 --> tag2
+    // cout << "\n\n\nstep: tag1 --> tag2" << endl;
+    // extend_branch_next_phase(branch_list, executor, sts, base_sv, "tag1_2", {{"tag0",0}, {"tag1",1}, {"tag2",0}, {"tag3",0}}, order, solver);
 
-    // step: tag2 --> tag2
-    cout << "\n\n\nstep: tag2 --> tag2" << endl;
-    extend_branch_same_phase(branch_list, executor, sts, base_sv, "tag2_2", {{"tag0",0}, {"tag1",0}, {"tag2",1}, {"tag3",0}}, order, solver);
+    // // step: tag2 --> tag2
+    // cout << "\n\n\nstep: tag2 --> tag2" << endl;
+    // extend_branch_same_phase(branch_list, executor, sts, base_sv, "tag2_2", {{"tag0",0}, {"tag1",0}, {"tag2",1}, {"tag3",0}}, order, solver);
 
-    // step: tag2 --> tag3
-    cout << "\n\n\nstep: tag2 --> tag3" << endl;
-    extend_branch_next_phase(branch_list, executor, sts, base_sv, "tag2_3", {{"tag0",0}, {"tag1",0}, {"tag2",1}, {"tag3",0}}, order, solver);
+    // // step: tag2 --> tag3
+    // cout << "\n\n\nstep: tag2 --> tag3" << endl;
+    // extend_branch_next_phase(branch_list, executor, sts, base_sv, "tag2_3", {{"tag0",0}, {"tag1",0}, {"tag2",1}, {"tag3",0}}, order, solver);
 
-    // step: tag3 --> tag3
-    cout << "\n\n\nstep: tag3 --> tag3" << endl;
-    extend_branch_same_phase(branch_list, executor, sts, base_sv, "tag3_3", {{"tag0",0}, {"tag1",0}, {"tag2",0}, {"tag3",1}}, order, solver);
+    // // step: tag3 --> tag3
+    // cout << "\n\n\nstep: tag3 --> tag3" << endl;
+    // extend_branch_same_phase(branch_list, executor, sts, base_sv, "tag3_3", {{"tag0",0}, {"tag1",0}, {"tag2",0}, {"tag3",1}}, order, solver);
 
 
     auto end = system_clock::now();

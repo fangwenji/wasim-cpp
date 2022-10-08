@@ -108,86 +108,12 @@ smt::Term expr_simplify_ite_new(smt::Term expr, smt::TermVec assumptions, smt::S
         }
 
     }
-    for(auto sub:subst_map){
-        auto f = sub.first;
-        auto s = sub.second;
-        cout << "f: " << f << endl;
-        cout << "f_sort: " << f->get_sort()->to_string() << endl;
-        cout << "f_width: " << f->get_sort()->get_width() << endl;
-        cout << "s: " << s << endl;
-        cout << "s_sort: " << s->get_sort()->to_string() << endl;
-        cout << "s_width: " << s->get_sort()->get_width() << endl;
-        
-    }
-    
-    auto expr_sub = solver->substitute(expr, subst_map);
+
+    smt::SubstitutionWalker sw(solver, subst_map);
+    auto expr_sub = sw.visit(expr);
     return expr_sub;
 }
 
-TermVec remove_ites_under_model(const SmtSolver & solver, const TermVec & terms)
-{
-  UnorderedTermSet visited;
-  UnorderedTermMap cache;
-
-  TermVec to_visit = terms;
-  Term solver_true = solver->make_term(true);
-  Term t;
-  while (to_visit.size()) {
-    t = to_visit.back();
-    to_visit.pop_back();
-
-    if (visited.find(t) == visited.end()) {
-      to_visit.push_back(t);
-      visited.insert(t);
-      for (const auto & tt : t) {
-        to_visit.push_back(tt);
-      }
-    } else {
-      // post-order case
-
-      TermVec cached_children;
-      for (const auto & tt : t) {
-        cached_children.push_back(tt);
-      }
-      Op op = t->get_op();
-
-      if (op == Ite) {
-        auto r = solver->check_sat_assuming({cached_children[0]});
-        // cout << "r: " << cached_children[0] << " -->-- " << r.is_sat() << endl;
-        // cout << cached_children[0] << endl;
-        if (solver->get_value(cached_children[0]) == solver_true) {
-          // if case
-          cache[t] = cached_children[1];
-        } else {
-          // else case
-          cache[t] = cached_children[2];
-        }
-      } else if (cached_children.size()) {
-        // rebuild to take into account any changes
-        if (!op.is_null()) {
-          cache[t] = solver->make_term(op, cached_children);
-        } else {
-          assert(cached_children.size() == 1);  // must be a constant array
-          assert(t->get_sort()->get_sort_kind() == ARRAY);
-          cache[t] = solver->make_term(cached_children[0], t->get_sort());
-        }
-      } else {
-        // just map to itself in the cache
-        // when there's no children
-        cache[t] = t;
-      }
-
-      assert(cache.find(t) != cache.end());
-    }
-  }
-
-  TermVec res;
-  res.reserve(terms.size());
-  for (const auto & tt : terms) {
-    res.push_back(cache.at(tt));
-  }
-  return res;
-}
 
 void state_simplify_xvar(StateAsmpt s, smt::UnorderedTermSet set_of_xvar, smt::SmtSolver& solver){
     smt::TermVec eq_vec = {};
@@ -213,10 +139,7 @@ void state_simplify_xvar(StateAsmpt s, smt::UnorderedTermSet set_of_xvar, smt::S
         auto var = sv.first;
         auto expr = sv.second;
         auto expr_new = solver->substitute(expr, xvar_sub);
-        // s.sv_[var] = expr_simplify_ite_new(expr_new, s.asmpt_, solver);
-        auto ret = remove_ites_under_model(solver, {expr_new});
-        assert(ret.size() == 1);
-        s.sv_[var] = ret.at(0);
+        s.sv_[var] = expr_simplify_ite_new(expr_new, s.asmpt_, solver);
 
     }
 

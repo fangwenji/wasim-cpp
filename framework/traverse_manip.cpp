@@ -81,7 +81,7 @@ void extend_branch_init(std::vector<std::vector<StateAsmpt>>& branch_list, Symbo
         state_vec_extend.push_back(nextstate);
         branch_list.push_back(state_vec_extend);
         nextstate.print();
-        nextstate.print_assumptions();
+        // nextstate.print_assumptions();
     }
     cout << "number of state " << flag << " in total: " << branch_list_old.size() << " --> " << branch_list.size() << endl;
 }
@@ -104,10 +104,12 @@ void extend_branch_next_phase(std::vector<std::vector<StateAsmpt>>& branch_list,
         traverse_temp.traverse_one_step(assumptions, order, {});
         cout << "number of state " << flag << ": 1-> " << traverse_temp.tracemgr_.abs_state_one_step_.size() << endl;
 
-        for (const auto& nextstate : traverse_temp.tracemgr_.abs_state_one_step_){
+        for (auto& nextstate : traverse_temp.tracemgr_.abs_state_one_step_){
             auto state_vec_extend (state_list);
             state_vec_extend.push_back(nextstate);
             branch_list.push_back(state_vec_extend);
+            nextstate.print();
+            // nextstate.print_assumptions();
         }
     }
     int start_num = branch_list_old.size();
@@ -134,10 +136,12 @@ void extend_branch_same_phase(std::vector<std::vector<StateAsmpt>>& branch_list,
         traverse_temp.traverse(assumptions, order, {});
         cout << "number of state " << flag << ": 1-> " << traverse_temp.tracemgr_.abs_state_.size() << endl;
 
-        for (const auto& nextstate : traverse_temp.tracemgr_.abs_state_){
+        for (auto& nextstate : traverse_temp.tracemgr_.abs_state_){
             auto state_vec_extend (state_list);
             state_vec_extend.push_back(nextstate);
             branch_list.push_back(state_vec_extend);
+            nextstate.print();
+            // nextstate.print_assumptions();
         }
     }
     int start_num = branch_list_old.size();
