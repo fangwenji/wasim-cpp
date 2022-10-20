@@ -1,7 +1,7 @@
 #include "framework/ts.h"
 #include "framework/btor2_encoder.h"
-#include "symsim.h"
-#include "deps/smt-switch/local/include/smt-switch/boolector_factory.h"
+#include "framework/symsim.h"
+#include "smt-switch/boolector_factory.h"
 #include "assert.h"
 #include "framework/term_manip.h"
 #include "config/testpath.h"
@@ -13,7 +13,7 @@ using namespace std;
 int main(){
 
 
-    std::string input_file = PROJECT_SOURCE_DIR "/example/pipe-no-stall.btor2";
+    std::string input_file = PROJECT_SOURCE_DIR "/design/testcase1-simple_pipe/simple_pipe.btor2";
     
     smt::SmtSolver s = smt::BoolectorSolverFactory::create(false);
     wasim::TransitionSystem ts(s);
@@ -102,32 +102,32 @@ int main(){
     executor.print_current_step_assumptions();
 
     cout << "\n\n\n" << endl;
-    auto cons = ts.constraints().at(1).first;
-    cout << cons << endl;
+    // auto cons = ts.constraints().at(1).first;
+    // cout << cons << endl;
 
-    for(auto v : cons){
-        cout << "v: " <<v << endl;
-        for (auto v0 : v){
-            cout << "v0: " << v0 << endl;
-            cout << v0->is_symbol() << endl;
-            for(auto v00 : v0){
-                cout << "v00: "<<v00 << endl;
-            }
-        }
-    }
+    // for(auto v : cons){
+    //     cout << "v: " <<v << endl;
+    //     for (auto v0 : v){
+    //         cout << "v0: " << v0 << endl;
+    //         cout << v0->is_symbol() << endl;
+    //         for(auto v00 : v0){
+    //             cout << "v00: "<<v00 << endl;
+    //         }
+    //     }
+    // }
 
-    cout << "\n\n" << endl;
-    auto arg1 = arg(cons);
-    cout << arg1.size() << endl;
+    // cout << "\n\n" << endl;
+    // auto arg1 = args(cons);
+    // cout << arg1.size() << endl;
 
 
-    auto cons1 = ts.init();
-    cout << "expr: " << cons1 << endl;
-    auto free_var = get_free_variable(cons1);
-    cout << "free_var_num: " << free_var.size() << endl;
-    for(auto v : free_var){
-        cout << v << endl;
-    }
+    // auto cons1 = ts.init();
+    // cout << "expr: " << cons1 << endl;
+    // auto free_var = get_free_variables(cons1);
+    // cout << "free_var_num: " << free_var.size() << endl;
+    // for(auto v : free_var){
+    //     cout << v << endl;
+    // }
 
     
     

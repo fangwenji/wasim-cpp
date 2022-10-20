@@ -46,7 +46,7 @@ using parsed_info = std::tuple<smt::UnorderedTermSet, smt::UnorderedTermSet, smt
 bool expr_contians_X(smt::Term expr, smt::UnorderedTermSet set_of_xvar);
 
 std::string GetTimeStamp();
-
+/*
 void sygus_simplify(StateAsmpt state, smt::UnorderedTermSet set_of_xvar, smt::SmtSolver& solver);
 
 smt::Term structure_simplify(smt::Term v, StateAsmpt state, smt::UnorderedTermSet set_of_xvar, smt::SmtSolver& solver);
@@ -56,5 +56,5 @@ smt::TermVec child_vec_simplify(smt::TermVec child_vec, StateAsmpt state, smt::U
 parsed_info parse_state(StateAsmpt state, smt::Term v, smt::SmtSolver& solver);
 
 smt::Term run_sygus(parsed_info info, smt::UnorderedTermSet set_of_xvar);
-
+*/
 }

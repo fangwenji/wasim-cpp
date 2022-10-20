@@ -29,7 +29,7 @@ extern "C" {
 #include "assert.h"
 
 #include "ts.h"
-#include "exceptions.h"
+#include "smt-switch/exceptions.h"
 
 #include "smt-switch/smt.h"
 

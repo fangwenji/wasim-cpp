@@ -19,7 +19,7 @@ bool e_is_always_valid(const smt::Term & e, smt::TermVec assumptions /*={}*/, sm
             auto eq_e = s->make_term(smt::Equal, e, bv_0);
             assumptions.push_back(eq_e);
         } else
-            throw PonoException("[e_is_always_valid] : expecting bit-width to be 1");
+            throw SmtException("[e_is_always_valid] : expecting bit-width to be 1");
     }
 
     return (s->check_sat_assuming(assumptions).is_unsat());
@@ -39,7 +39,7 @@ bool e_is_always_invalid(const smt::Term & e, smt::TermVec assumptions /*={}*/, 
             auto eq_e = s->make_term(smt::Equal, e, bv_1);
             assumptions.push_back(eq_e);
         } else
-            throw PonoException("[e_is_always_invalid] : expecting bit-width to be 1");
+            throw SmtException("[e_is_always_invalid] : expecting bit-width to be 1");
     }
 
     return (s->check_sat_assuming(assumptions).is_unsat());

@@ -17,7 +17,7 @@
 #include "smt-switch/utils.h"
 
 #include "btor2_encoder.h"
-#include "logger.h"
+#include "utils/logger.h"
 
 #include <iostream>
 #include "assert.h"

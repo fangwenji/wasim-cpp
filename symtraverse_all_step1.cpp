@@ -1,12 +1,12 @@
 #include "framework/ts.h"
 #include "framework/btor2_encoder.h"
-#include "symsim.h"
-#include "deps/smt-switch/local/include/smt-switch/boolector_factory.h"
+#include "framework/symsim.h"
+#include "smt-switch/boolector_factory.h"
 #include "assert.h"
 #include "framework/term_manip.h"
 #include "framework/symtraverse.h"
-#include "term_manip.h"
-#include "traverse_manip.h"
+#include "framework/term_manip.h"
+#include "framework/traverse_manip.h"
 #include "config/testpath.h"
 #include <chrono>
 

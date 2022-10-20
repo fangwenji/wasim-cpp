@@ -8,7 +8,7 @@
             "name": "g++ debug",
             "type": "cppdbg",
             "request": "launch",
-            "program": "/data/wenjifang/wasim-cpp/build/symtraverse_all_step1",
+            "program": "/data/wenjifang/wasim-cpp/build/wasim",
             "args": [],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",

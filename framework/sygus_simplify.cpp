@@ -30,7 +30,7 @@ std::string GetTimeStamp()
 	return std::to_string(timestamp);
 }
 
-
+/*
 smt::Term structure_simplify(smt::Term v, StateAsmpt state, smt::UnorderedTermSet set_of_xvar, smt::SmtSolver& solver){
     auto child_vec = args(v);
     auto child_new_vec = child_vec_simplify(child_vec, state, set_of_xvar);
@@ -133,5 +133,5 @@ smt::Term run_sygus(parsed_info info, smt::UnorderedTermSet set_of_xvar){
     run_cmd(cmd_string, 0.5);
 
 }
-
+*/
 }

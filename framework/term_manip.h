@@ -5,11 +5,12 @@
 // #include <unordered_map>
 // #include <boost/variant.hpp>
 
-#include "../deps/smt-switch/local/include/smt-switch/boolector_factory.h"
-// #include "../deps/smt-switch/local/include/smt-switch/boolector_extensions.h"
+#include "smt-switch/boolector_factory.h"
+// #include "/data/wenjifang/wasim-cpp/deps/smt-switch/include/boolector_extensions.h"
 
-#include "../deps/smt-switch/local/include/smt-switch/smt.h"
-// #include "../deps/smt-switch/local/include/smt-switch/generic_sort.h"
+#include "smt-switch/smt.h"
+#include "smt-switch/smtlib_reader.h"
+// #include "/data/wenjifang/wasim-cpp/deps/smt-switch/include/generic_sort.h"
 
 // #include "../utils/exceptions.h"
 
@@ -40,4 +41,29 @@ smt::TermVec args(smt::Term term);
 smt::UnorderedTermSet get_free_variables(smt::Term term);
 
 smt::Term free_make_symbol(std::string n, smt::Sort symb_sort, std::unordered_map<std::string, int>& name_cnt, smt::SmtSolver& solver);
+
+class PropertyInterface : public smt::SmtLibReader
+{
+ public:
+    PropertyInterface(std::string filename, TransitionSystem & ts);
+
+    typedef SmtLibReader super;
+
+    smt::Term AddAssertions(const smt::Term &in) const;
+
+    void AddAssumptionsToTS();
+
+ protected:
+    // overloaded function, used when arg list of function is parsed
+    // NOTE: | |  pipe quotes are removed.
+    virtual smt::Term register_arg(const std::string & name, const smt::Sort & sort) override;
+
+    std::string filename_;
+
+    TransitionSystem & ts_;
+
+    smt::TermVec assertions_;
+    smt::TermVec assumptions_;
+
+};
 }

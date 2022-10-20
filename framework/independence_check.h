@@ -6,7 +6,7 @@
 // #include <boost/variant.hpp>
 
 #include "smt-switch/smt.h"
-#include "exceptions.h"
+#include "smt-switch/exceptions.h"
 #include "assert.h"
 
 // #include "ts.h"
