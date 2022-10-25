@@ -52,7 +52,7 @@ int main(){
     // // btor_paser.preprocess(input_file);
     // // btor_paser.parse(input_file);
     
-    std::map<wasim::type_conv, wasim::type_conv> init_map = {\
+    assignment_type init_map = {\
         {"wen_stage1","v1"},
         {"wen_stage2","v2"},
         {"wen_stage3","v3"},

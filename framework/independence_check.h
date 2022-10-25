@@ -3,7 +3,6 @@
 #include <string>
 // #include <iomanip>
 // #include <unordered_map>
-// #include <boost/variant.hpp>
 
 #include "smt-switch/smt.h"
 #include "smt-switch/exceptions.h"

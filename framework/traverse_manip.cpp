@@ -9,43 +9,43 @@ smt::TermVec tag2asmpt_c1(std::string flag, SymbolicExecutor & executor, smt::Sm
     smt::Term rhs_0 = solver->make_term(0, solver->make_sort(smt::BV, 1));
     smt::Term rhs_1 = solver->make_term(1, solver->make_sort(smt::BV, 1));
     if(flag == "tag0_0"){
-        lhs = executor.sv("stage1_go");
+        lhs = executor.var("stage1_go");
         ret_term = solver->make_term(smt::Equal, lhs, rhs_0);
         ret.push_back(ret_term);  
     }
     else if(flag == "tag0_1"){
-        lhs = executor.sv("stage1_go");
+        lhs = executor.var("stage1_go");
         ret_term = solver->make_term(smt::Equal, lhs, rhs_1);
         ret.push_back(ret_term);
     }
     else if(flag == "tag1_1"){
-        lhs = executor.sv("stage1_go");
+        lhs = executor.var("stage1_go");
         ret_term = solver->make_term(smt::Equal, lhs, rhs_0);
-        lhs2 = executor.sv("stage2_go");
+        lhs2 = executor.var("stage2_go");
         ret_term2 = solver->make_term(smt::Equal, lhs2, rhs_0);
         ret.push_back(ret_term);
         ret.push_back(ret_term2);
     }
     else if(flag == "tag1_2"){
-        lhs = executor.sv("stage2_go");
+        lhs = executor.var("stage2_go");
         ret_term = solver->make_term(smt::Equal, lhs, rhs_1);
         ret.push_back(ret_term);
     }
     else if(flag == "tag2_2"){
-        lhs = executor.sv("stage2_go");
+        lhs = executor.var("stage2_go");
         ret_term = solver->make_term(smt::Equal, lhs, rhs_0);
-        lhs2 = executor.sv("stage3_go");
+        lhs2 = executor.var("stage3_go");
         ret_term2 = solver->make_term(smt::Equal, lhs2, rhs_0);
         ret.push_back(ret_term);
         ret.push_back(ret_term2);
     }
     else if(flag == "tag2_3"){
-        lhs = executor.sv("stage3_go");
+        lhs = executor.var("stage3_go");
         ret_term = solver->make_term(smt::Equal, lhs, rhs_1);
         ret.push_back(ret_term);
     }
     else if(flag == "tag3_3"){
-        lhs = executor.sv("stage3_go");
+        lhs = executor.var("stage3_go");
         ret_term = solver->make_term(smt::Equal, lhs, rhs_0);
         ret.push_back(ret_term);
     }
@@ -69,7 +69,7 @@ void extend_branch_init(std::vector<std::vector<StateAsmpt>>& branch_list, Symbo
     auto executor_temp(executor);
     smt::UnorderedTermSet base_variable;
     for (const auto n : base_sv){
-        base_variable.insert(executor_temp.sv(n));
+        base_variable.insert(executor_temp.var(n));
     }
     SymbolicTraverse traverse_temp(sts, executor_temp, solver, base_variable);
     auto assumptions = tag2asmpt_c1(flag, executor_temp, solver);
@@ -86,7 +86,7 @@ void extend_branch_init(std::vector<std::vector<StateAsmpt>>& branch_list, Symbo
     cout << "number of state " << flag << " in total: " << branch_list_old.size() << " --> " << branch_list.size() << endl;
 }
 
-void extend_branch_next_phase(std::vector<std::vector<StateAsmpt>>& branch_list, SymbolicExecutor & executor, TransitionSystem & sts, std::vector<std::string> base_sv, std::string flag, std::map<wasim::type_conv, wasim::type_conv> phase_maker, std::vector<TraverseBranchingNode> order, smt::SmtSolver & solver){
+void extend_branch_next_phase(std::vector<std::vector<StateAsmpt>>& branch_list, SymbolicExecutor & executor, TransitionSystem & sts, std::vector<std::string> base_sv, std::string flag, assignment_type phase_maker, std::vector<TraverseBranchingNode> order, smt::SmtSolver & solver){
     auto branch_list_old(branch_list);
     branch_list.clear();
     for (auto state_list_old : branch_list_old){
@@ -94,10 +94,12 @@ void extend_branch_next_phase(std::vector<std::vector<StateAsmpt>>& branch_list,
         auto s = state_list.back();
         auto executor_temp (executor);
         auto d = executor_temp.convert(phase_maker);
-        executor_temp.set_current_state(s, d);
+        std::swap(s.sv_, d);
+        s.sv_.insert(d.begin(),d.end()); // for the same variable, d will overwrite s
+        executor_temp.set_current_state(s);
         smt::UnorderedTermSet base_variable;
         for (const auto n : base_sv){
-            base_variable.insert(executor_temp.sv(n));
+            base_variable.insert(executor_temp.var(n));
         }
         SymbolicTraverse traverse_temp(sts, executor_temp, solver, base_variable);
         auto assumptions = tag2asmpt_c1(flag, executor_temp, solver);
@@ -118,7 +120,7 @@ void extend_branch_next_phase(std::vector<std::vector<StateAsmpt>>& branch_list,
 }
 
 
-void extend_branch_same_phase(std::vector<std::vector<StateAsmpt>>& branch_list, SymbolicExecutor & executor, TransitionSystem & sts, std::vector<std::string> base_sv, std::string flag, std::map<wasim::type_conv, wasim::type_conv> phase_maker, std::vector<TraverseBranchingNode> order, smt::SmtSolver & solver){
+void extend_branch_same_phase(std::vector<std::vector<StateAsmpt>>& branch_list, SymbolicExecutor & executor, TransitionSystem & sts, std::vector<std::string> base_sv, std::string flag, assignment_type phase_maker, std::vector<TraverseBranchingNode> order, smt::SmtSolver & solver){
     auto branch_list_old(branch_list);
     branch_list.clear();
     for (auto state_list_old : branch_list_old){
@@ -126,10 +128,12 @@ void extend_branch_same_phase(std::vector<std::vector<StateAsmpt>>& branch_list,
         auto s = state_list.back();
         auto executor_temp (executor);
         auto d = executor_temp.convert(phase_maker);
-        executor_temp.set_current_state(s, d);
+        std::swap(s.sv_, d); // swap will only exchange the pointers
+        s.sv_.insert(d.begin(),d.end()); // for the same variable, d will overwrite s
+        executor_temp.set_current_state(s);
         smt::UnorderedTermSet base_variable;
         for (const auto n : base_sv){
-            base_variable.insert(executor_temp.sv(n));
+            base_variable.insert(executor_temp.var(n));
         }
         SymbolicTraverse traverse_temp(sts, executor_temp, solver, base_variable);
         auto assumptions = tag2asmpt_c1(flag, executor_temp, solver);

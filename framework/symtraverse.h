@@ -4,16 +4,15 @@
 // #include <string>
 // #include <iomanip>
 // #include <unordered_map>
-// #include <boost/variant.hpp>
 
-#include "../deps/smt-switch/local/include/smt-switch/boolector_factory.h"
+#include "smt-switch/boolector_factory.h"
 // #include "../deps/smt-switch/local/include/smt-switch/boolector_extensions.h"
 
-#include "../deps/smt-switch/local/include/smt-switch/smt.h"
+#include "smt-switch/smt.h"
 #include "term_manip.h"
 // #include "../deps/smt-switch/local/include/smt-switch/generic_sort.h"
 
-#include "../utils/exceptions.h"
+#include "utils/exceptions.h"
 
 #include "ts.h"
 #include "symsim.h"
@@ -41,9 +40,9 @@ class TraverseBranchingNode
 {
 public:
     TraverseBranchingNode(wasim::type_v input_v /*={}*/, wasim::type_v signal_v /*={}*/){
-        assert((input_v.size() <= 1) and (signal_v.size() <= 1));
-        assert((input_v.size() == 0) or (signal_v.size() == 0));
-        assert(not((input_v.size() == 0) and (signal_v.size() == 0)));
+        assert((input_v.size() <= 1) && (signal_v.size() <= 1));
+        assert((input_v.size() == 0) || (signal_v.size() == 0));
+        assert(not((input_v.size() == 0) && (signal_v.size() == 0)));
         wasim::type_v iv_vec;
         if(input_v.size() == 1){
             iv_vec.assign(input_v.begin(), input_v.end());

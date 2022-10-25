@@ -10,7 +10,7 @@ smt::UnorderedTermMap get_xvar_sub(smt::TermVec assumptions, smt::UnorderedTermS
     auto value_sort = solver->make_sort(smt::BV, 1);
     for(const auto& xvar:set_of_xvar){
         auto xvar_width = xvar->get_sort()->get_width();
-        if ((xvar_width == 1) and (free_var.find(xvar) != free_var.end())){
+        if ((xvar_width == 1) && (free_var.find(xvar) != free_var.end())){
             bv1_vec.push_back(xvar);
             auto reducible = is_reducible_bv_width1(xvar, assumptions, solver);
             if(reducible == 0){

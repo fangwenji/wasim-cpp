@@ -34,7 +34,7 @@ std::string GetTimeStamp()
 smt::Term structure_simplify(smt::Term v, StateAsmpt state, smt::UnorderedTermSet set_of_xvar, smt::SmtSolver& solver){
     auto child_vec = args(v);
     auto child_new_vec = child_vec_simplify(child_vec, state, set_of_xvar);
-    if((v->get_op() == smt::Ite) and (child_vec.size() == 3)){
+    if((v->get_op() == smt::Ite) && (child_vec.size() == 3)){
         auto new_expr = solver->make_term(smt::Ite, child_new_vec);
     }
     // else if
