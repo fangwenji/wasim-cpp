@@ -19,11 +19,10 @@
 #include <string>
 #include <unordered_map>
 
-#include "../deps/smt-switch/local/include/smt-switch/boolector_factory.h"
+#include "smt-switch/boolector_factory.h"
+#include "smt-switch/smt.h"
 
-#include "../deps/smt-switch/local/include/smt-switch/smt.h"
-
-#include "../utils/exceptions.h"
+#include "utils/exceptions.h"
 
 #include <iostream>
 #include <map>
@@ -35,21 +34,18 @@ namespace wasim {
 class StateAsmpt
 {
 public:
-  StateAsmpt(smt::UnorderedTermMap sv, smt::TermVec asmpt, std::vector<std::string> assumption_interp){
-    // this->_solver = smt::BoolectorSolverFactory::create(false);
-    this->sv_ = sv;
-    this->asmpt_ = asmpt;
-    this->assumption_interp_ = assumption_interp;
-  }
+  StateAsmpt(const smt::UnorderedTermMap & sv, 
+             const smt::TermVec & asmpt, 
+             const std::vector<std::string> & assumption_interp) :
+    sv_(sv), asmpt_(asmpt), assumption_interp_(assumption_interp)
+  { }
+
   void print();
   void print_assumptions();
 
-  // ~StateAsmpt();
-// private:
   smt::UnorderedTermMap sv_;
   smt::TermVec asmpt_;
   std::vector<std::string> assumption_interp_;
-
 
 };
 

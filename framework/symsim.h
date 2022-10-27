@@ -4,15 +4,11 @@
 #include <string>
 #include <iomanip>
 #include <unordered_map>
-#include <boost/variant.hpp>
-
-#include "smt-switch/boolector_factory.h"
-// #include "../deps/smt-switch/local/include/smt-switch/boolector_extensions.h"
 
 #include "smt-switch/smt.h"
 #include "smt-switch/generic_sort.h"
 
-#include "../utils/exceptions.h"
+#include "utils/exceptions.h"
 
 #include "ts.h"
 #include "term_manip.h"
@@ -23,93 +19,54 @@
 #include <functional>
 #include <vector>
 #include <set>
-#include <any>
 #include <variant>
 
-using namespace std;
 
 namespace wasim {
-using type_conv = std::variant<int, std::string>;
-// class Value
-// {
-// public:
-//     Value();
-//     Value(int val);
-//     Value(const std::string& val);
-//     Value(smt::Term val);
 
-//     bool isString() const;
-//     bool isInt() const;
-
-//     const std::string& string() const;
-//     uint32_t uint32() const;
-//     smt::Term term() const;
-
-// private:
-//     boost::variant<int, std::string> _data;
-// };
-
-class ChoiceItem
-{
-public:
-    ChoiceItem(smt::TermVec assumptions, smt::UnorderedTermMap var_assign){
-        // this->_solver = smt::BoolectorSolverFactory::create(false);
-        this->assumptions_ = assumptions;  // TODO: need to add copy
-        this->var_assign_ = var_assign;
-        this->UsedInSim_ = false;
-    }
-    void setSim();
-    void CheckSimed();
-    void record_prev_assumption_len(int l);
-    int get_prev_assumption_len();
-
-  // ~StateAsmpt();
-// private:
-    smt::TermVec assumptions_;
-    smt::UnorderedTermMap var_assign_;
-    bool UsedInSim_;
-    int assmpt_len_;
-
-};
+/// std::string : a symbolic value, int : a concrete value
+typedef std::variant<int, std::string> value_type;
+/// from string (variable name) to value
+typedef std::map<std::string, value_type> assignment_type;
 
 class SymbolicExecutor
 {
+private:
+
+    /// a class only used in symbolic executor
+    class ChoiceItem
+    {
+    public:
+        ChoiceItem(const smt::TermVec & assumptions, 
+                const smt::UnorderedTermMap & var_assign) :
+            assumptions_(assumptions), var_assign_(var_assign),
+            UsedInSim_(false)  {  }
+
+        void setSim() { assert(!UsedInSim_); UsedInSim_ = true; }
+        void CheckSimed() const { assert(UsedInSim_); } 
+        void record_prev_assumption_len(unsigned l) { assmpt_len_ = l; }
+        unsigned get_prev_assumption_len() const { return assmpt_len_; }
+
+        smt::TermVec assumptions_;
+        smt::UnorderedTermMap var_assign_;
+        bool UsedInSim_;
+        unsigned assmpt_len_;
+    }; // end of class ChoiceItem
+
 public:
-    SymbolicExecutor(TransitionSystem ts, smt::SmtSolver & s){
-        this->ts_ = ts; // transition system
-        this->solver_ = s;
+    // we will keep a reference to ts
+    // and a copy of the pointer to the solver
+    SymbolicExecutor(TransitionSystem & ts, const smt::SmtSolver & s) : 
+        ts_(ts), solver_(s), 
+        invar_(ts.inputvars()),
+        svar_(ts.statevars())
+    {  }
 
-        // input variables & state variables
-        this->invar_ = ts.inputvars();
-        this->svar_ = ts.statevars();
-        
-        this->trace_ = {}; // vector of state var assignment. A var assignment is a unordered_map: v -> value
-        this->history_choice_ = {};
-        this->history_assumptions_ = {};
-        this->history_assumptions_interp_ = {};
-        this->name_cnt_ = {};
-        this->Xvar_ = {};
-    }
-    // SymbolicExecutor(TransitionSystem ts){
-    //     this->ts_ = ts; // transition system
-    //     this->solver_ = smt::BoolectorSolverFactory::create(false);
-
-    //     // input variables & state variables
-    //     this->invar_ = ts.inputvars_;
-    //     this->svar_ = ts.statevars_;
-        
-    //     this->trace_ = {}; // vector of state var assignment. A var assignment is a unordered_map: v -> value
-    //     this->history_choice_ = {};
-    //     this->history_assumptions_ = {};
-    //     this->history_assumptions_interp_ = {};
-    //     this->name_cnt_ = {};
-    //     this->Xvar_ = {};
-    // }
-
-    TransitionSystem ts_;
-    smt::SmtSolver solver_;
-    smt::UnorderedTermSet invar_;
-    smt::UnorderedTermSet svar_;
+protected:
+    TransitionSystem & ts_;
+    smt::SmtSolver solver_; // smt::SmtSolver is a smart pointer
+    const smt::UnorderedTermSet & invar_;
+    const smt::UnorderedTermSet & svar_;
     std::vector<smt::UnorderedTermMap> trace_;
     std::vector<ChoiceItem> history_choice_;
     std::vector<smt::TermVec> history_assumptions_;
@@ -117,31 +74,65 @@ public:
     std::unordered_map<std::string,int> name_cnt_;
     smt::UnorderedTermSet Xvar_;
 
-    int tracelen();
-    auto all_assumptions();
-    auto all_assumption_interp();
-    smt::Term sv(const std::string & n);
-    smt::Term cur(const std::string & n);
-    void _check_only_invar(const smt::UnorderedTermMap & vdict);
-    bool _expr_only_sv(smt::Term expr);
-    // smt::UnorderedTermMap convert(std::map<std::any, std::any> vdict);
-    smt::UnorderedTermMap convert(std::map<wasim::type_conv, wasim::type_conv> vdict);
+    void _check_only_invar(const smt::UnorderedTermMap & vdict) const;
+    bool _expr_only_sv(const smt::Term & expr) const;
+
+    smt::Term new_var(int bitwdth, const std::string & vname = "var", bool x = true);
+
+public:
+    /// get the length of the trace
+    unsigned tracelen() const;
+    /// collect all assumptions on each frame
+    smt::TermVec all_assumptions() const;
+    /// collect all interpretations of assumptions on each frame
+    std::vector<std::string> all_assumption_interp() const;
+    /// get the term for a variable
+    smt::Term var(const std::string & n) const;
+    /// get the term for name n, then use the current symbolic 
+    /// variable assignment to substitute all variables in it
+    /// if it contains input variable, use the most recent input
+    /// variable assignment as well
+    smt::Term cur(const std::string & n) const;
+    /// print the current state variable assignment
+    void print_current_step() const;
+    /// get the assumptions (collected from all previous steps)
+    void print_current_step_assumptions() const;
+    
+    /// a shortcut to create symbolic variables/concrete values in a map
+    smt::UnorderedTermMap convert(const assignment_type & vdict) const;
+
+    /// goto the previous simulation step
     void backtrack();
-    void init(smt::UnorderedTermMap var_assignment = {});
-    void set_current_state(StateAsmpt s, smt::UnorderedTermMap d);
-    void print_current_step();
-    void print_current_step_assumptions();
-    void set_input(smt::UnorderedTermMap invar_assign, const smt::TermVec pre_assumptions);
+    /// use the given variable assignment to initialize
+    void init(const smt::UnorderedTermMap & var_assignment = {});
+    /// re-assign the current state
+    void set_current_state(const StateAsmpt & s);
+    /// set the input variable values before simulating next step
+    ///  (and also set some assumptions before the next step)
+    void set_input(const smt::UnorderedTermMap & invar_assign, const smt::TermVec & pre_assumptions);
+    /// undo the input setting
+    /// usage: set_input -> sim_one_step --> (a new state) -> backtrack -> undo_set_input
     void undo_set_input();
-    std::any interpret_state_expr_on_curr_frame(std::any expr);
+
+    /// similar to cur(), but will check no reference to the input variables
+    smt::Term interpret_state_expr_on_curr_frame(const smt::Term & expr) const;
+    /// similar to cur(), but will check no reference to the input variables
+    smt::TermVec interpret_state_expr_on_curr_frame(const smt::TermVec & expr) const;
+    
+    /// do simulation
     void sim_one_step();
+
+    /// do simulation (will not substitue for the input variables)
+    /// warning: expert-only
     void sim_one_step_direct();
-    smt::UnorderedTermSet get_Xs();
-    smt::Term new_var(int bitwdth, std::string vname = "var", bool x = true);
-    StateAsmpt get_curr_state(smt::TermVec assumptions = {});
-    auto set_var(int bitwdth, std::string vname = "var");
 
+    /// get the set of all X variables
+    const smt::UnorderedTermSet & get_Xs() const { return Xvar_; }
 
+    /// get (a copy of) the current state
+    StateAsmpt get_curr_state(const smt::TermVec & assumptions = {});
+    /// a shortcut to create a variable
+    smt::Term set_var(int bitwdth, std::string vname = "var");
 
 };
 }

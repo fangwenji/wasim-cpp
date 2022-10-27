@@ -2,15 +2,15 @@
 
 namespace wasim{
     
-smt::TermVec args(smt::Term term){
+smt::TermVec args(const smt::Term & term){
     smt::TermVec arg_vec;
-    for (const auto& a : term){
-        arg_vec.push_back(a);
-    }
+    for(auto pos = term->begin(); pos != term->end(); ++pos)
+        arg_vec.push_back(*pos);
+    
     return arg_vec;
 }
 
-smt::UnorderedTermSet get_free_variables(smt::Term term){
+smt::UnorderedTermSet get_free_variables(const smt::Term & term){
     smt::UnorderedTermSet free_var;
     smt::TermVec search_stack;
     if(term->is_symbol()){
@@ -34,30 +34,26 @@ smt::UnorderedTermSet get_free_variables(smt::Term term){
     return free_var;
 }
 
-smt::Term free_make_symbol(std::string n, smt::Sort symb_sort, std::unordered_map<std::string, int>& name_cnt, smt::SmtSolver& solver){
+smt::Term free_make_symbol(const std::string & n, smt::Sort symb_sort, std::unordered_map<std::string, int>& name_cnt, smt::SmtSolver& solver){
     int cnt;
-    if(name_cnt.find(n) == name_cnt.end()){
-        cnt = 1;
-    }
-    else{
-        auto cur_cnt = name_cnt[n];
-        // const auto cur_cnt = iter->second;
-        cnt = cur_cnt + 1; 
-    }
-
-    name_cnt[n] = cnt;
-    smt::Term symb;
-    try
-    {
-       symb =  solver->make_symbol(n + std::to_string(cnt), symb_sort);
-       
-    }
-    catch(const std::exception& e)
-    {
-        name_cnt[n] = cnt + 1;
-        symb = free_make_symbol(n, symb_sort, name_cnt, solver);
-    }
-    return symb;
+    if(name_cnt.find(n) == name_cnt.end())
+        cnt = 0;
+    else
+        cnt = name_cnt[n];
+    
+    do{
+        ++cnt;
+        name_cnt[n] = cnt;
+        smt::Term symb;
+        try
+        {
+            symb =  solver->make_symbol(n + std::to_string(cnt), symb_sort);
+            return symb;
+        }
+        catch(const std::exception & e) {   // maybe name conflict
+            std::cout << "New symbol: " << n + std::to_string(cnt) << " failed." << std::endl;
+        }
+    } while(true);
 }
 
 PropertyInterface::PropertyInterface(std::string filename, smt::UnorderedTermMap assign_map, smt::SmtSolver &solver)

@@ -39,7 +39,7 @@ int main(){
 
     SymbolicExecutor executor(sts, solver);
 
-    std::map<wasim::type_conv, wasim::type_conv> init_map = {
+    assignment_type init_map = {
         {"wen_stage1","v1"},
         {"wen_stage2","v2"},
         {"stage1","a"},

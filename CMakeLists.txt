@@ -55,6 +55,10 @@ find_library(LIBRT rt)
 message("-- FOUND FLEX EXECUTABLE: ${FLEX_EXECUTABLE}")
 message("-- FOUND FLEX INCLUDE DIRS: ${FLEX_INCLUDE_DIRS}")
 
+find_package(Boost REQUIRED COMPONENTS system filesystem)
+MESSAGE( STATUS "Boost_INCLUDE_DIRS = ${Boost_INCLUDE_DIRS}.")
+MESSAGE( STATUS "Boost_LIBRARIES = ${Boost_LIBRARIES}.")
+
 # TODO: Use find_package
 # find package
 #list(APPEND CMAKE_PREFIX_PATH "${PROJECT_SOURCE_DIR}/smt-switch")
@@ -104,6 +108,7 @@ set(INCLUDE_DIRS
   "${CMAKE_CURRENT_BINARY_DIR}"
   "${GMP_INCLUDE_DIR}"
   "${FLEX_INCLUDE_DIRS}"
+  "${Boost_INCLUDE_DIRS}"
   )
 
 set(SOURCES
@@ -144,6 +149,7 @@ target_link_libraries(wasim-lib PUBLIC "${GMPXX_LIBRARIES}")
 target_link_libraries(wasim-lib PUBLIC "${GMP_LIBRARIES}")
 target_link_libraries(wasim-lib PUBLIC pthread)
 target_link_libraries(wasim-lib PUBLIC y)
+target_link_libraries(wasim-lib PUBLIC Boost::system)
 
 # if (LIBRT)
 #   target_link_libraries(wasim-lib PUBLIC ${LIBRT})

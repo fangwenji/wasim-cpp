@@ -3,7 +3,6 @@
 // #include <string>
 // #include <iomanip>
 // #include <unordered_map>
-// #include <boost/variant.hpp>
 
 #include "smt-switch/boolector_factory.h"
 // #include "/data/wenjifang/wasim-cpp/deps/smt-switch/include/boolector_extensions.h"
@@ -35,12 +34,12 @@ namespace wasim
 {
 
 //  return the arguments of a term, <left, right>
-smt::TermVec args(smt::Term term);
+smt::TermVec args(const smt::Term & term);
 
 // DFS of a term (arg), free var --> symbol
-smt::UnorderedTermSet get_free_variables(smt::Term term);
+smt::UnorderedTermSet get_free_variables(const smt::Term & term);
 
-smt::Term free_make_symbol(std::string n, smt::Sort symb_sort, std::unordered_map<std::string, int>& name_cnt, smt::SmtSolver& solver);
+smt::Term free_make_symbol(const std::string & n, smt::Sort symb_sort, std::unordered_map<std::string, int>& name_cnt, smt::SmtSolver& solver);
 
 class PropertyInterface : public smt::SmtLibReader
 {
