@@ -77,8 +77,8 @@ smt::UnorderedTermMap SymbolicExecutor::convert(const assignment_type & vdict) c
         const auto & value = v.second;
 
         smt::Term key_new = var(key);
-        if(svar_.find(key_new) == svar_.end())
-            throw PonoException("var name " + key + " is not a state variable");
+        // if(svar_.find(key_new) == svar_.end() && invar_.find(key_new) == invar_.end())
+        //    throw PonoException("var name " + key + " is not a state/input variable");
 
         if (std::holds_alternative<std::string>(value)) {
             auto value_str = std::get<std::string>(value);
