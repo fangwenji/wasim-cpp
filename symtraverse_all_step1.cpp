@@ -86,4 +86,11 @@ int main(){
 
     cout << "Program running time: " << double(duration.count())*seconds::period::num/seconds::period::den << " (s)" << endl;
 
+    
+    std::string smt_file = PROJECT_SOURCE_DIR "/smtlib_result3.smt";
+    PropertyInterface pi(smt_file, map, solver);
+    auto file_sort = solver->make_sort(smt::BV, 4);
+    auto expr = pi.return_defs();
+    // auto parse = pi.register_arg(smt_file, file_sort);
+    // cout << parse->to_string() << endl;
 }
