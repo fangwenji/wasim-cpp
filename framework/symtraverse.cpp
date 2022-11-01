@@ -127,6 +127,8 @@ bool PerStateStack::check_stack(){
 
 void SymbolicTraverse::traverse_one_step(smt::TermVec assumptions, std::vector<TraverseBranchingNode> branching_point, std::vector<wasim::StateAsmpt> s_init /*={}*/){
     auto state = executor_.get_curr_state(assumptions);
+    state.print();
+    state.print_assumptions();
     StateAsmpt state_init (state); // shallow copy?
     auto reachable = tracemgr_.check_reachable(state);
     if(not reachable){
@@ -203,8 +205,9 @@ void SymbolicTraverse::traverse_one_step(smt::TermVec assumptions, std::vector<T
     cout << "Get #state: " << tracemgr_.abs_state_one_step_.size() << endl;
 
     // TODO : simplification procedure
-    for(auto abs_state_one_step : tracemgr_.abs_state_one_step_){
+    for(auto& abs_state_one_step : tracemgr_.abs_state_one_step_){
         state_simplify_xvar(abs_state_one_step, executor_.get_Xs(), solver_);
+        sygus_simplify(abs_state_one_step, executor_.get_Xs(), solver_);
     }
 
     
@@ -213,6 +216,8 @@ void SymbolicTraverse::traverse_one_step(smt::TermVec assumptions, std::vector<T
 
 void SymbolicTraverse::traverse(smt::TermVec assumptions, std::vector<TraverseBranchingNode> branching_point, std::vector<StateAsmpt> s_init /*={}*/){
     auto state = executor_.get_curr_state(assumptions);
+    state.print();
+    state.print_assumptions();
     auto reachable = tracemgr_.check_reachable(state);
     if(not reachable){
         tracemgr_.abs_state_.insert(tracemgr_.abs_state_.end(), s_init.begin(), s_init.end());
@@ -341,8 +346,9 @@ void SymbolicTraverse::traverse(smt::TermVec assumptions, std::vector<TraverseBr
     cout << "Get #state: " << tracemgr_.abs_state_.size() << endl;
 
     // TODO : simplification procedure
-    for(auto abs_state : tracemgr_.abs_state_){
+    for(auto& abs_state : tracemgr_.abs_state_){
         state_simplify_xvar(abs_state, executor_.get_Xs(), solver_);
+        sygus_simplify(abs_state, executor_.get_Xs(), solver_);
     }
 }
 } // namespace wasim

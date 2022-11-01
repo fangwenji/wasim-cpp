@@ -17,5 +17,5 @@ smt::Term expr_simplify_ite_new(smt::Term expr, smt::TermVec assumptions,       
 smt::TermVec remove_ites_under_model(const smt::SmtSolver & solver,
                                      const smt::TermVec & terms);
 
-void state_simplify_xvar(StateAsmpt s, smt::UnorderedTermSet set_of_xvar, smt::SmtSolver& solver);
+void state_simplify_xvar(StateAsmpt& s, smt::UnorderedTermSet set_of_xvar, smt::SmtSolver& solver);
 }

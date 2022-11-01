@@ -14,10 +14,63 @@ using namespace wasim;
 // using namespace smt;
 using namespace std;
 using namespace chrono;
+smt::TermVec tag2asmpt_c1(std::string flag, SymbolicExecutor & executor, smt::SmtSolver & solver){
+    smt::TermVec ret;
+    smt::Term ret_term, ret_term2;
+    smt::Term lhs, lhs2;
+    smt::Term rhs_0 = solver->make_term(0, solver->make_sort(smt::BV, 1));
+    smt::Term rhs_1 = solver->make_term(1, solver->make_sort(smt::BV, 1));
+    if(flag == "tag0_0"){
+        lhs = executor.var("stage1_go");
+        ret_term = solver->make_term(smt::Equal, lhs, rhs_0);
+        ret.push_back(ret_term);  
+    }
+    else if(flag == "tag0_1"){
+        lhs = executor.var("stage1_go");
+        ret_term = solver->make_term(smt::Equal, lhs, rhs_1);
+        ret.push_back(ret_term);
+    }
+    else if(flag == "tag1_1"){
+        lhs = executor.var("stage1_go");
+        ret_term = solver->make_term(smt::Equal, lhs, rhs_0);
+        lhs2 = executor.var("stage2_go");
+        ret_term2 = solver->make_term(smt::Equal, lhs2, rhs_0);
+        ret.push_back(ret_term);
+        ret.push_back(ret_term2);
+    }
+    else if(flag == "tag1_2"){
+        lhs = executor.var("stage2_go");
+        ret_term = solver->make_term(smt::Equal, lhs, rhs_1);
+        ret.push_back(ret_term);
+    }
+    else if(flag == "tag2_2"){
+        lhs = executor.var("stage2_go");
+        ret_term = solver->make_term(smt::Equal, lhs, rhs_0);
+        lhs2 = executor.var("stage3_go");
+        ret_term2 = solver->make_term(smt::Equal, lhs2, rhs_0);
+        ret.push_back(ret_term);
+        ret.push_back(ret_term2);
+    }
+    else if(flag == "tag2_3"){
+        lhs = executor.var("stage3_go");
+        ret_term = solver->make_term(smt::Equal, lhs, rhs_1);
+        ret.push_back(ret_term);
+    }
+    else if(flag == "tag3_3"){
+        lhs = executor.var("stage3_go");
+        ret_term = solver->make_term(smt::Equal, lhs, rhs_0);
+        ret.push_back(ret_term);
+    }
+    else{
+        cout << "<ERROR> Wrong tag transition format!" << endl;
+        assert(false);
+    }
+    return ret;
+}
 
 int main(){
     auto start = system_clock::now();
-    std::vector<std::string> base_sv = {"wen_stage1", "wen_stage2", "stage1", "stage2", "stage3"};
+    std::unordered_set<std::string> base_sv = {"wen_stage1", "wen_stage2", "stage1", "stage2", "stage3"};
     TraverseBranchingNode node0({make_pair("rst", 1)}, {});
     TraverseBranchingNode node1({}, {make_pair("stage1_go", 1)});
     TraverseBranchingNode node2({}, {make_pair("stage2_go", 1)});
@@ -54,31 +107,38 @@ int main(){
 
     // step: tag0 --> tag0
     cout << "step: tag0 --> tag0" << endl;
-    extend_branch_init(branch_list, executor, sts, base_sv, "tag0_0", order, solver);
+    auto asmpt_tag0_0 = tag2asmpt_c1("tag0_0", executor, solver);
+    extend_branch_init(branch_list, executor, sts, base_sv, "tag0_0", asmpt_tag0_0, order, solver);
 
-    // // step: tag0 --> tag1
-    // cout << "\n\n\nstep: tag0 --> tag1" << endl;
-    // extend_branch_next_phase(branch_list, executor, sts, base_sv, "tag0_1", {{"tag0",1}, {"tag1",0}, {"tag2",0}, {"tag3",0}}, order, solver);
+    // step: tag0 --> tag1
+    cout << "\n\n\nstep: tag0 --> tag1" << endl;
+     auto asmpt_tag0_1 = tag2asmpt_c1("tag0_1", executor, solver);
+    extend_branch_next_phase(branch_list, executor, sts, base_sv, "tag0_1", asmpt_tag0_1, {{"tag0",1}, {"tag1",0}, {"tag2",0}, {"tag3",0}}, order, solver);
 
-    // // step: tag1 --> tag1
-    // cout << "\n\n\nstep: tag1 --> tag1" << endl;
-    // extend_branch_same_phase(branch_list, executor, sts, base_sv, "tag1_1", {{"tag0",0}, {"tag1",1}, {"tag2",0}, {"tag3",0}}, order, solver);
+    // step: tag1 --> tag1
+    cout << "\n\n\nstep: tag1 --> tag1" << endl;
+     auto asmpt_tag1_1 = tag2asmpt_c1("tag1_1", executor, solver);
+    extend_branch_same_phase(branch_list, executor, sts, base_sv, "tag1_1", asmpt_tag1_1, {{"tag0",0}, {"tag1",1}, {"tag2",0}, {"tag3",0}}, order, solver);
 
-    // // step: tag1 --> tag2
-    // cout << "\n\n\nstep: tag1 --> tag2" << endl;
-    // extend_branch_next_phase(branch_list, executor, sts, base_sv, "tag1_2", {{"tag0",0}, {"tag1",1}, {"tag2",0}, {"tag3",0}}, order, solver);
+    // step: tag1 --> tag2
+    cout << "\n\n\nstep: tag1 --> tag2" << endl;
+     auto asmpt_tag1_2 = tag2asmpt_c1("tag1_2", executor, solver);
+    extend_branch_next_phase(branch_list, executor, sts, base_sv, "tag1_2", asmpt_tag1_2, {{"tag0",0}, {"tag1",1}, {"tag2",0}, {"tag3",0}}, order, solver);
 
-    // // step: tag2 --> tag2
-    // cout << "\n\n\nstep: tag2 --> tag2" << endl;
-    // extend_branch_same_phase(branch_list, executor, sts, base_sv, "tag2_2", {{"tag0",0}, {"tag1",0}, {"tag2",1}, {"tag3",0}}, order, solver);
+    // step: tag2 --> tag2
+    cout << "\n\n\nstep: tag2 --> tag2" << endl;
+     auto asmpt_tag2_2 = tag2asmpt_c1("tag2_2", executor, solver);
+    extend_branch_same_phase(branch_list, executor, sts, base_sv, "tag2_2", asmpt_tag2_2, {{"tag0",0}, {"tag1",0}, {"tag2",1}, {"tag3",0}}, order, solver);
 
-    // // step: tag2 --> tag3
-    // cout << "\n\n\nstep: tag2 --> tag3" << endl;
-    // extend_branch_next_phase(branch_list, executor, sts, base_sv, "tag2_3", {{"tag0",0}, {"tag1",0}, {"tag2",1}, {"tag3",0}}, order, solver);
+    // step: tag2 --> tag3
+    cout << "\n\n\nstep: tag2 --> tag3" << endl;
+     auto asmpt_tag2_3 = tag2asmpt_c1("tag2_3", executor, solver);
+    extend_branch_next_phase(branch_list, executor, sts, base_sv, "tag2_3", asmpt_tag2_3, {{"tag0",0}, {"tag1",0}, {"tag2",1}, {"tag3",0}}, order, solver);
 
-    // // step: tag3 --> tag3
-    // cout << "\n\n\nstep: tag3 --> tag3" << endl;
-    // extend_branch_same_phase(branch_list, executor, sts, base_sv, "tag3_3", {{"tag0",0}, {"tag1",0}, {"tag2",0}, {"tag3",1}}, order, solver);
+    // step: tag3 --> tag3
+    cout << "\n\n\nstep: tag3 --> tag3" << endl;
+     auto asmpt_tag3_3 = tag2asmpt_c1("tag3_3", executor, solver);
+    extend_branch_same_phase(branch_list, executor, sts, base_sv, "tag3_3", asmpt_tag3_3, {{"tag0",0}, {"tag1",0}, {"tag2",0}, {"tag3",1}}, order, solver);
 
 
     auto end = system_clock::now();
@@ -87,10 +147,7 @@ int main(){
     cout << "Program running time: " << double(duration.count())*seconds::period::num/seconds::period::den << " (s)" << endl;
 
     
-    std::string smt_file = PROJECT_SOURCE_DIR "/smtlib_result3.smt";
-    PropertyInterface pi(smt_file, map, solver);
-    auto file_sort = solver->make_sort(smt::BV, 4);
-    auto expr = pi.return_defs();
-    // auto parse = pi.register_arg(smt_file, file_sort);
-    // cout << parse->to_string() << endl;
+    // std::string smt_file = PROJECT_SOURCE_DIR "/smtlib_result3.smt";
+    // PropertyInterface pi(smt_file, solver);
+    // auto expr = pi.return_defs();
 }

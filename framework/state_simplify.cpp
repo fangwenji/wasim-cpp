@@ -115,7 +115,7 @@ smt::Term expr_simplify_ite_new(smt::Term expr, smt::TermVec assumptions, smt::S
 }
 
 
-void state_simplify_xvar(StateAsmpt s, smt::UnorderedTermSet set_of_xvar, smt::SmtSolver& solver){
+void state_simplify_xvar(StateAsmpt& s, smt::UnorderedTermSet set_of_xvar, smt::SmtSolver& solver){
     smt::TermVec eq_vec = {};
     for (auto sv: s.sv_){
         auto var = sv.first;

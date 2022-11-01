@@ -29,8 +29,8 @@ namespace wasim {
 
 void StateAsmpt::print(){
   const auto& prev_sv = this->sv_;
-  std::cout << "sv rhs" << std::endl;
-  std::cout << "-----" << std::endl;
+  // std::cout << "sv rhs" << std::endl;
+  // std::cout << "-----" << std::endl;
 
   cout << "--------------------------------" << endl;
   cout  << "| " << setiosflags(ios::left) << setw(20) << "sv"  << "| " << setw(20) << "value" << endl;

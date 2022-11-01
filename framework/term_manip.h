@@ -44,28 +44,21 @@ smt::Term free_make_symbol(const std::string & n, smt::Sort symb_sort, std::unor
 class PropertyInterface : public smt::SmtLibReader
 {
  public:
-    PropertyInterface(std::string filename, smt::UnorderedTermMap assign_map, smt::SmtSolver &solver);
+    PropertyInterface(std::string filename, smt::SmtSolver &solver);
 
     typedef SmtLibReader super;
 
-   //  smt::Term AddAssertions(const smt::Term &in) const;
+    smt::Term return_defs();
 
-   //  void AddAssumptionsToTS();
-
-//  protected:
+ protected:
     // overloaded function, used when arg list of function is parsed
     // NOTE: | |  pipe quotes are removed.
     virtual smt::Term register_arg(const std::string & name, const smt::Sort & sort) override;
 
-    smt::Term return_defs();
+    
 
     std::string filename_;
-
-    smt::UnorderedTermMap assign_map_;
     smt::SmtSolver & solver_;
-
-    smt::TermVec assertions_;
-    smt::TermVec assumptions_;
 
 };
 }
