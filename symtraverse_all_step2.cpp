@@ -111,7 +111,13 @@ int main(){
     auto svar = sts.statevars();
     for(const auto& var:svar){
         std::cout << var->to_string() << std::endl;
-    } 
+    }
+    auto bvs = solver->make_sort(smt::BV, 1);
+    auto t1 = solver->make_term(1, bvs);
+    cout << t1->to_string() << endl;
+    // auto bls = solver->make_sort(smt::BOOL, 1);
+    auto t2 = solver->make_term(1);
+    cout << t2->to_string() << endl;
     exit(1);
 
     SymbolicExecutor executor(sts, solver);

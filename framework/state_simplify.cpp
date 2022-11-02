@@ -69,9 +69,8 @@ smt::Term expr_simplify_ite_new(smt::Term expr, smt::TermVec assumptions, smt::S
     smt::UnorderedTermSet cond_set;
     std::queue<smt::Term> que;
     que.push(expr);
-    auto bool_sort = solver->make_sort(smt::BOOL);
-    auto T = solver->make_term(1, bool_sort);
-    auto F = solver->make_term(0, bool_sort);
+    auto T = solver->make_term(1);
+    auto F = solver->make_term(0);
     smt::UnorderedTermMap subst_map = {};
     while (que.size() != 0)
     {
