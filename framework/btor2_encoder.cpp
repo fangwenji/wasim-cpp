@@ -258,6 +258,7 @@ void BTOR2Encoder::parse(const std::string filename)
       linesort_ = sorts_.at(l_->sort.id);
     }
 
+
     /******************************** Gather term arguments
      * ********************************/
     termargs_.clear();
@@ -289,6 +290,7 @@ void BTOR2Encoder::parse(const std::string filename)
     if (l_->tag == BTOR2_TAG_state) {
       if (l_->symbol) {
         symbol_ = l_->symbol;
+        std::cout << "GET SV: " << l_->symbol << std::endl;
       } else {
         auto renaming_lookup_pos = state_renaming_table.find(l_->id);
         if (renaming_lookup_pos != state_renaming_table.end() )
@@ -305,6 +307,8 @@ void BTOR2Encoder::parse(const std::string filename)
       id2statenum[l_->id] = num_states;
       num_states++;
     } else if (l_->tag == BTOR2_TAG_input) {
+      if (l_->symbol)
+        std::cout << "GET INVAR: " << l_->symbol << std::endl;
       if (l_->symbol) {
         symbol_ = l_->symbol;
       } else {
@@ -350,13 +354,16 @@ void BTOR2Encoder::parse(const std::string filename)
 
       // BTOR2 allows constraints over inputs
       // in Pono these need to be promoted to state variables
-      UnorderedTermSet free_vars;
-      get_free_symbolic_consts(constraint, free_vars);
-      for (const auto & v : free_vars) {
-        if (ts_.is_input_var(v)) {
-          ts_.promote_inputvar(v);
-        }
-      }
+      // HZ: unlike Pono, our WASIM can handle the case when 
+      //     the constraint contains input variable, so no 
+      //     need to promote input variables
+      // UnorderedTermSet free_vars;
+      // get_free_symbolic_consts(constraint, free_vars);
+      // for (const auto & v : free_vars) {
+      //   if (ts_.is_input_var(v)) {
+      //     ts_.promote_inputvar(v);
+      //   }
+      // }
 
       ts_.add_constraint(constraint);
       terms_[l_->id] = constraint;
