@@ -8,9 +8,9 @@ namespace wasim
 {
 smt::UnorderedTermMap get_xvar_sub(smt::TermVec assumptions, smt::UnorderedTermSet set_of_xvar, smt::UnorderedTermSet free_var, smt::SmtSolver& solver);
 
-bool is_reducible_bool(smt::Term expr, smt::TermVec assumptions, smt::SmtSolver& solver);
+int is_reducible_bool(smt::Term expr, smt::TermVec assumptions, smt::SmtSolver& solver);
 
-bool is_reducible_bv_width1(smt::Term expr, smt::TermVec assumptions, smt::SmtSolver& solver);
+int is_reducible_bv_width1(smt::Term expr, smt::TermVec assumptions, smt::SmtSolver& solver);
 
 smt::Term expr_simplify_ite_new(smt::Term expr, smt::TermVec assumptions,       smt::SmtSolver& solver);
 

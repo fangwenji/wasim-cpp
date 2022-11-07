@@ -25,27 +25,26 @@ smt::UnorderedTermMap get_xvar_sub(smt::TermVec assumptions, smt::UnorderedTermS
     return xvar_sub;
 }
 
-bool is_reducible_bool(smt::Term expr, smt::TermVec assumptions, smt::SmtSolver& solver){
+int is_reducible_bool(smt::Term expr, smt::TermVec assumptions, smt::SmtSolver& solver){
     smt::TermVec check_vec_true (assumptions);
-    auto bool_sort = solver->make_sort(smt::BOOL);
-    smt::Term eq_expr_true = solver->make_term(smt::Equal, expr, solver->make_term(1, bool_sort));
+    smt::Term eq_expr_true = solver->make_term(smt::Equal, expr, solver->make_term(1));
     check_vec_true.push_back(eq_expr_true);
     auto r_t = solver->check_sat_assuming(check_vec_true);
 
     smt::TermVec check_vec_false (assumptions);
-    smt::Term eq_expr_false = solver->make_term(smt::Equal, expr, solver->make_term(0, bool_sort));
+    smt::Term eq_expr_false = solver->make_term(smt::Equal, expr, solver->make_term(0));
     check_vec_false.push_back(eq_expr_false);
     auto r_f = solver->check_sat_assuming(check_vec_false);
     if(not r_t.is_sat()){
-        return false;
+        return 0;
     }
     if(not r_f.is_sat()){
-        return true;
+        return 1;
     }
-    return NULL; 
+    return 2; 
 }
 
-bool is_reducible_bv_width1(smt::Term expr, smt::TermVec assumptions, smt::SmtSolver& solver){
+int is_reducible_bv_width1(smt::Term expr, smt::TermVec assumptions, smt::SmtSolver& solver){
     smt::TermVec check_vec_true (assumptions);
     auto bv_sort = solver->make_sort(smt::BV, 1);
     smt::Term eq_expr_true = solver->make_term(smt::Equal, expr, solver->make_term(1, bv_sort));
@@ -57,12 +56,12 @@ bool is_reducible_bv_width1(smt::Term expr, smt::TermVec assumptions, smt::SmtSo
     check_vec_false.push_back(eq_expr_false);
     auto r_f = solver->check_sat_assuming(check_vec_false);
     if(not r_t.is_sat()){
-        return false;
+        return 0;
     }
     if(not r_f.is_sat()){
-        return true;
+        return 1;
     }
-    return NULL; 
+    return 2; 
 }
 
 smt::Term expr_simplify_ite_new(smt::Term expr, smt::TermVec assumptions, smt::SmtSolver& solver){
@@ -138,7 +137,8 @@ void state_simplify_xvar(StateAsmpt& s, smt::UnorderedTermSet set_of_xvar, smt::
         auto var = sv.first;
         auto expr = sv.second;
         auto expr_new = solver->substitute(expr, xvar_sub);
-        s.sv_[var] = expr_simplify_ite_new(expr_new, s.asmpt_, solver);
+        auto expr_final = expr_simplify_ite_new(expr_new, s.asmpt_, solver);
+        s.sv_[var] = expr_final;
 
     }
 

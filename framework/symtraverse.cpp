@@ -127,8 +127,6 @@ bool PerStateStack::check_stack(){
 
 void SymbolicTraverse::traverse_one_step(smt::TermVec assumptions, std::vector<TraverseBranchingNode> branching_point, std::vector<wasim::StateAsmpt> s_init /*={}*/){
     auto state = executor_.get_curr_state(assumptions);
-    state.print();
-    state.print_assumptions();
     StateAsmpt state_init (state); // shallow copy?
     auto reachable = tracemgr_.check_reachable(state);
     if(not reachable){
@@ -181,7 +179,7 @@ void SymbolicTraverse::traverse_one_step(smt::TermVec assumptions, std::vector<T
             }
             cout << "<ERROR>: cannot reach a concrete state even if all choices are made. Future work." << endl;
             auto state = executor_.get_curr_state();
-            state.print();
+            // state.print();
             assert(false);
         }
 
@@ -216,8 +214,6 @@ void SymbolicTraverse::traverse_one_step(smt::TermVec assumptions, std::vector<T
 
 void SymbolicTraverse::traverse(smt::TermVec assumptions, std::vector<TraverseBranchingNode> branching_point, std::vector<StateAsmpt> s_init /*={}*/){
     auto state = executor_.get_curr_state(assumptions);
-    state.print();
-    state.print_assumptions();
     auto reachable = tracemgr_.check_reachable(state);
     if(not reachable){
         tracemgr_.abs_state_.insert(tracemgr_.abs_state_.end(), s_init.begin(), s_init.end());
@@ -302,7 +298,7 @@ void SymbolicTraverse::traverse(smt::TermVec assumptions, std::vector<TraverseBr
             }
 
             auto state = executor_.get_curr_state();
-            state.print();
+            // state.print();
             for (const auto & sv : state.sv_){
                 auto s = sv.first;
                 auto v = sv.second;

@@ -121,25 +121,25 @@ int main(){
      auto asmpt_tag1_1 = tag2asmpt_c1("tag1_1", executor, solver);
     extend_branch_same_phase(branch_list, executor, sts, base_sv, "tag1_1", asmpt_tag1_1, {{"tag0",0}, {"tag1",1}, {"tag2",0}, {"tag3",0}}, order, solver);
 
-    // step: tag1 --> tag2
-    cout << "\n\n\nstep: tag1 --> tag2" << endl;
-     auto asmpt_tag1_2 = tag2asmpt_c1("tag1_2", executor, solver);
-    extend_branch_next_phase(branch_list, executor, sts, base_sv, "tag1_2", asmpt_tag1_2, {{"tag0",0}, {"tag1",1}, {"tag2",0}, {"tag3",0}}, order, solver);
+    // // step: tag1 --> tag2
+    // cout << "\n\n\nstep: tag1 --> tag2" << endl;
+    //  auto asmpt_tag1_2 = tag2asmpt_c1("tag1_2", executor, solver);
+    // extend_branch_next_phase(branch_list, executor, sts, base_sv, "tag1_2", asmpt_tag1_2, {{"tag0",0}, {"tag1",1}, {"tag2",0}, {"tag3",0}}, order, solver);
 
-    // step: tag2 --> tag2
-    cout << "\n\n\nstep: tag2 --> tag2" << endl;
-     auto asmpt_tag2_2 = tag2asmpt_c1("tag2_2", executor, solver);
-    extend_branch_same_phase(branch_list, executor, sts, base_sv, "tag2_2", asmpt_tag2_2, {{"tag0",0}, {"tag1",0}, {"tag2",1}, {"tag3",0}}, order, solver);
+    // // step: tag2 --> tag2
+    // cout << "\n\n\nstep: tag2 --> tag2" << endl;
+    //  auto asmpt_tag2_2 = tag2asmpt_c1("tag2_2", executor, solver);
+    // extend_branch_same_phase(branch_list, executor, sts, base_sv, "tag2_2", asmpt_tag2_2, {{"tag0",0}, {"tag1",0}, {"tag2",1}, {"tag3",0}}, order, solver);
 
-    // step: tag2 --> tag3
-    cout << "\n\n\nstep: tag2 --> tag3" << endl;
-     auto asmpt_tag2_3 = tag2asmpt_c1("tag2_3", executor, solver);
-    extend_branch_next_phase(branch_list, executor, sts, base_sv, "tag2_3", asmpt_tag2_3, {{"tag0",0}, {"tag1",0}, {"tag2",1}, {"tag3",0}}, order, solver);
+    // // step: tag2 --> tag3
+    // cout << "\n\n\nstep: tag2 --> tag3" << endl;
+    //  auto asmpt_tag2_3 = tag2asmpt_c1("tag2_3", executor, solver);
+    // extend_branch_next_phase(branch_list, executor, sts, base_sv, "tag2_3", asmpt_tag2_3, {{"tag0",0}, {"tag1",0}, {"tag2",1}, {"tag3",0}}, order, solver);
 
-    // step: tag3 --> tag3
-    cout << "\n\n\nstep: tag3 --> tag3" << endl;
-     auto asmpt_tag3_3 = tag2asmpt_c1("tag3_3", executor, solver);
-    extend_branch_same_phase(branch_list, executor, sts, base_sv, "tag3_3", asmpt_tag3_3, {{"tag0",0}, {"tag1",0}, {"tag2",0}, {"tag3",1}}, order, solver);
+    // // step: tag3 --> tag3
+    // cout << "\n\n\nstep: tag3 --> tag3" << endl;
+    //  auto asmpt_tag3_3 = tag2asmpt_c1("tag3_3", executor, solver);
+    // extend_branch_same_phase(branch_list, executor, sts, base_sv, "tag3_3", asmpt_tag3_3, {{"tag0",0}, {"tag1",0}, {"tag2",0}, {"tag3",1}}, order, solver);
    
 
     auto end = system_clock::now();
@@ -147,46 +147,33 @@ int main(){
     
     cout << "Program running time: " << double(duration.count())*seconds::period::num/seconds::period::den << " (s)" << endl;
     
-    StateRW staterw(solver);
-    std::string out_dir = PROJECT_SOURCE_DIR "/output/c1/";
-    staterw.StateWriteTree(branch_list, out_dir);
+    // StateRW staterw(solver);
+    // std::string out_dir = PROJECT_SOURCE_DIR "/output/c1/";
+    // staterw.StateWriteTree(branch_list, out_dir);
 
-    auto state = branch_list[0][1];
-    state.print();
-    state.print_assumptions();
-
-    // auto branch_list_new = staterw.StateReadTree(out_dir,  6, 1);
-    auto branch_list_new = staterw.StateReadTree(out_dir, 322, 7);
-
-    cout << branch_list.size() << " -- " << branch_list[0].size() << endl;
-    cout << branch_list_new.size() << " -- " << branch_list_new[0].size() << endl;
-    
-
-
-    for(const auto& state_list:branch_list){
-        for(auto state:state_list){
-            state.print();
-            state.print_assumptions();
-        }
-    }
-
-    for(const auto& state_list:branch_list_new){
-        for(auto state:state_list){
-            state.print();
-            state.print_assumptions();
-        }
-    }
-
-
-    // int i = 2;
-    // int j = 0;
-    // std::string infile_sv = out_dir + "state_sv_" + to_string(i) + "_" + to_string(j); 
-    // std::string infile_asmpt = out_dir + "state_asmpt_" + to_string(i) + "_" + to_string(j); 
-
-    // auto state = staterw.StateRead(infile_sv, infile_asmpt);
-
+    // auto state = branch_list[0][1];
     // state.print();
     // state.print_assumptions();
 
+    // // auto branch_list_new = staterw.StateReadTree(out_dir,  6, 1);
+    // auto branch_list_new = staterw.StateReadTree(out_dir, 322, 7);
 
+    // cout << branch_list.size() << " -- " << branch_list[0].size() << endl;
+    // cout << branch_list_new.size() << " -- " << branch_list_new[0].size() << endl;
+    
+
+
+    // for(const auto& state_list:branch_list){
+    //     for(auto state:state_list){
+    //         state.print();
+    //         state.print_assumptions();
+    //     }
+    // }
+
+    // for(const auto& state_list:branch_list_new){
+    //     for(auto state:state_list){
+    //         state.print();
+    //         state.print_assumptions();
+    //     }
+    // }
 }

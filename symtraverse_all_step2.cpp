@@ -38,6 +38,7 @@ smt::TermVec tag2asmpt_c2(std::string flag, SymbolicExecutor & executor, smt::Sm
         ret.push_back(ret_term1);
         lhs2 = executor.var("RTL_ex_go");
         ret_term2 = solver->make_term(smt::Equal, lhs2, rhs_0);
+        cout << "ret_term2:" << ret_term2 << endl; 
         ret.push_back(ret_term2);
     }
     else if(flag == "ex-wb"){
@@ -82,7 +83,7 @@ smt::TermVec tag2asmpt_c2(std::string flag, SymbolicExecutor & executor, smt::Sm
 
 int main(){
     auto start = system_clock::now();
-    std::unordered_set<std::string> base_sv = {"RTL_id_ex_operand1","RTL_id_ex_operand2","RTL_id_ex_op","RTL_id_ex_rd","RTL_id_ex_reg_wen","RTL_ex_wb_val","RTL_ex_wb_rd","RTL_ex_wb_reg_wen","RTL_id_ex_valid","RTL_ex_wb_valid",\
+    std::unordered_set<std::string> base_sv = {"RTL_id_ex_operand1","RTL_id_ex_operand2","RTL_id_ex_op","RTL_id_ex_rd","RTL_id_ex_reg_wen","RTL_id_ex_valid","RTL_ex_wb_val","RTL_ex_wb_rd","RTL_ex_wb_reg_wen","RTL_ex_wb_valid",\
     "RTL_registers[0]","RTL_registers[1]","RTL_registers[2]","RTL_registers[3]",\
       "RTL_scoreboard[0]","RTL_scoreboard[1]","RTL_scoreboard[2]","RTL_scoreboard[3]",\
         "__VLG_I_inst", "__VLG_I_inst_valid"};
@@ -182,45 +183,35 @@ int main(){
     // step: start-ex
     cout << "step: start --> ex" << endl;
     auto asmpt_start_ex = tag2asmpt_c2("start-ex", executor, solver);
-    extend_branch_next_phase(branch_list, executor, sts, base_sv, "start-ex", asmpt_start_ex, {{"__START__", 1}, {"ppl_stage_ex", 0}, {"ppl_stage_wb", 0}, {"ppl_stage_finish", 0}}
-, order, solver);
+    extend_branch_next_phase(branch_list, executor, sts, base_sv, "start-ex", asmpt_start_ex, {{"__START__", 1}, {"ppl_stage_ex", 0}, {"ppl_stage_wb", 0}, {"ppl_stage_finish", 0}}, \
+ order, solver);
 
     cout << "step: ex --> ex" << endl;
     auto asmpt_ex_ex = tag2asmpt_c2("ex-ex", executor, solver);
-    extend_branch_same_phase(branch_list, executor, sts, base_sv, "ex-ex", asmpt_start_ex, {{"__START__", 0}, {"ppl_stage_ex", 1}, {"ppl_stage_wb", 0}, {"ppl_stage_finish", 0}}
-, order, solver);
+    extend_branch_same_phase(branch_list, executor, sts, base_sv, "ex-ex", asmpt_ex_ex, {{"__START__", 0}, {"ppl_stage_ex", 1}, {"ppl_stage_wb", 0}, {"ppl_stage_finish", 0}}, \
+ order, solver);
 
+    cout << "step: ex --> wb" << endl;
+    auto asmpt_ex_wb = tag2asmpt_c2("ex-wb", executor, solver);
+    std::unordered_set<std::string> base_sv_wb = {"RTL_ex_wb_val","RTL_ex_wb_rd","RTL_ex_wb_reg_wen","RTL_ex_wb_valid",\
+    "RTL_registers[0]","RTL_registers[1]","RTL_registers[2]","RTL_registers[3]"};
+    extend_branch_next_phase(branch_list, executor, sts, base_sv_wb, "ex-wb", asmpt_ex_wb, {{"__START__", 0}, {"ppl_stage_ex", 1}, {"ppl_stage_wb", 0}, {"ppl_stage_finish", 0}}, \
+ order, solver);
 
-/*
-    // step: tag1 --> tag1
-    cout << "\n\n\nstep: tag1 --> tag1" << endl;
-    extend_branch_same_phase(branch_list, executor, sts, base_sv, "tag1_1", {{"tag0",0}, {"tag1",1}, {"tag2",0}, {"tag3",0}}, order, solver);
+    cout << "step: wb --> wb" << endl;
+    auto asmpt_wb_wb = tag2asmpt_c2("wb-wb", executor, solver);
+    extend_branch_same_phase(branch_list, executor, sts, base_sv_wb, "wb-wb", asmpt_wb_wb, {{"__START__", 0}, {"ppl_stage_ex", 0}, {"ppl_stage_wb", 1}, {"ppl_stage_finish", 0}}, \
+ order, solver);
 
-    // step: tag1 --> tag2
-    cout << "\n\n\nstep: tag1 --> tag2" << endl;
-    extend_branch_next_phase(branch_list, executor, sts, base_sv, "tag1_2", {{"tag0",0}, {"tag1",1}, {"tag2",0}, {"tag3",0}}, order, solver);
-
-    // step: tag2 --> tag2
-    cout << "\n\n\nstep: tag2 --> tag2" << endl;
-    extend_branch_same_phase(branch_list, executor, sts, base_sv, "tag2_2", {{"tag0",0}, {"tag1",0}, {"tag2",1}, {"tag3",0}}, order, solver);
-
-    // step: tag2 --> tag3
-    cout << "\n\n\nstep: tag2 --> tag3" << endl;
-    extend_branch_next_phase(branch_list, executor, sts, base_sv, "tag2_3", {{"tag0",0}, {"tag1",0}, {"tag2",1}, {"tag3",0}}, order, solver);
-
-    // step: tag3 --> tag3
-    cout << "\n\n\nstep: tag3 --> tag3" << endl;
-    extend_branch_same_phase(branch_list, executor, sts, base_sv, "tag3_3", {{"tag0",0}, {"tag1",0}, {"tag2",0}, {"tag3",1}}, order, solver);
-
+    cout << "step: ex --> finish" << endl;
+    auto asmpt_wb_finish = tag2asmpt_c2("wb-finish", executor, solver);
+    std::unordered_set<std::string> base_sv_finish = {"RTL_registers[0]","RTL_registers[1]","RTL_registers[2]","RTL_registers[3]"};
+    extend_branch_next_phase(branch_list, executor, sts, base_sv_finish, "wb-finish", asmpt_wb_finish, {{"__START__", 0}, {"ppl_stage_ex", 0}, {"ppl_stage_wb", 1}, {"ppl_stage_finish", 0}}, \
+ order, solver);
 
     auto end = system_clock::now();
     auto duration = duration_cast<seconds>(end-start);
 
     cout << "Program running time: " << double(duration.count())*seconds::period::num/seconds::period::den << " (s)" << endl;
 
-    
-    // std::string smt_file = PROJECT_SOURCE_DIR "/smtlib_result3.smt";
-    // PropertyInterface pi(smt_file, solver);
-    // auto expr = pi.return_defs();
-    */
 }

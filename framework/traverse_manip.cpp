@@ -38,8 +38,8 @@ void extend_branch_next_phase(std::vector<std::vector<StateAsmpt>>& branch_list,
         }
         std::swap(s.sv_, d);
         s.sv_.insert(d.begin(),d.end()); // for the same variable, d will overwrite s
-        s.print();
-        s.print_assumptions();
+        // s.print();
+        // s.print_assumptions();
         executor_temp.set_current_state(s);
         smt::UnorderedTermSet base_variable;
         for (const auto n : base_sv){
