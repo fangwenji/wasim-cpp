@@ -1,0 +1,11 @@
+| sv                  | value               
+--------------------------------
+| stage2              | (ite (= #b1 (bvand v1 (bvand (bvnot stall2inX18) (bvnot (bvand v2 stall3inX18))))) (bvadd #b0001 (bvmul #b0010 a)) b)
+| wen_stage1          | (bvnot (bvand stall1inX18 (bvnot (bvand v1 (bvnot (bvand (bvnot stall2inX18) (bvnot (bvand v2 stall3inX18))))))))
+| wen_stage2          | (let (($e1 (bvand v2 stall3inX18))) (bvnot (bvand (bvnot $e1) (bvnot (bvand v1 (bvand (bvnot stall2inX18) (bvnot $e1)))))))
+| stage1              | (ite (= #b1 (bvand (bvnot stall1inX18) (bvnot (bvand v1 (bvnot (bvand (bvnot stall2inX18) (bvnot (bvand v2 stall3inX18)))))))) (ite (= #b1 v1) (bvadd #b0001 (bvmul #b0010 a)) (ite (= #b1 v2) b c)) a)
+| stage3              | (ite (= #b1 (bvand v2 (bvnot stall3inX18))) b c)
+
+
+stage2: ((v1 & (!stall2inX18) & !(v2 & stall3inX18)) =1) ? (2a+1) : b
+wen_stage1: (! (stall1inX18 & !(v1 & !(!stall2inX18 & !(v2 & stall3inX18)))))

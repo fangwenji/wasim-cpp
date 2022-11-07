@@ -5789,3 +5789,13 @@ Get #state: 1
 number of state tag3_3: 1-> 1
 number of state tag3_3 in total: 120 --> 345
 Program running time: 573 (s)
+
+
+
+number of state tag0_0 in total: 0 --> 6
+number of state tag0_1 in total: 6 --> 10
+number of state tag1_1 in total: 10 --> 15
+number of state tag1_2 in total: 15 --> 30
+number of state tag2_2 in total: 30 --> 45
+number of state tag2_3 in total: 45 --> 120
+number of state tag3_3 in total: 120 --> 345

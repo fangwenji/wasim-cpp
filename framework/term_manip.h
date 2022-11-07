@@ -27,6 +27,10 @@
 #include <iterator>
 #include <algorithm>
 #include <variant>
+#include <fstream>
+#include <regex>
+#include "math.h"
+
 
 using namespace std;
 
@@ -61,4 +65,27 @@ class PropertyInterface : public smt::SmtLibReader
     smt::SmtSolver & solver_;
 
 };
+
+class StateRW{
+public:
+   StateRW(smt::SmtSolver & s){
+      this->solver_ = s;
+   }
+
+   void StateWrite(wasim::StateAsmpt state, std::string outfile_sv, std::string outfile_asmpt);
+   StateAsmpt StateRead(std::string infile_sv, std::string infile_asmpt);
+   void write_single_term(std::string outfile, smt::Term expr);
+   void write_term(std::string outfile, smt::Term expr);
+   void write_string(std::string outfile, std::string asmpt_interp);
+   bool is_bv_const(smt::Term expr);
+   smt::Term str2bvnum(std::string int_num);
+   void StateWriteTree(std::vector<std::vector<StateAsmpt>> branch_list, std::string out_dir);
+   std::vector<std::vector<StateAsmpt>> StateReadTree(std::string in_dir, int i, int j);
+
+private:
+   smt::SmtSolver solver_;
+   
+};
+
+void getFileNames(string path, vector<string>& files);
 }

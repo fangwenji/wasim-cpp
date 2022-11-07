@@ -118,7 +118,7 @@ int main(){
     // auto bls = solver->make_sort(smt::BOOL, 1);
     auto t2 = solver->make_term(1);
     cout << t2->to_string() << endl;
-    exit(1);
+
 
     SymbolicExecutor executor(sts, solver);
 
@@ -184,6 +184,13 @@ int main(){
     auto asmpt_start_ex = tag2asmpt_c2("start-ex", executor, solver);
     extend_branch_next_phase(branch_list, executor, sts, base_sv, "start-ex", asmpt_start_ex, {{"__START__", 1}, {"ppl_stage_ex", 0}, {"ppl_stage_wb", 0}, {"ppl_stage_finish", 0}}
 , order, solver);
+
+    cout << "step: ex --> ex" << endl;
+    auto asmpt_ex_ex = tag2asmpt_c2("ex-ex", executor, solver);
+    extend_branch_same_phase(branch_list, executor, sts, base_sv, "ex-ex", asmpt_start_ex, {{"__START__", 0}, {"ppl_stage_ex", 1}, {"ppl_stage_wb", 0}, {"ppl_stage_finish", 0}}
+, order, solver);
+
+
 /*
     // step: tag1 --> tag1
     cout << "\n\n\nstep: tag1 --> tag1" << endl;
