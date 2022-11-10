@@ -88,4 +88,8 @@ private:
 };
 
 void getFileNames(string path, vector<string>& files);
+
+smt::Term TermTransfer(smt::Term expr, smt::SmtSolver& solver_old, smt::SmtSolver& solver_new);
+StateAsmpt StateTransfer(wasim::StateAsmpt state, smt::SmtSolver& solver_old, smt::SmtSolver& solver_new);
+smt::UnorderedTermSet SetTransfer(smt::UnorderedTermSet expr_set, smt::SmtSolver& solver_old, smt::SmtSolver& solver_new);
 }

@@ -1,6 +1,7 @@
 #pragma once
-#include "../deps/smt-switch/local/include/smt-switch/boolector_factory.h"
-#include "../deps/smt-switch/local/include/smt-switch/smt.h"
+#include "smt-switch/boolector_factory.h"
+#include "smt-switch/smt.h"
+#include "smt-switch/cvc5_factory.h"
 #include "term_manip.h"
 #include "ts.h"
 #include <variant>

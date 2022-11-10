@@ -51,9 +51,9 @@ parsed_info parse_state(StateAsmpt state, smt::Term v, smt::SmtSolver& solver);
 
 smt::Term run_sygus(parsed_info info, smt::UnorderedTermSet set_of_xvar, smt::SmtSolver& solver);
 
-smt::TermVec child_vec_simplify(smt::TermVec child_vec, StateAsmpt state, smt::UnorderedTermSet set_of_xvar, smt::SmtSolver& solver, smt::SmtSolver& solver_cvc5);
+smt::TermVec child_vec_simplify(smt::TermVec child_vec, StateAsmpt state, smt::UnorderedTermSet set_of_xvar, smt::SmtSolver& solver);
 
-smt::Term structure_simplify(smt::Term v_btor, StateAsmpt state_btor, smt::UnorderedTermSet set_of_xvar_btor, smt::SmtSolver& solver, smt::SmtSolver& solver_cvc5);
+smt::Term structure_simplify(smt::Term v, StateAsmpt state, smt::UnorderedTermSet set_of_xvar, smt::SmtSolver& solver);
 
 void sygus_simplify(StateAsmpt& state, smt::UnorderedTermSet set_of_xvar, smt::SmtSolver& solver);
 

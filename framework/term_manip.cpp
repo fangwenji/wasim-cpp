@@ -336,6 +336,59 @@ std::vector<std::vector<StateAsmpt>> StateRW::StateReadTree(std::string in_dir, 
 
 }
 
+smt::Term TermTransfer(smt::Term expr, smt::SmtSolver& solver_old, smt::SmtSolver& solver_new){
+    smt::TermTranslator tt(solver_new);
+    auto expr_new = tt.transfer_term(expr);
 
+    return expr_new;
+}
+
+StateAsmpt StateTransfer(wasim::StateAsmpt state, smt::SmtSolver& solver_old, smt::SmtSolver& solver_new){
+    smt::UnorderedTermMap sv_new = {};
+    smt::TermVec asmpt_vec_new = {};
+    for(const auto& sv:state.sv_){
+        auto var = sv.first;
+        auto value = sv.second;
+
+        auto var_new = TermTransfer(var, solver_old, solver_new);
+        auto value_new = TermTransfer(value, solver_old, solver_new);
+        sv_new[var_new] = value_new;
+    }
+
+    for(const auto& asmpt:state.asmpt_){
+        auto asmpt_new = TermTransfer(asmpt, solver_old, solver_new);
+        smt::Term asmpt_expr;
+        if(asmpt_new->get_sort()->get_sort_kind() == smt::BV){
+            // convert bitvector 1 term to boolean term
+            cout << "\n\n" << asmpt_new->to_string() << endl;
+            auto bvs = solver_new->make_sort(smt::BV, 1);
+            smt::TermVec ite_term = {solver_new->make_term(smt::Equal, asmpt_new, solver_new->make_term(1, bvs)), solver_new->make_term(1), solver_new->make_term(0)};
+            auto asmpt_temp = solver_new->make_term(smt::Ite, ite_term);
+            cout << "\n\n" << asmpt_temp->to_string() << endl;
+            asmpt_expr = asmpt_temp;
+        }
+        else{
+            asmpt_expr = asmpt_new;
+        }
+        
+        asmpt_vec_new.push_back(asmpt_expr);
+    }
+
+    StateAsmpt state_ret(sv_new, asmpt_vec_new, state.assumption_interp_);
+
+    return state_ret;
+
+
+}
+
+smt::UnorderedTermSet SetTransfer(smt::UnorderedTermSet expr_set, smt::SmtSolver& solver_old, smt::SmtSolver& solver_new){
+    smt::UnorderedTermSet expr_set_new = {};
+    for(const auto& expr:expr_set){
+        auto expr_new = TermTransfer(expr, solver_old, solver_new);
+        expr_set.insert(expr_new);
+    }
+
+    return expr_set_new;
+}
     
 } // namespace wasim

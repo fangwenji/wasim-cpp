@@ -34,7 +34,14 @@ std::string GetTimeStamp()
 
 
 parsed_info parse_state(StateAsmpt state, smt::Term v, smt::SmtSolver& solver){
-    auto asmpt_and = solver->make_term(smt::And, state.asmpt_);
+    smt::SmtSolver solver_cvc5 = smt::Cvc5SolverFactory::create(false);
+    solver_cvc5->set_logic("QF_BV");
+    solver_cvc5->set_opt("produce-models", "true");
+    solver_cvc5->set_opt("incremental", "true");
+    auto asmpt_and_btor = solver->make_term(smt::And, state.asmpt_);
+    // auto asmpt_and_cvc5 = TermTransfer(asmpt_and_btor, solver, solver_cvc5);
+    // auto asmpt_and = TermTransfer(asmpt_and_cvc5, solver_cvc5, solver);
+    auto asmpt_and = asmpt_and_btor;
     auto free_var_asmpt = get_free_variables(asmpt_and);
     auto Fun = v;
     auto free_var = get_free_variables(v);
@@ -155,15 +162,15 @@ smt::Term run_sygus(parsed_info info, smt::UnorderedTermSet set_of_xvar, smt::Sm
     return new_expr;
 }
 
-smt::TermVec child_vec_simplify(smt::TermVec child_vec, StateAsmpt state, smt::UnorderedTermSet set_of_xvar, smt::SmtSolver& solver, smt::SmtSolver& solver_cvc5){
+smt::TermVec child_vec_simplify(smt::TermVec child_vec, StateAsmpt state, smt::UnorderedTermSet set_of_xvar, smt::SmtSolver& solver){
     smt::TermVec child_new_vec = {};
     for(auto child : child_vec){
         if(expr_contians_X(child, set_of_xvar)){
-            auto expr_info = parse_state(state, child, solver_cvc5);
+            auto expr_info = parse_state(state, child, solver);
             smt::Term new_expr_part;
-            new_expr_part = run_sygus(expr_info, set_of_xvar, solver_cvc5);
+            new_expr_part = run_sygus(expr_info, set_of_xvar, solver);
             if(new_expr_part->to_string() == "no_file"){
-                new_expr_part = structure_simplify(child, state, set_of_xvar, solver, solver_cvc5);
+                new_expr_part = structure_simplify(child, state, set_of_xvar, solver);
             }
             child = new_expr_part;
         }
@@ -172,24 +179,24 @@ smt::TermVec child_vec_simplify(smt::TermVec child_vec, StateAsmpt state, smt::U
     return child_new_vec;
 }
 
-smt::Term structure_simplify(smt::Term v_btor, StateAsmpt state_btor, smt::UnorderedTermSet set_of_xvar_btor, smt::SmtSolver& solver, smt::SmtSolver& solver_cvc5){
-    auto v = TermTransfer(v_btor, solver, solver_cvc5);
-    auto state = StateTransfer(state_btor, solver, solver_cvc5);
-    auto set_of_xvar = SetTransfer(set_of_xvar_btor, solver, solver_cvc5);
+smt::Term structure_simplify(smt::Term v, StateAsmpt state, smt::UnorderedTermSet set_of_xvar, smt::SmtSolver& solver){
+    // auto v = TermTransfer(v_btor, solver, solver);
+    // auto state = StateTransfer(state_btor, solver, solver);
+    // auto set_of_xvar = SetTransfer(set_of_xvar_btor, solver, solver);
 
 
     auto child_vec = args(v);
-    auto child_new_vec = child_vec_simplify(child_vec, state, set_of_xvar, solver, solver_cvc5);
+    auto child_new_vec = child_vec_simplify(child_vec, state, set_of_xvar, solver);
     smt::Term new_expr;
     if((v->get_op() == smt::Ite) && (child_vec.size() == 3)){
-        new_expr = solver_cvc5->make_term(smt::Ite, child_new_vec);
+        new_expr = solver->make_term(smt::Ite, child_new_vec);
         cout << "ite!" << endl;
         exit(1);
     }
     // else if
     else{
-        auto expr_info = parse_state(state, v, solver_cvc5);
-        new_expr = run_sygus(expr_info, set_of_xvar, solver_cvc5);
+        auto expr_info = parse_state(state, v, solver);
+        new_expr = run_sygus(expr_info, set_of_xvar, solver);
         cout << "direct" << endl;
         // exit(1);
         if(new_expr->to_string() == "no_file"){
@@ -199,21 +206,17 @@ smt::Term structure_simplify(smt::Term v_btor, StateAsmpt state_btor, smt::Unord
             exit(1);
         }
     }
-    auto new_expr_btor = TermTransfer(new_expr, solver_cvc5, solver);
+    auto new_expr_btor = TermTransfer(new_expr, solver, solver);
 
     return new_expr_btor;
 }
 
 void sygus_simplify(StateAsmpt& state, smt::UnorderedTermSet set_of_xvar, smt::SmtSolver& solver){
-    smt::SmtSolver solver_cvc5 = smt::Cvc5SolverFactory::create(false);
-    solver_cvc5->set_logic("QF_BV");
-    solver_cvc5->set_opt("produce-models", "true");
-    solver_cvc5->set_opt("incremental", "true");
     for(auto sv : state.sv_){
         auto s = sv.first;
         auto v = sv.second;
         if (expr_contians_X(v, set_of_xvar)){
-            auto new_expr = structure_simplify(v, state, set_of_xvar, solver, solver_cvc5);
+            auto new_expr = structure_simplify(v, state, set_of_xvar, solver);
             // smt::UnorderedTermMap new_sv_map = {s, new_expr};
             state.sv_.insert_or_assign(s, new_expr);
         }
