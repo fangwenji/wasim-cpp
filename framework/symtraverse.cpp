@@ -344,7 +344,7 @@ void SymbolicTraverse::traverse(smt::TermVec assumptions, std::vector<TraverseBr
     // TODO : simplification procedure
     for(auto& abs_state : tracemgr_.abs_state_){
         state_simplify_xvar(abs_state, executor_.get_Xs(), solver_);
-        sygus_simplify(abs_state, executor_.get_Xs(), solver_);
+        // sygus_simplify(abs_state, executor_.get_Xs(), solver_);
     }
 }
 } // namespace wasim

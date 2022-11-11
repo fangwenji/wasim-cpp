@@ -63,6 +63,10 @@ smt::Term run_sygus(parsed_info info, smt::UnorderedTermSet set_of_xvar, smt::Sm
     auto line1 = "(set-logic BV)\n\n\n(synth-fun FunNew \n   (";
     f << line1 << endl;
 
+    // for(auto xvar:set_of_xvar){
+    //     cout << xvar->to_string();
+    // }
+    // cout << endl;
     for(const auto& var : free_var){
         if(set_of_xvar.find(var) == set_of_xvar.end()){
             auto line2 = "    (" + var->to_string() + " " + var->get_sort()->to_string() + " )";
@@ -183,14 +187,17 @@ smt::Term structure_simplify(smt::Term v_btor, StateAsmpt state_btor, smt::Unord
     smt::Term new_expr;
     if((v->get_op() == smt::Ite) && (child_vec.size() == 3)){
         new_expr = solver_cvc5->make_term(smt::Ite, child_new_vec);
-        cout << "ite!" << endl;
-        exit(1);
+        // cout << "ite!" << endl;
+        // exit(1);
+    }
+    else if((v->get_op() == smt::BVNot) && (child_vec.size() == 2)){
+        new_expr = solver_cvc5->make_term(smt::BVNot, child_new_vec);
     }
     // else if
     else{
         auto expr_info = parse_state(state, v, solver_cvc5);
         new_expr = run_sygus(expr_info, set_of_xvar, solver_cvc5);
-        cout << "direct" << endl;
+        // cout << "direct" << endl;
         // exit(1);
         if(new_expr->to_string() == "no_file"){
             cout << "new structure?\n" << v->to_string() << endl;

@@ -1,0 +1,37 @@
+(set-logic BV)
+
+
+(synth-fun FunNew 
+   (
+    (v1 (_ BitVec 1) )
+   )
+   (_ BitVec 1)
+  )
+
+
+
+(declare-var stall3inX18 (_ BitVec 1))
+(declare-var stall2inX18 (_ BitVec 1))
+(declare-var v2 (_ BitVec 1))
+(declare-var v1 (_ BitVec 1))
+(declare-var stall1inX18 (_ BitVec 1))
+(declare-var b (_ BitVec 4))
+(declare-var tag31 (_ BitVec 1))
+(declare-var reg_v1 (_ BitVec 4))
+(declare-var tag21 (_ BitVec 1))
+(declare-var c (_ BitVec 4))
+(declare-var tag01 (_ BitVec 1))
+(declare-var tag11 (_ BitVec 1))
+
+(constraint (=> 
+    (and (ite (= (bvand (bvnot tag11) (bvand tag01 (bvand (bvnot tag21) (bvnot tag31)))) (_ bv1 1)) true false) (not (and (= tag21 (_ bv1 1)) (not (= c reg_v1)))) (ite (= (bvnot (bvand (bvnot stall1inX18) (bvnot (bvand v1 (bvnot (bvand (bvnot stall2inX18) (bvnot (bvand v2 stall3inX18)))))))) (_ bv1 1)) true false) (ite (= (bvnot (bvand v1 (bvand (bvnot stall2inX18) (bvnot (bvand v2 stall3inX18))))) (_ bv1 1)) true false) (ite (= (bvand v2 (bvnot stall3inX18)) (_ bv1 1)) true false) (ite (= (bvnot (bvand (bvnot stall1inX18) (bvnot (bvand v1 (bvnot (bvand (bvnot stall2inX18) (bvnot (bvand v2 stall3inX18)))))))) (_ bv1 1)) true false) (not (and (= (bvand (bvnot (bvand (bvnot tag11) (bvand v1 (bvand (bvnot stall2inX18) (bvnot (bvand v2 stall3inX18)))))) (bvnot (bvand (bvnot (bvand v1 (bvand (bvnot stall2inX18) (bvnot (bvand v2 stall3inX18))))) (bvnot (bvand tag21 (bvnot (bvand v2 (bvnot stall3inX18)))))))) (_ bv1 1)) (not (= reg_v1 (ite (= (bvand v2 (bvnot stall3inX18)) (_ bv1 1)) b c)))))) ;
+
+    (=
+        (bvand stall1inX18 (bvnot (bvand v1 stall2inX18))) ;
+        (FunNew v1 ) ;
+    )))
+
+
+;
+
+(check-synth)

@@ -20,6 +20,9 @@ void extend_branch_init(std::vector<std::vector<StateAsmpt>>& branch_list, Symbo
         state_vec_extend.push_back(nextstate);
         branch_list.push_back(state_vec_extend);
         nextstate.print();
+        if(nextstate.is_contain_x(executor.get_Xs())){
+            assert(false);
+        }
         // nextstate.print_assumptions();
     }
     cout << "number of state " << flag << " in total: " << branch_list_old.size() << " --> " << branch_list.size() << endl;

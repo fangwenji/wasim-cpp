@@ -110,30 +110,30 @@ int main(){
     auto asmpt_tag0_0 = tag2asmpt_c1("tag0_0", executor, solver);
     extend_branch_init(branch_list, executor, sts, base_sv, "tag0_0", asmpt_tag0_0, order, solver);
     
-    cout << "\n\n\n\n ========== state test ============" << endl;
-    std::vector<StateAsmpt> state_vec_temp = {};
-    for(auto state_vec:branch_list){
-        for(auto state:state_vec){
-            state_vec_temp.push_back(state);
-        }
-    }
+    // cout << "\n\n\n\n ========== state test ============" << endl;
+    // std::vector<StateAsmpt> state_vec_temp = {};
+    // for(auto state_vec:branch_list){
+    //     for(auto state:state_vec){
+    //         state_vec_temp.push_back(state);
+    //     }
+    // }
 
-    auto state_test = state_vec_temp.at(1);
-    state_test.print();
-    state_test.print_assumptions();
-    smt::SmtSolver solver_cvc5 = smt::Cvc5SolverFactory::create(false);
-    solver_cvc5->set_logic("QF_BV");
-    solver_cvc5->set_opt("produce-models", "true");
-    solver_cvc5->set_opt("incremental", "true");
-    auto state_new = StateTransfer(state_test, solver, solver_cvc5);
-    state_new.print();
-    state_new.print_assumptions();
+    // auto state_test = state_vec_temp.at(1);
+    // state_test.print();
+    // state_test.print_assumptions();
+    // smt::SmtSolver solver_cvc5 = smt::Cvc5SolverFactory::create(false);
+    // solver_cvc5->set_logic("QF_BV");
+    // solver_cvc5->set_opt("produce-models", "true");
+    // solver_cvc5->set_opt("incremental", "true");
+    // auto state_new = StateTransfer(state_test, solver, solver_cvc5);
+    // state_new.print();
+    // state_new.print_assumptions();
 
-    auto asmpt_old = solver->make_term(smt::BVAnd, state_test.asmpt_); 
-    cout << "\n\n" << asmpt_old->to_string() << endl;
-    auto asmpt_new = solver_cvc5->make_term(smt::And, state_new.asmpt_);
+    // auto asmpt_old = solver->make_term(smt::BVAnd, state_test.asmpt_); 
+    // cout << "\n\n" << asmpt_old->to_string() << endl;
+    // auto asmpt_new = solver_cvc5->make_term(smt::And, state_new.asmpt_);
 
-    cout << "\n\n\n\n ========== state test end ============" << endl;
+    // cout << "\n\n\n\n ========== state test end ============" << endl;
 
     
     // step: tag0 --> tag1

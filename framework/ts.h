@@ -23,6 +23,7 @@
 #include "smt-switch/smt.h"
 
 #include "utils/exceptions.h"
+// #include "framework/term_manip.h"
 
 #include <iostream>
 #include <map>
@@ -30,6 +31,9 @@
 #include <iomanip>
 
 namespace wasim {
+
+smt::TermVec args(const smt::Term & term);
+smt::UnorderedTermSet get_free_variables(const smt::Term & term);
 
 class StateAsmpt
 {
@@ -42,6 +46,7 @@ public:
 
   void print();
   void print_assumptions();
+  bool is_contain_x(smt::UnorderedTermSet set_of_Xvar);
 
   smt::UnorderedTermMap sv_;
   smt::TermVec asmpt_;

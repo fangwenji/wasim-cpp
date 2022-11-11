@@ -2,37 +2,37 @@
 
 namespace wasim{
     
-smt::TermVec args(const smt::Term & term){
-    smt::TermVec arg_vec;
-    for(auto pos = term->begin(); pos != term->end(); ++pos)
-        arg_vec.push_back(*pos);
+// smt::TermVec args(const smt::Term & term){
+//     smt::TermVec arg_vec;
+//     for(auto pos = term->begin(); pos != term->end(); ++pos)
+//         arg_vec.push_back(*pos);
     
-    return arg_vec;
-}
+//     return arg_vec;
+// }
 
-smt::UnorderedTermSet get_free_variables(const smt::Term & term){
-    smt::UnorderedTermSet free_var;
-    smt::TermVec search_stack;
-    if(term->is_symbol()){
-        free_var.insert(term);
-    }
-    else{ // DFS
-        search_stack.push_back(term);
-        while (search_stack.size() != 0)
-        {
-            auto node = search_stack.back();
-            search_stack.pop_back();
-            if(node->is_symbol()){ // check
-                free_var.insert(node);
-            }
-            auto children_vec = args(node);
-            std::reverse(std::begin(children_vec), std::end(children_vec));
-            search_stack.insert(search_stack.end(), children_vec.begin(), children_vec.end());
-        }
+// smt::UnorderedTermSet get_free_variables(const smt::Term & term){
+//     smt::UnorderedTermSet free_var;
+//     smt::TermVec search_stack;
+//     if(term->is_symbol()){
+//         free_var.insert(term);
+//     }
+//     else{ // DFS
+//         search_stack.push_back(term);
+//         while (search_stack.size() != 0)
+//         {
+//             auto node = search_stack.back();
+//             search_stack.pop_back();
+//             if(node->is_symbol()){ // check
+//                 free_var.insert(node);
+//             }
+//             auto children_vec = args(node);
+//             std::reverse(std::begin(children_vec), std::end(children_vec));
+//             search_stack.insert(search_stack.end(), children_vec.begin(), children_vec.end());
+//         }
         
-    }
-    return free_var;
-}
+//     }
+//     return free_var;
+// }
 
 smt::Term free_make_symbol(const std::string & n, smt::Sort symb_sort, std::unordered_map<std::string, int>& name_cnt, smt::SmtSolver& solver){
     int cnt;
@@ -360,11 +360,9 @@ StateAsmpt StateTransfer(wasim::StateAsmpt state, smt::SmtSolver& solver_old, sm
         smt::Term asmpt_expr;
         if(asmpt_new->get_sort()->get_sort_kind() == smt::BV){
             // convert bitvector 1 term to boolean term
-            cout << "\n\n" << asmpt_new->to_string() << endl;
             auto bvs = solver_new->make_sort(smt::BV, 1);
             smt::TermVec ite_term = {solver_new->make_term(smt::Equal, asmpt_new, solver_new->make_term(1, bvs)), solver_new->make_term(1), solver_new->make_term(0)};
             auto asmpt_temp = solver_new->make_term(smt::Ite, ite_term);
-            cout << "\n\n" << asmpt_temp->to_string() << endl;
             asmpt_expr = asmpt_temp;
         }
         else{
@@ -385,9 +383,9 @@ smt::UnorderedTermSet SetTransfer(smt::UnorderedTermSet expr_set, smt::SmtSolver
     smt::UnorderedTermSet expr_set_new = {};
     for(const auto& expr:expr_set){
         auto expr_new = TermTransfer(expr, solver_old, solver_new);
-        expr_set.insert(expr_new);
+        expr_set_new.insert(expr_new);
     }
-
+    assert(expr_set.size() == expr_set_new.size());
     return expr_set_new;
 }
     

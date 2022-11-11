@@ -79,7 +79,7 @@ smt::Term expr_simplify_ite_new(smt::Term expr, smt::TermVec assumptions, smt::S
             auto childern = args(node);
             auto cond = childern.at(0);
             if(cond_set.find(cond) == cond_set.end()){
-                auto reducible = is_reducible_bool(cond, assumptions, solver);
+                auto reducible = is_reducible_bv_width1(cond, assumptions, solver);
                 if(reducible == 0){
                     cond_set.insert(cond);
                     subst_map[cond] = F;
