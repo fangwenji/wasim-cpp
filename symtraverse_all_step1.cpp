@@ -109,62 +109,36 @@ int main(){
     cout << "step: tag0 --> tag0" << endl;
     auto asmpt_tag0_0 = tag2asmpt_c1("tag0_0", executor, solver);
     extend_branch_init(branch_list, executor, sts, base_sv, "tag0_0", asmpt_tag0_0, order, solver);
-    
-    // cout << "\n\n\n\n ========== state test ============" << endl;
-    // std::vector<StateAsmpt> state_vec_temp = {};
-    // for(auto state_vec:branch_list){
-    //     for(auto state:state_vec){
-    //         state_vec_temp.push_back(state);
-    //     }
-    // }
-
-    // auto state_test = state_vec_temp.at(1);
-    // state_test.print();
-    // state_test.print_assumptions();
-    // smt::SmtSolver solver_cvc5 = smt::Cvc5SolverFactory::create(false);
-    // solver_cvc5->set_logic("QF_BV");
-    // solver_cvc5->set_opt("produce-models", "true");
-    // solver_cvc5->set_opt("incremental", "true");
-    // auto state_new = StateTransfer(state_test, solver, solver_cvc5);
-    // state_new.print();
-    // state_new.print_assumptions();
-
-    // auto asmpt_old = solver->make_term(smt::BVAnd, state_test.asmpt_); 
-    // cout << "\n\n" << asmpt_old->to_string() << endl;
-    // auto asmpt_new = solver_cvc5->make_term(smt::And, state_new.asmpt_);
-
-    // cout << "\n\n\n\n ========== state test end ============" << endl;
-
-    
+        
     // step: tag0 --> tag1
-    // cout << "\n\n\nstep: tag0 --> tag1" << endl;
-    //  auto asmpt_tag0_1 = tag2asmpt_c1("tag0_1", executor, solver);
-    // extend_branch_next_phase(branch_list, executor, sts, base_sv, "tag0_1", asmpt_tag0_1, {{"tag0",1}, {"tag1",0}, {"tag2",0}, {"tag3",0}}, order, solver);
+    cout << "\n\n\nstep: tag0 --> tag1" << endl;
+     auto asmpt_tag0_1 = tag2asmpt_c1("tag0_1", executor, solver);
+    extend_branch_next_phase(branch_list, executor, sts, base_sv, "tag0_1", asmpt_tag0_1, {{"tag0",1}, {"tag1",0}, {"tag2",0}, {"tag3",0}}, order, solver);
 
-    // // step: tag1 --> tag1
-    // cout << "\n\n\nstep: tag1 --> tag1" << endl;
-    //  auto asmpt_tag1_1 = tag2asmpt_c1("tag1_1", executor, solver);
-    // extend_branch_same_phase(branch_list, executor, sts, base_sv, "tag1_1", asmpt_tag1_1, {{"tag0",0}, {"tag1",1}, {"tag2",0}, {"tag3",0}}, order, solver);
+    // step: tag1 --> tag1
+    cout << "\n\n\nstep: tag1 --> tag1" << endl;
+     auto asmpt_tag1_1 = tag2asmpt_c1("tag1_1", executor, solver);
+    extend_branch_same_phase(branch_list, executor, sts, base_sv, "tag1_1", asmpt_tag1_1, {{"tag0",0}, {"tag1",1}, {"tag2",0}, {"tag3",0}}, order, solver);
 
-    // // step: tag1 --> tag2
-    // cout << "\n\n\nstep: tag1 --> tag2" << endl;
-    //  auto asmpt_tag1_2 = tag2asmpt_c1("tag1_2", executor, solver);
-    // extend_branch_next_phase(branch_list, executor, sts, base_sv, "tag1_2", asmpt_tag1_2, {{"tag0",0}, {"tag1",1}, {"tag2",0}, {"tag3",0}}, order, solver);
+    // step: tag1 --> tag2
+    cout << "\n\n\nstep: tag1 --> tag2" << endl;
+     auto asmpt_tag1_2 = tag2asmpt_c1("tag1_2", executor, solver);
+    extend_branch_next_phase(branch_list, executor, sts, base_sv, "tag1_2", asmpt_tag1_2, {{"tag0",0}, {"tag1",1}, {"tag2",0}, {"tag3",0}}, order, solver);
 
-    // // step: tag2 --> tag2
-    // cout << "\n\n\nstep: tag2 --> tag2" << endl;
-    //  auto asmpt_tag2_2 = tag2asmpt_c1("tag2_2", executor, solver);
-    // extend_branch_same_phase(branch_list, executor, sts, base_sv, "tag2_2", asmpt_tag2_2, {{"tag0",0}, {"tag1",0}, {"tag2",1}, {"tag3",0}}, order, solver);
+    // step: tag2 --> tag2
+    cout << "\n\n\nstep: tag2 --> tag2" << endl;
+     auto asmpt_tag2_2 = tag2asmpt_c1("tag2_2", executor, solver);
+    extend_branch_same_phase(branch_list, executor, sts, base_sv, "tag2_2", asmpt_tag2_2, {{"tag0",0}, {"tag1",0}, {"tag2",1}, {"tag3",0}}, order, solver);
 
-    // // step: tag2 --> tag3
-    // cout << "\n\n\nstep: tag2 --> tag3" << endl;
-    //  auto asmpt_tag2_3 = tag2asmpt_c1("tag2_3", executor, solver);
-    // extend_branch_next_phase(branch_list, executor, sts, base_sv, "tag2_3", asmpt_tag2_3, {{"tag0",0}, {"tag1",0}, {"tag2",1}, {"tag3",0}}, order, solver);
+    // step: tag2 --> tag3
+    cout << "\n\n\nstep: tag2 --> tag3" << endl;
+     auto asmpt_tag2_3 = tag2asmpt_c1("tag2_3", executor, solver);
+    extend_branch_next_phase(branch_list, executor, sts, base_sv, "tag2_3", asmpt_tag2_3, {{"tag0",0}, {"tag1",0}, {"tag2",1}, {"tag3",0}}, order, solver);
 
-    // // step: tag3 --> tag3
-    // cout << "\n\n\nstep: tag3 --> tag3" << endl;
-    //  auto asmpt_tag3_3 = tag2asmpt_c1("tag3_3", executor, solver);
-    // extend_branch_same_phase(branch_list, executor, sts, base_sv, "tag3_3", asmpt_tag3_3, {{"tag0",0}, {"tag1",0}, {"tag2",0}, {"tag3",1}}, order, solver);
+    // step: tag3 --> tag3
+    cout << "\n\n\nstep: tag3 --> tag3" << endl;
+     auto asmpt_tag3_3 = tag2asmpt_c1("tag3_3", executor, solver);
+    extend_branch_same_phase(branch_list, executor, sts, base_sv, "tag3_3", asmpt_tag3_3, {{"tag0",0}, {"tag1",0}, {"tag2",0}, {"tag3",1}}, order, solver);
    
 
     auto end = system_clock::now();

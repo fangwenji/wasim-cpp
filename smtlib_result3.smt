@@ -1,1 +1,0 @@
-(define-fun FunNew ((v1 (_ BitVec 1)) (v2 (_ BitVec 1))) Bool true)

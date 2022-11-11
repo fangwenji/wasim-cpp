@@ -205,7 +205,8 @@ void SymbolicTraverse::traverse_one_step(smt::TermVec assumptions, std::vector<T
     // TODO : simplification procedure
     for(auto& abs_state_one_step : tracemgr_.abs_state_one_step_){
         state_simplify_xvar(abs_state_one_step, executor_.get_Xs(), solver_);
-        // sygus_simplify(abs_state_one_step, executor_.get_Xs(), solver_);
+        sygus_simplify(abs_state_one_step, executor_.get_Xs(), solver_);
+        assert(not abs_state_one_step.is_contain_x(executor_.get_Xs()));
     }
 
     
@@ -344,7 +345,9 @@ void SymbolicTraverse::traverse(smt::TermVec assumptions, std::vector<TraverseBr
     // TODO : simplification procedure
     for(auto& abs_state : tracemgr_.abs_state_){
         state_simplify_xvar(abs_state, executor_.get_Xs(), solver_);
-        // sygus_simplify(abs_state, executor_.get_Xs(), solver_);
+        sygus_simplify(abs_state, executor_.get_Xs(), solver_);
+        assert(not abs_state.is_contain_x(executor_.get_Xs()));
+
     }
 }
 } // namespace wasim

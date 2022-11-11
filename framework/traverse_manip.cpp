@@ -36,9 +36,6 @@ void extend_branch_next_phase(std::vector<std::vector<StateAsmpt>>& branch_list,
         auto s = state_list.back();
         auto executor_temp (executor);
         auto d = executor_temp.convert(phase_maker);
-        for(auto kv:d){
-            cout << kv.first << " ->- " << kv.second << endl;
-        }
         std::swap(s.sv_, d);
         s.sv_.insert(d.begin(),d.end()); // for the same variable, d will overwrite s
         // s.print();

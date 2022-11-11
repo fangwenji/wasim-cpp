@@ -1,6 +1,0 @@
-(define-fun FunNew ((tag31 (_ BitVec 1)) (tag21 (_ BitVec 1)) (tag01 (_ BitVec 1)) (tag11 (_ BitVec 1)) ) (_ BitVec 1) (bvand (bvnot tag11) (bvand tag01 (bvand (bvnot tag21) (bvnot tag31)))))
-init
-(define-fun FunNew ((reg_v1 (_ BitVec 1)) (c (_ BitVec 1)) (tag21 (_ BitVec 1)) ) (_ BitVec 1) (bvnot (bvand tag21 (bvnot (ite (= c reg_v1) #b1 #b0)))))
-ts.asmpt @0
-(define-fun FunNew ((stall3inX1 (_ BitVec 1)) (v2 (_ BitVec 1)) (stall2inX1 (_ BitVec 1)) (v1 (_ BitVec 1)) (stall1inX1 (_ BitVec 1)) ) (_ BitVec 1) (bvnot (bvand (bvnot stall1inX1) (bvnot (bvand v1 (bvnot (bvand (bvnot stall2inX1) (bvnot (bvand v2 stall3inX1)))))))))
-(bvnot (bvand (bvnot stall1inX1) (bvnot (bvand v1 (bvnot (bvand (bvnot stall2inX1) (bvnot (bvand v2 stall3inX1))))))))@0

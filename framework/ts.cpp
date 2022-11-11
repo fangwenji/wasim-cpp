@@ -91,10 +91,12 @@ bool StateAsmpt::is_contain_x(smt::UnorderedTermSet set_of_Xvar){
     auto free_var = get_free_variables(value);
     for(const auto& var:free_var){
       if(set_of_Xvar.find(var)!=set_of_Xvar.end()){
+        cout << "\nWARNING: State Contains X!\n" << endl;
         return true;
       }
     }
   }
+
   return false;
 }
 
