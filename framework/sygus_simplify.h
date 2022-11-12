@@ -33,12 +33,43 @@
 #include <string>
 #include <fstream>
 #include <time.h>
+
 #include <boost/process.hpp>
+#include <boost/process/async.hpp>
+#include <boost/asio.hpp>
+#include <boost/bind.hpp>
+
 
 using namespace std;
 
 namespace wasim
 {
+namespace bp = boost::process;
+class Process {
+
+  public:
+    Process(std::string &cmd, const int timeout);
+    void run();
+
+  private:
+    void timeout_handler(boost::system::error_code ec);
+
+    const std::string command;
+    const int timeout;
+
+    bool killed = false;
+    bool stopped = false;
+
+    std::string stdOut;
+    std::string stdErr;
+    int returnStatus = 0;
+
+    boost::asio::io_service ios;
+    boost::process::group group;
+    boost::asio::deadline_timer deadline_timer;
+};
+
+
 void run_cmd(std::string cmd_string, int timeout);
 
 using parsed_info = std::tuple<smt::UnorderedTermSet, smt::UnorderedTermSet, smt::Term, smt::Term, std::string>;

@@ -7,3 +7,4 @@ Currently I don't understand why the function "concretize" is not used at all...
 
 Long term plan: maybe thinking about merging states?
 
+TODO: find terminate bugs in sygus simplify

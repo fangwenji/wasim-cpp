@@ -1,0 +1,26 @@
+(define-fun FunNew ((RTL_ex_wb_rd (_ BitVec 2))) (_ BitVec 2) (ite (= #b1 #b1) RTL_ex_wb_rd RTL_ex_wb_rd))
+(define-fun FunNew ((inst (_ BitVec 2)) ) (_ BitVec 2) ((_ extract 1 0) inst))
+(define-fun FunNew ((RTL_ex_wb_reg_wen (_ BitVec 1))) (_ BitVec 1) (ite (= #b1 #b1) RTL_ex_wb_reg_wen RTL_ex_wb_reg_wen))
+(define-fun FunNew ((inst_v (_ BitVec 1)) (w2 (_ BitVec 1)) ) (_ BitVec 1) (bvnot (bvand (bvnot w2) (bvnot inst_v))))
+(define-fun FunNew ((RTL_registers[1] (_ BitVec 8))) (_ BitVec 8) (ite (= #b1 #b1) RTL_registers[1] RTL_registers[1]))
+(define-fun FunNew ((reg1 (_ BitVec 8))) (_ BitVec 8) (ite (= #b1 #b1) reg1 reg1))
+(define-fun FunNew ((RTL_ex_wb_valid (_ BitVec 1))) (_ BitVec 1) (ite (= #b1 #b1) RTL_ex_wb_valid RTL_ex_wb_valid))
+(define-fun FunNew ((inst_v (_ BitVec 1))) (_ BitVec 1) (ite (= #b1 #b1) inst_v inst_v))
+(define-fun FunNew ((RTL_registers[3] (_ BitVec 8))) (_ BitVec 8) (ite (= #b1 #b1) RTL_registers[3] RTL_registers[3]))
+(define-fun FunNew ((reg3 (_ BitVec 8))) (_ BitVec 8) (ite (= #b1 #b1) reg3 reg3))
+(define-fun FunNew ((RTL_registers[2] (_ BitVec 8))) (_ BitVec 8) (ite (= #b1 #b1) RTL_registers[2] RTL_registers[2]))
+(define-fun FunNew ((reg2 (_ BitVec 8))) (_ BitVec 8) (ite (= #b1 #b1) reg2 reg2))
+(define-fun FunNew ((RTL_ex_wb_val (_ BitVec 8))) (_ BitVec 8) (ite (= #b1 #b1) RTL_ex_wb_val RTL_ex_wb_val))
+(define-fun FunNew ((reg0 (_ BitVec 8)) (reg1 (_ BitVec 8)) (reg2 (_ BitVec 8)) (reg3 (_ BitVec 8)) (inst (_ BitVec 8)) ) (_ BitVec 8) (let (($e1 ((_ extract 5 4) inst))) (let (($e2 ((_ extract 3 2) inst))) (bvadd (ite (= #b11 $e1) reg3 (ite (= #b10 $e1) reg2 (ite (= #b01 $e1) reg1 (ite (= #b00 $e1) reg0 #b00000000)))) (ite (= #b11 $e2) reg3 (ite (= #b10 $e2) reg2 (ite (= #b01 $e2) reg1 (ite (= #b00 $e2) reg0 #b00000000))))))))
+(define-fun FunNew ((__START__ (_ BitVec 1))) (_ BitVec 1) (ite (= #b1 #b1) __START__ __START__))
+#b0
+(define-fun FunNew ((RTL_registers[0] (_ BitVec 8))) (_ BitVec 8) (ite (= #b1 #b1) RTL_registers[0] RTL_registers[0]))
+(define-fun FunNew ((reg0 (_ BitVec 8))) (_ BitVec 8) (ite (= #b1 #b1) reg0 reg0))
+(define-fun FunNew ((stage_tracker_ex_wb_iuv (_ BitVec 1))) (_ BitVec 1) (ite (= #b1 #b1) stage_tracker_ex_wb_iuv stage_tracker_ex_wb_iuv))
+#b1
+(define-fun FunNew ((stage_tracker_id_ex_iuv (_ BitVec 1))) (_ BitVec 1) (ite (= #b1 #b1) stage_tracker_id_ex_iuv stage_tracker_id_ex_iuv))
+#b0
+(define-fun FunNew ((stage_tracker_wb_iuv (_ BitVec 1))) (_ BitVec 1) (ite (= #b1 #b1) stage_tracker_wb_iuv stage_tracker_wb_iuv))
+#b0
+(define-fun FunNew ((stage_tracker_if_id_iuv (_ BitVec 1))) (_ BitVec 1) (ite (= #b1 #b1) stage_tracker_if_id_iuv stage_tracker_if_id_iuv))
+#b0

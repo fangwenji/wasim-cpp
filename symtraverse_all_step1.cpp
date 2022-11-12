@@ -146,9 +146,9 @@ int main(){
     
     cout << "Program running time: " << double(duration.count())*seconds::period::num/seconds::period::den << " (s)" << endl;
     
-    // StateRW staterw(solver);
-    // std::string out_dir = PROJECT_SOURCE_DIR "/output/c1/";
-    // staterw.StateWriteTree(branch_list, out_dir);
+    StateRW staterw(solver);
+    std::string out_dir = PROJECT_SOURCE_DIR "/output/c1/";
+    staterw.StateWriteTree(branch_list, out_dir);
 
     // auto state = branch_list[0][1];
     // state.print();

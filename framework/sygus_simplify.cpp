@@ -2,14 +2,68 @@
 
 namespace wasim{
 
+Process::Process(std::string &cmd, const int timeout) : command(cmd), timeout(timeout), deadline_timer(ios) {}
+
+void Process::timeout_handler(boost::system::error_code ec) {
+    if (stopped)
+        return;
+
+    if (ec == boost::asio::error::operation_aborted)
+        return;
+
+    if (deadline_timer.expires_at() <= boost::asio::deadline_timer::traits_type::now()) {
+        // std::cout << "Time Up!" << std::endl;
+        group.terminate(); // NOTE: anticipate errors
+        // std::cout << "Killed the process and all its decendants" << std::endl;
+        killed = true;
+        stopped = true;
+        deadline_timer.expires_at(boost::posix_time::pos_infin);
+    }
+    //NOTE: don't make it a loop
+    //deadline_timer.async_wait(boost::bind(&Process::timeout_handler, this, boost::asio::placeholders::error));
+}
+
+void Process::run() {
+
+    std::future<std::string> dataOut;
+    std::future<std::string> dataErr;
+
+    deadline_timer.expires_from_now(boost::posix_time::milliseconds(timeout));
+    deadline_timer.async_wait(boost::bind(&Process::timeout_handler, this, boost::asio::placeholders::error));
+
+    bp::child c(command, bp::std_in.close(), bp::std_out > dataOut, bp::std_err > dataErr, ios, group, 
+            bp::on_exit([=](int e, std::error_code ec) {
+                // TODO handle errors
+                // std::cout << "on_exit: " << ec.message() << " -> " << e << std::endl;
+                deadline_timer.cancel();
+                returnStatus = e;
+            }));
+
+    ios.run();
+
+    stdOut = dataOut.get();
+    stdErr = dataErr.get();
+
+    c.wait();
+
+    returnStatus = c.exit_code();
+}
+
 void run_cmd(std::string cmd_string, int timeout){
+    /*
     boost::process::child c(cmd_string);
     std::error_code ec;
     if (!c.wait_for(std::chrono::milliseconds(timeout), ec)) {
         // std::cout << "nTimeout reached. Process terminated after " << timeout << " milliseconds.\n";
         // exit(1);
-        c.terminate(ec);
+        c.terminate(ec);   
     }
+    */
+
+    Process p(cmd_string, timeout);
+    p.run();
+
+
 }
 
 bool expr_contians_X(smt::Term expr, smt::UnorderedTermSet set_of_xvar){
@@ -120,7 +174,11 @@ smt::Term run_sygus(parsed_info info, smt::UnorderedTermSet set_of_xvar, smt::Sm
     auto cmd = "chmod 755 " + bash_file;
     system(cmd.c_str());
     auto cmd_string = "./" + bash_file;
-    run_cmd(cmd_string, 500); // 500 milliseconds -> 0.5s
+    run_cmd(cmd_string, 1000); // 500 milliseconds -> 0.5s
+    // timeout table
+    // c1 ->- 100ms
+    // c2 ->- 100ms
+    // c3 ->- 1s
 
     // only move the second line of sygus output file to a new file
     std::ifstream infile(result_temp_file.c_str());
@@ -150,7 +208,7 @@ smt::Term run_sygus(parsed_info info, smt::UnorderedTermSet set_of_xvar, smt::Sm
         new_expr = pi.return_defs();
     }
     int rm;
-    rm = remove(template_file.c_str());
+    // rm = remove(template_file.c_str());
     rm = remove(result_file.c_str());
     rm = remove(result_temp_file.c_str());
     rm = remove(bash_file.c_str());

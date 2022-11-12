@@ -1,0 +1,10 @@
+(define-fun FunNew ((stage2 (_ BitVec 4))) (_ BitVec 4) (ite (= #b1 #b1) stage2 stage2))
+(define-fun FunNew ((a (_ BitVec 4)) (b (_ BitVec 4)) (v1 (_ BitVec 4)) ) (_ BitVec 4) (bvadd #b0011 (bvmul (ite (= #b1 v1) (bvadd #b0001 (bvmul #b0010 a)) b) #b0100)))
+(define-fun FunNew ((wen_stage1 (_ BitVec 1))) (_ BitVec 1) (ite (= #b1 #b1) wen_stage1 wen_stage1))
+#b0
+(define-fun FunNew ((wen_stage2 (_ BitVec 1))) (_ BitVec 1) (ite (= #b1 #b1) wen_stage2 wen_stage2))
+#b1
+(define-fun FunNew ((stage1 (_ BitVec 4))) (_ BitVec 4) (ite (= #b1 #b1) stage1 stage1))
+(define-fun FunNew ((a (_ BitVec 4)) (b (_ BitVec 4)) (v1 (_ BitVec 4)) ) (_ BitVec 4) (bvadd #b0001 (bvmul #b0010 (ite (= #b1 v1) (bvadd #b0001 (bvmul #b0010 a)) b))))
+(define-fun FunNew ((stage3 (_ BitVec 4))) (_ BitVec 4) (ite (= #b1 #b1) stage3 stage3))
+(define-fun FunNew ((a (_ BitVec 4)) (b (_ BitVec 4)) (v1 (_ BitVec 4)) ) (_ BitVec 4) (bvadd #b0001 (bvmul #b0010 (ite (= #b1 v1) (bvadd #b0001 (bvmul #b0010 a)) b))))

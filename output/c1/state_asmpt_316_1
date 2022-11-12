@@ -1,0 +1,24 @@
+(define-fun FunNew ((tag31 (_ BitVec 1)) (tag21 (_ BitVec 1)) (tag01 (_ BitVec 1)) (tag11 (_ BitVec 1)) ) (_ BitVec 1) (bvand (bvnot tag11) (bvand tag01 (bvand (bvnot tag21) (bvnot tag31)))))
+init
+(define-fun FunNew ((reg_v1 (_ BitVec 1)) (c (_ BitVec 1)) (tag21 (_ BitVec 1)) ) (_ BitVec 1) (bvnot (bvand tag21 (bvnot (ite (= c reg_v1) #b1 #b0)))))
+ts.asmpt @0
+(define-fun FunNew ((stall3inX84 (_ BitVec 1)) (v2 (_ BitVec 1)) (stall2inX84 (_ BitVec 1)) (v1 (_ BitVec 1)) (stall1inX84 (_ BitVec 1)) ) (_ BitVec 1) (bvnot (bvand (bvnot stall1inX84) (bvnot (bvand v1 (bvnot (bvand (bvnot stall2inX84) (bvnot (bvand v2 stall3inX84)))))))))
+(bvnot (bvand (bvnot stall1inX84) (bvnot (bvand v1 (bvnot (bvand (bvnot stall2inX84) (bvnot (bvand v2 stall3inX84))))))))@0
+(define-fun FunNew ((stall3inX84 (_ BitVec 1)) (v2 (_ BitVec 1)) (stall2inX84 (_ BitVec 1)) (v1 (_ BitVec 1)) ) (_ BitVec 1) (bvand v1 (bvand (bvnot stall2inX84) (bvnot (bvand v2 stall3inX84)))))
+(bvand v1 (bvand (bvnot stall2inX84) (bvnot (bvand v2 stall3inX84))))@0
+(define-fun FunNew ((stall3inX84 (_ BitVec 1)) (v2 (_ BitVec 1)) (stall2inX84 (_ BitVec 1)) (v1 (_ BitVec 1)) (stall1inX84 (_ BitVec 1)) ) (_ BitVec 1) (bvnot (bvand (bvnot stall1inX84) (bvnot (bvand v1 (bvnot (bvand (bvnot stall2inX84) (bvnot (bvand v2 stall3inX84)))))))))
+(bvnot (bvand (bvnot stall1inX84) (bvnot (bvand v1 (bvnot (bvand (bvnot stall2inX84) (bvnot (bvand v2 stall3inX84))))))))@0
+(define-fun FunNew ((reg_v1 (_ BitVec 1)) (stall3inX84 (_ BitVec 1)) (stall2inX84 (_ BitVec 1)) (c (_ BitVec 1)) (b (_ BitVec 1)) (tag21 (_ BitVec 1)) (v1 (_ BitVec 1)) (v2 (_ BitVec 1)) (tag11 (_ BitVec 1)) ) (_ BitVec 1) (let (($e1 (bvand v1 (bvand (bvnot stall2inX84) (bvnot (bvand v2 stall3inX84)))))) (let (($e2 (bvand v2 (bvnot stall3inX84)))) (bvnot (bvand (bvand (bvnot (bvand (bvnot tag11) $e1)) (bvnot (bvand (bvnot $e1) (bvnot (bvand tag21 (bvnot $e2)))))) (bvnot (ite (= reg_v1 (ite (= #b1 $e2) b c)) #b1 #b0)))))))
+ts.asmpt @1
+#b1
+ts.asmpt @0
+(define-fun FunNew ((stall1inX196 (_ BitVec 1)) ) (_ BitVec 1) (bvnot stall1inX196))
+(bvnot stall1inX196)@0
+#b1
+#b1@0
+(define-fun FunNew ((stall3inX196 (_ BitVec 1)) (v1 (_ BitVec 1)) ) (_ BitVec 1) (bvand v1 (bvnot stall3inX196)))
+(bvand v1 (bvnot stall3inX196))@0
+(define-fun FunNew ((stall1inX196 (_ BitVec 1)) ) (_ BitVec 1) (bvnot stall1inX196))
+(bvnot stall1inX196)@0
+#b1
+ts.asmpt @1

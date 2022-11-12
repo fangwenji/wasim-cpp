@@ -139,7 +139,11 @@ void SymbolicTraverse::traverse_one_step(smt::TermVec assumptions, std::vector<T
 
         auto abs_state = tracemgr_.abs_state_one_step_.at(0);
         //TODO : SIMPLIFICATION
-        exit(0);
+        state_simplify_xvar(abs_state, executor_.get_Xs(), solver_);
+        sygus_simplify(abs_state, executor_.get_Xs(), solver_);
+        assert(not abs_state.is_contain_x(executor_.get_Xs()));
+        exit(1);
+        return;
     }
     auto concrete_enough = tracemgr_.check_concrete_enough(state, executor_.get_Xs());
     assert(concrete_enough);
@@ -226,7 +230,13 @@ void SymbolicTraverse::traverse(smt::TermVec assumptions, std::vector<TraverseBr
 
         auto abs_state = tracemgr_.abs_state_.at(0);
         //TODO : SIMPLIFICATION
-        exit(0);
+        state_simplify_xvar(abs_state, executor_.get_Xs(), solver_);
+        sygus_simplify(abs_state, executor_.get_Xs(), solver_);
+        assert(not abs_state.is_contain_x(executor_.get_Xs()));
+        abs_state.print();
+        abs_state.print_assumptions();
+        exit(1);
+        return;
     }
     auto concrete_enough = tracemgr_.check_concrete_enough(state, executor_.get_Xs());
     assert(concrete_enough);
