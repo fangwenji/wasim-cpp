@@ -130,6 +130,7 @@ int main(){
     solver->set_opt("produce-unsat-assumptions", "true");
     TransitionSystem sts(solver);
     BTOR2Encoder btor_parser(input_file, sts);
+
     auto invar = sts.inputvars();
     for(const auto& var:invar){
         std::cout << var->to_string() << std::endl;
@@ -183,7 +184,7 @@ int main(){
     // step: start
     cout << "step: start" << endl;
     auto s_init = executor.get_curr_state();
-    auto is_not_start0 = solver->make_term(smt::Equal, executor.var("__START__"), solver->make_term(0, solver->make_sort(smt::BV, 1)));
+    auto is_not_start0 = solver->make_term(smt::Equal, executor.var("__START__"), solver->make_term(0));
     auto is_not_start = executor.interpret_state_expr_on_curr_frame(is_not_start0);
     auto init_asmpt = s_init.asmpt_;
     init_asmpt.push_back(is_not_start);
@@ -205,41 +206,45 @@ int main(){
     s_init.print();
     s_init.print_assumptions();
 
-    std::unordered_set<std::string> base_sv_start = {"RTL_if_id_inst","RTL_if_id_valid",\
+    std::unordered_set<std::string> base_sv_id = {"RTL_if_id_inst","RTL_if_id_valid",\
         "RTL_id_ex_operand1","RTL_id_ex_operand2","RTL_id_ex_op","RTL_id_ex_rd","RTL_id_ex_reg_wen","RTL_id_ex_valid",\
         "RTL_ex_wb_val","RTL_ex_wb_rd","RTL_ex_wb_reg_wen","RTL_ex_wb_valid",\
         "RTL_registers[0]","RTL_registers[1]","RTL_registers[2]","RTL_registers[3]",\
         "RTL_scoreboard[0]","RTL_scoreboard[1]","RTL_scoreboard[2]","RTL_scoreboard[3]",\
         };
-    
+    smt::TermVec asmpt_input={};
     // step: start-ex
     cout << "step: start --> id" << endl;
-    auto asmpt_start_id = tag2asmpt_c3("start-id", executor, solver);
-    extend_branch_next_phase(branch_list, executor, sts, base_sv_start, "start-id", asmpt_start_id, \
+    asmpt_input.clear();
+    asmpt_input = tag2asmpt_c3("start-id", executor, solver);
+    extend_branch_next_phase(branch_list, executor, sts, base_sv_id, "start-id", asmpt_input, \
             {{"__START__", 1}, {"stage_tracker_if_id_iuv", 0}, {"stage_tracker_id_ex_iuv", 0}, {"stage_tracker_ex_wb_iuv", 0}, {"stage_tracker_wb_iuv", 0}}, \
             order, solver);
 
     cout << "step: id --> id" << endl;
-    auto asmpt_id_id = tag2asmpt_c3("id-id", executor, solver);
-    extend_branch_same_phase(branch_list, executor, sts, base_sv_start, "id-id", asmpt_id_id, \
+    asmpt_input.clear();
+    asmpt_input = tag2asmpt_c3("id-id", executor, solver);
+    extend_branch_same_phase(branch_list, executor, sts, base_sv_id, "id-id", asmpt_input, \
             {{"__START__", 0}, {"stage_tracker_if_id_iuv", 1}, {"stage_tracker_id_ex_iuv", 0}, {"stage_tracker_ex_wb_iuv", 0}, {"stage_tracker_wb_iuv", 0}}, \
             order, solver);
     
-    std::unordered_set<std::string> base_sv_id = {\
+    std::unordered_set<std::string> base_sv_ex = {\
         "RTL_id_ex_operand1","RTL_id_ex_operand2","RTL_id_ex_op","RTL_id_ex_rd","RTL_id_ex_reg_wen","RTL_id_ex_valid",\
         "RTL_ex_wb_val","RTL_ex_wb_rd","RTL_ex_wb_reg_wen","RTL_ex_wb_valid",\
         "RTL_registers[0]","RTL_registers[1]","RTL_registers[2]","RTL_registers[3]",\
         };
     
     cout << "step: id --> ex" << endl;
-    auto asmpt_id_ex = tag2asmpt_c3("id-ex", executor, solver);
-    extend_branch_next_phase(branch_list, executor, sts, base_sv_id, "id-ex", asmpt_id_ex, \
+    asmpt_input.clear();
+    asmpt_input = tag2asmpt_c3("id-ex", executor, solver);
+    extend_branch_next_phase(branch_list, executor, sts, base_sv_ex, "id-ex", asmpt_input, \
             {{"__START__", 0}, {"stage_tracker_if_id_iuv", 1}, {"stage_tracker_id_ex_iuv", 0}, {"stage_tracker_ex_wb_iuv", 0}, {"stage_tracker_wb_iuv", 0}}, \
             order, solver);
 
     cout << "step: ex --> ex" << endl;
-    auto asmpt_ex_ex = tag2asmpt_c3("ex-ex", executor, solver);
-    extend_branch_same_phase(branch_list, executor, sts, base_sv_id, "ex-ex", asmpt_ex_ex, \
+    asmpt_input.clear();
+    asmpt_input = tag2asmpt_c3("ex-ex", executor, solver);
+    extend_branch_same_phase(branch_list, executor, sts, base_sv_ex, "ex-ex", asmpt_input, \
             {{"__START__", 0}, {"stage_tracker_if_id_iuv", 0}, {"stage_tracker_id_ex_iuv", 1}, {"stage_tracker_ex_wb_iuv", 0}, {"stage_tracker_wb_iuv", 0}}, \
             order, solver);
 
@@ -247,21 +252,22 @@ int main(){
         "RTL_registers[0]","RTL_registers[1]","RTL_registers[2]","RTL_registers[3]"};
 
     cout << "step: ex --> wb" << endl;
-    auto asmpt_ex_wb = tag2asmpt_c3("ex-wb", executor, solver);
-    extend_branch_next_phase(branch_list, executor, sts, base_sv_wb, "ex-wb", asmpt_ex_wb, \
+    asmpt_input = tag2asmpt_c3("ex-wb", executor, solver);
+    extend_branch_next_phase(branch_list, executor, sts, base_sv_wb, "ex-wb", asmpt_input, \
             {{"__START__", 0}, {"stage_tracker_if_id_iuv", 0}, {"stage_tracker_id_ex_iuv", 1}, {"stage_tracker_ex_wb_iuv", 0}, {"stage_tracker_wb_iuv", 0}}, \
             order, solver);
 
     cout << "step: wb --> wb" << endl;
-    auto asmpt_wb_wb = tag2asmpt_c3("wb-wb", executor, solver);
-    extend_branch_same_phase(branch_list, executor, sts, base_sv_wb, "wb-wb", asmpt_wb_wb, \
+    asmpt_input.clear();
+    asmpt_input = tag2asmpt_c3("wb-wb", executor, solver);
+    extend_branch_same_phase(branch_list, executor, sts, base_sv_wb, "wb-wb", asmpt_input, \
             {{"__START__", 0}, {"stage_tracker_if_id_iuv", 0}, {"stage_tracker_id_ex_iuv", 0}, {"stage_tracker_ex_wb_iuv", 1}, {"stage_tracker_wb_iuv", 0}}, \
             order, solver);
 
     std::unordered_set<std::string> base_sv_finish = {"RTL_registers[0]","RTL_registers[1]","RTL_registers[2]","RTL_registers[3]"};
     cout << "step: wb --> finish" << endl;
-    auto asmpt_wb_finish = tag2asmpt_c3("wb-finish", executor, solver);
-    extend_branch_next_phase(branch_list, executor, sts, base_sv_finish, "wb-finish", asmpt_wb_finish, \
+    asmpt_input = tag2asmpt_c3("wb-finish", executor, solver);
+    extend_branch_next_phase(branch_list, executor, sts, base_sv_finish, "wb-finish", asmpt_input, \
             {{"__START__", 0}, {"stage_tracker_if_id_iuv", 0}, {"stage_tracker_id_ex_iuv", 0}, {"stage_tracker_ex_wb_iuv", 1}, {"stage_tracker_wb_iuv", 0}}, \
             order, solver);
 

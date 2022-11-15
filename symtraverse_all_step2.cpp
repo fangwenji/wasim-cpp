@@ -104,6 +104,7 @@ int main(){
     solver->set_opt("produce-unsat-assumptions", "true");
     TransitionSystem sts(solver);
     BTOR2Encoder btor_parser(input_file, sts);
+
     auto invar = sts.inputvars();
     for(const auto& var:invar){
         std::cout << var->to_string() << std::endl;

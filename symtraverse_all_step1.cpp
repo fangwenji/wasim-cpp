@@ -90,6 +90,7 @@ int main(){
     TransitionSystem sts(solver);
     BTOR2Encoder btor_parser(input_file, sts);
 
+
     SymbolicExecutor executor(sts, solver);
 
     assignment_type init_map = {
@@ -149,6 +150,8 @@ int main(){
     StateRW staterw(solver);
     std::string out_dir = PROJECT_SOURCE_DIR "/output/c1/";
     staterw.StateWriteTree(branch_list, out_dir);
+
+
 
     // auto state = branch_list[0][1];
     // state.print();

@@ -1,6 +1,6 @@
 #include "term_manip.h"
 #include <queue>
-#include "../deps/smt-switch/local/include/smt-switch/substitution_walker.h"
+#include "smt-switch/substitution_walker.h"
 
 using namespace std;
 

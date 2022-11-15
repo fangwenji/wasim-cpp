@@ -203,7 +203,8 @@ void SymbolicExecutor::set_input(const smt::UnorderedTermMap & invar_assign, con
     // the second Boolean has no use in our case
     smt::TermVec assmpt_vec;
     for(const auto& vect : ts_.constraints()){
-        auto assumption = solver_->substitute(vect.first, submap);
+        auto assumption_temp = solver_->make_term(smt::Equal, vect.first, solver_->make_term(vect.second));
+        auto assumption = solver_->substitute(assumption_temp, submap);
         assmpt_vec.push_back(assumption); 
     }
     

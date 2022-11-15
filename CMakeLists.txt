@@ -122,6 +122,7 @@ set(SOURCES
     "${PROJECT_SOURCE_DIR}/framework/traverse_manip.cpp"
     "${PROJECT_SOURCE_DIR}/framework/sygus_simplify.cpp"
     "${PROJECT_SOURCE_DIR}/framework/state_simplify.cpp"
+    "${PROJECT_SOURCE_DIR}/framework/inv_group.cpp"
     "${PROJECT_SOURCE_DIR}/utils/logger.cpp"
 )
 
@@ -165,8 +166,8 @@ target_link_libraries(wasim-lib PUBLIC Boost::system)
 # and builds all the parametrized tests
 # add_subdirectory(tests)
 
-add_executable(wasim-bin "${PROJECT_SOURCE_DIR}/symtraverse_all_step3.cpp")
-set_target_properties(wasim-bin PROPERTIES OUTPUT_NAME symtraverse_all_step3)
+add_executable(wasim-bin "${PROJECT_SOURCE_DIR}/inv_check1.cpp")
+set_target_properties(wasim-bin PROPERTIES OUTPUT_NAME wasim)
 
 
 target_include_directories(wasim-bin PUBLIC

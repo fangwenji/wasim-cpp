@@ -262,6 +262,7 @@ StateAsmpt StateRW::StateRead(std::string infile_sv, std::string infile_asmpt){
         state_sv[key] = value;
     }
 
+
     // 2. read asmpt
     std::ifstream f_asmpt(infile_asmpt.c_str());
     std::string temp_file_asmpt = "temp_asmpt.log";
@@ -319,14 +320,21 @@ void StateRW::StateWriteTree(std::vector<std::vector<StateAsmpt>> branch_list, s
 }
 
 std::vector<std::vector<StateAsmpt>> StateRW::StateReadTree(std::string in_dir, int num_i, int num_j){
-    std::vector<StateAsmpt> state_list = {};
+    
     std::vector<std::vector<StateAsmpt>> branch_list = {};
     for(int i=0; i<num_i; i++){
+        std::vector<StateAsmpt> state_list = {};
         for(int j=0; j<num_j; j++){
             std::string infile_sv = in_dir + "state_sv_" + to_string(i) + "_" + to_string(j); 
             std::string infile_asmpt = in_dir + "state_asmpt_" + to_string(i) + "_" + to_string(j); 
+            // std::string infile_asmpt = "";
             auto state = StateRead(infile_sv, infile_asmpt);
             state_list.push_back(state);
+
+            // cout << "i = " << i << ", j = " << j << endl;
+            // cout << infile_sv << endl;
+            
+
         }
         branch_list.push_back(state_list);
     }
