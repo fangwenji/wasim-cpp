@@ -67,6 +67,7 @@ public:
 
 private:
    smt::SmtSolver solver_;
+   // smt::SmtSolver solver_asmpt_; 
    
 };
 
@@ -75,4 +76,19 @@ void getFileNames(string path, vector<string>& files);
 smt::Term TermTransfer(smt::Term expr, smt::SmtSolver& solver_old, smt::SmtSolver& solver_new);
 StateAsmpt StateTransfer(wasim::StateAsmpt state, smt::SmtSolver& solver_old, smt::SmtSolver& solver_new);
 smt::UnorderedTermSet SetTransfer(smt::UnorderedTermSet expr_set, smt::SmtSolver& solver_old, smt::SmtSolver& solver_new);
+
+/**
+ * @brief 
+ * 
+ * @param one_hot_vec 
+ * @param solver 
+ * @return smt::TermVec 
+ */
+smt::TermVec one_hot(smt::TermVec one_hot_vec, smt::SmtSolver& solver);
+
+smt::UnorderedTermMap get_model(smt::Term expr, smt::SmtSolver& solver);
+smt::UnorderedTermMap get_invalid_model(smt::Term expr, smt::SmtSolver& solver);
+
+bool is_valid(smt::Term expr, smt::SmtSolver& solver);
+
 }

@@ -1,10 +1,6 @@
-1. If you don't need to make a copy for the argument, then avoid it.
-2. Advocate the use of member functions
-
-Currently I don't understand why the function "concretize" is not used at all...
-(not even in the original Python WASIM)
-
-
-Long term plan: maybe thinking about merging states?
-
-TODO: find terminate bugs in sygus simplify
+TODO: sovler reset assertions
+    solution: always use push and pop when assert formulas?
+    // s->push();
+    // s->assert_formula(unsat_expr);
+    // auto res1 = s->check_sat();
+    // s->pop();

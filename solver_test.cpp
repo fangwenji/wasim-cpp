@@ -5,62 +5,49 @@ using namespace smt;
 using namespace std;
 int main()
 {
- // Boolector aliases booleans and bitvectors of size one
- // and also performs on-the-fly rewriting
- // if you'd like to maintain the term structure, you can
- // enable logging by passing true
- SmtSolver s = BoolectorSolverFactory::create(false);
+  // Boolector aliases booleans and bitvectors of size one
+  // and also performs on-the-fly rewriting
+  // if you'd like to maintain the term structure, you can
+  // enable logging by passing true
+  SmtSolver s = BoolectorSolverFactory::create(false);
 
- s->set_logic("QF_UFBV");
- s->set_opt("incremental", "true");
- s->set_opt("produce-models", "true");
- s->set_opt("produce-unsat-assumptions",
-   "true");
- Sort bvs = s->make_sort(BV, 32);
- Sort funs =
-   s->make_sort(FUNCTION, {bvs, bvs});
+  s->set_logic("QF_UFBV");
+  s->set_opt("incremental", "true");
+  s->set_opt("produce-models", "true");
+  s->set_opt("produce-unsat-assumptions",
+    "true");
 
- Term x = s->make_symbol("x", bvs);
- Term y = s->make_symbol("y", bvs);
- Term f = s->make_symbol("f", funs);
+  auto s_1 = s->make_term(1);
+  auto s_0 = s->make_term(0);
 
- Op ext = Op(Extract, 15, 0);
- Term x0 = s->make_term(ext, x);
- Term y0 = s->make_term(ext, y);
+  auto unsat_expr = s->make_term(smt::Equal, s_0, s_1);
 
- Term fx = s->make_term(Apply, f, x);
- Term fy = s->make_term(Apply, f, y);
- s->assert_formula(
-   s->make_term(Distinct, fx, fy));
+  s->push();
+  s->assert_formula(unsat_expr);
+  auto res1 = s->check_sat();
+  s->pop();
+  cout << res1.is_sat() << endl;
 
- s->push(1);
- s->assert_formula(
-   s->make_term(Equal, x0, y0));
- cout <<  s->check_sat() << endl;
 
- cout << s->get_value(x) << endl;
- s->pop(1);
+  auto sat_expr = s->make_term(smt::Equal, s_0, s_0);
 
- Term xy = s->make_term(BVAnd, x, y);
- Term a1 = s->make_term(BVUge, x0, y0);
- Term a2 = s->make_term(BVUge, xy, x);
- Term a3 = s->make_term(BVUge, xy, y);
- Term a4 = s->make_term(And, a2, a3);
- cout << a1 << endl;
- cout <<
-   s->check_sat_assuming({a2, a3})
-   << endl;
- cout <<
-   s->check_sat_assuming({a2})
-   << endl;
- cout <<
-   s->check_sat_assuming({a4})
-   << endl;
- UnorderedTermSet ua;
-//  s->get_unsat_assumptions(ua);
-//  for (Term t : ua) { cout << t << endl; }
+  s->push();
+  s->assert_formula(sat_expr);
+  auto res2 = s->check_sat();
+  s->pop();
+  cout << res2.is_sat() << endl;
+  
 
-auto a = s->make_sort(BV, 1);
-auto aa = s->make_term(1, a);
-cout << aa << endl;
+  // s->push();
+  // s->assert_formula(unsat_expr);
+  // auto res3 = s->check_sat();
+  // cout << res3.is_sat() << endl;
+  // s->pop();
+
+  // s->push();
+  // s->assert_formula(sat_expr);
+  // auto res4 = s->check_sat();
+  // cout << res4.is_sat() << endl;
+  // s->pop();
+
 }

@@ -46,6 +46,7 @@ private:
         void CheckSimed() const { assert(UsedInSim_); } 
         void record_prev_assumption_len(unsigned l) { assmpt_len_ = l; }
         unsigned get_prev_assumption_len() const { return assmpt_len_; }
+        
 
         smt::TermVec assumptions_;
         smt::UnorderedTermMap var_assign_;
@@ -77,6 +78,14 @@ protected:
     void _check_only_invar(const smt::UnorderedTermMap & vdict) const;
     bool _expr_only_sv(const smt::Term & expr) const;
 
+    /**
+     * @brief 
+     * 
+     * @param bitwdth 
+     * @param vname 
+     * @param x 
+     * @return smt::Term 
+     */
     smt::Term new_var(int bitwdth, const std::string & vname = "var", bool x = true);
 
 public:

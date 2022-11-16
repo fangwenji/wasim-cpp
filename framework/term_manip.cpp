@@ -72,7 +72,9 @@ smt::Term PropertyInterface::register_arg(const std::string & name, const smt::S
   try {
             tmpvar = solver_->get_symbol(name);
         } catch(const std::exception& e) {
-            cout << "ERROR: Could not find " << name << " in solver! Wrong input value."<< endl;
+            // cout << "ERROR: Could not find " << name << " in solver! Wrong input value."<< endl;
+            // cout << sort->get_sort_kind() << endl;
+            tmpvar = solver_->make_symbol(name, sort);
         }
   arg_param_map_.add_mapping(name, tmpvar);
   return tmpvar; // we expect to get the term in the transition system.
@@ -320,7 +322,7 @@ void StateRW::StateWriteTree(std::vector<std::vector<StateAsmpt>> branch_list, s
 }
 
 std::vector<std::vector<StateAsmpt>> StateRW::StateReadTree(std::string in_dir, int num_i, int num_j){
-    
+    cout << "Reading files. Please wait for seconds." << endl;
     std::vector<std::vector<StateAsmpt>> branch_list = {};
     for(int i=0; i<num_i; i++){
         std::vector<StateAsmpt> state_list = {};
@@ -338,6 +340,7 @@ std::vector<std::vector<StateAsmpt>> StateRW::StateReadTree(std::string in_dir, 
         }
         branch_list.push_back(state_list);
     }
+    cout << "Reading complete!" << endl;
 
     return branch_list;
 
@@ -396,5 +399,68 @@ smt::UnorderedTermSet SetTransfer(smt::UnorderedTermSet expr_set, smt::SmtSolver
     assert(expr_set.size() == expr_set_new.size());
     return expr_set_new;
 }
-    
+
+smt::TermVec one_hot(smt::TermVec one_hot_vec, smt::SmtSolver& solver){
+    smt::TermVec ret = {};
+    auto ll = one_hot_vec.size();
+    for(int i=0; i<ll; i++){
+        for(int j=i+1; j<ll; j++){
+            ret.push_back(solver->make_term(smt::Not, solver->make_term(smt::And, {one_hot_vec.at(i), one_hot_vec.at(j)})));
+        }
+    }
+
+    return ret;
+}
+
+/**
+ * @brief Get the model object
+ * should be used after 'solver->assert_formula'
+ * 
+ * @param expr 
+ * @param solver 
+ * @return std::string 
+ */
+// smt::UnorderedTermMap get_model(smt::Term expr, smt::SmtSolver& solver){
+//     smt::UnorderedTermMap ret_model = {};
+//     if(solver->check_sat().is_sat()){
+//         smt::TermVec free_var_vec(get_free_variables(expr).begin(), get_free_variables(expr).end());
+//         for (auto t : free_var_vec)
+//         {
+//             cout << "\t" << t->to_string() << " := " << solver->get_value(t) << endl;
+//             ret_model[t] = solver->get_value(t);
+//         }
+//     }
+//     else{
+//         cout << "No model exists!" << endl;
+//     }
+        
+// }
+
+smt::UnorderedTermMap get_model(smt::Term expr, smt::SmtSolver& solver){
+    cout << "get_model" << endl;
+    smt::UnorderedTermMap ret_model = {};
+    smt::TermVec free_var_vec(get_free_variables(expr).begin(), get_free_variables(expr).end());
+    for (auto t : free_var_vec)
+    {
+        cout << "\t" << t->to_string() << " := " << solver->get_value(t) << endl;
+        ret_model[t] = solver->get_value(t);
+    }
+    return ret_model;
+
+}
+
+smt::UnorderedTermMap get_invalid_model(smt::Term expr, smt::SmtSolver& solver){
+    cout << "get_invalid_model" << endl;
+    auto expr_not = solver->make_term(smt::Not, expr);
+    return get_model(expr_not, solver);
+
+}
+
+bool is_valid(smt::Term expr, smt::SmtSolver& solver){
+    auto expr_not = solver->make_term(smt::Not, expr);
+    solver->reset_assertions();
+    solver->assert_formula(expr_not);
+}
+
+
 } // namespace wasim

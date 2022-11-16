@@ -36,6 +36,7 @@ int main(){
     solver->set_opt("incremental", "true");
     solver->set_opt("produce-models", "true");
     solver->set_opt("produce-unsat-assumptions", "true");
+    // solver->set_opt("base-context-1", "true");
     TransitionSystem sts(solver);
     BTOR2Encoder btor_parser(input_file, sts);
 
@@ -115,7 +116,7 @@ int main(){
     cout << sat_check->to_string() << endl;
 
 
-    // solver->reset_assertions();
+    solver->push();
     solver->assert_formula(sat_check);
     smt::Result r = solver->check_sat();
 
@@ -125,12 +126,11 @@ int main(){
     else{
         cout << "Formal Property Check Fail!" << endl;
         cout << "Please check the following counter-example:" << endl;
-        smt::TermVec free_var_vec(get_free_variables(sat_check).begin(), get_free_variables(sat_check).end());
-        for (auto t : free_var_vec)
-        {
-            cout << "\t" << t->to_string() << " := " << solver->get_value(t) << endl;
-        }
+        auto cex = get_model(sat_check, solver);
     }
+    solver->pop();
+
+
 
 
 

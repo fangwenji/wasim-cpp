@@ -166,7 +166,7 @@ target_link_libraries(wasim-lib PUBLIC Boost::system)
 # and builds all the parametrized tests
 # add_subdirectory(tests)
 
-add_executable(wasim-bin "${PROJECT_SOURCE_DIR}/inv_check1.cpp")
+add_executable(wasim-bin "${PROJECT_SOURCE_DIR}/solver_test.cpp")
 set_target_properties(wasim-bin PROPERTIES OUTPUT_NAME wasim)
 
 
