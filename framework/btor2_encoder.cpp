@@ -290,7 +290,7 @@ void BTOR2Encoder::parse(const std::string filename)
     if (l_->tag == BTOR2_TAG_state) {
       if (l_->symbol) {
         symbol_ = l_->symbol;
-        // std::cout << "GET SV: " << l_->symbol << std::endl;
+        std::cout << "GET SV: " << l_->symbol << std::endl;
       } else {
         auto renaming_lookup_pos = state_renaming_table.find(l_->id);
         if (renaming_lookup_pos != state_renaming_table.end() )
@@ -307,8 +307,8 @@ void BTOR2Encoder::parse(const std::string filename)
       id2statenum[l_->id] = num_states;
       num_states++;
     } else if (l_->tag == BTOR2_TAG_input) {
-      // if (l_->symbol)
-      //   std::cout << "GET INVAR: " << l_->symbol << std::endl;
+      if (l_->symbol)
+        std::cout << "GET INVAR: " << l_->symbol << std::endl;
       if (l_->symbol) {
         symbol_ = l_->symbol;
       } else {

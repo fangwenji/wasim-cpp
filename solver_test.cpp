@@ -21,6 +21,7 @@ int main()
   auto s_0 = s->make_term(0);
 
   auto unsat_expr = s->make_term(smt::Equal, s_0, s_1);
+  auto unsat_expr2 = s->make_term(smt::Equal, s_0, s->make_term(smt::And, s_1, s_1));
 
   s->push();
   s->assert_formula(unsat_expr);
@@ -38,16 +39,18 @@ int main()
   cout << res2.is_sat() << endl;
   
 
-  // s->push();
-  // s->assert_formula(unsat_expr);
-  // auto res3 = s->check_sat();
-  // cout << res3.is_sat() << endl;
-  // s->pop();
+  s->push();
+  s->assert_formula(unsat_expr);
+  s->assert_formula(sat_expr);
+  s->assert_formula(unsat_expr2);
+  auto res3 = s->check_sat();
+  s->pop();
+  cout << res3.is_sat() << endl;
 
-  // s->push();
-  // s->assert_formula(sat_expr);
-  // auto res4 = s->check_sat();
-  // cout << res4.is_sat() << endl;
-  // s->pop();
+  s->push();
+  s->assert_formula(sat_expr);
+  auto res4 = s->check_sat();
+  s->pop();
+  cout << res4.is_sat() << endl;
 
 }

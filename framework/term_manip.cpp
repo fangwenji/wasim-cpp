@@ -437,12 +437,12 @@ smt::TermVec one_hot(smt::TermVec one_hot_vec, smt::SmtSolver& solver){
 // }
 
 smt::UnorderedTermMap get_model(smt::Term expr, smt::SmtSolver& solver){
-    cout << "get_model" << endl;
+    // cout << "get_model" << endl;
     smt::UnorderedTermMap ret_model = {};
     smt::TermVec free_var_vec(get_free_variables(expr).begin(), get_free_variables(expr).end());
     for (auto t : free_var_vec)
     {
-        cout << "\t" << t->to_string() << " := " << solver->get_value(t) << endl;
+        // cout << "\t" << t->to_string() << " := " << solver->get_value(t) << endl;
         ret_model[t] = solver->get_value(t);
     }
     return ret_model;
@@ -450,16 +450,50 @@ smt::UnorderedTermMap get_model(smt::Term expr, smt::SmtSolver& solver){
 }
 
 smt::UnorderedTermMap get_invalid_model(smt::Term expr, smt::SmtSolver& solver){
-    cout << "get_invalid_model" << endl;
+    // cout << "get_invalid_model" << endl;
     auto expr_not = solver->make_term(smt::Not, expr);
     return get_model(expr_not, solver);
 
 }
 
-bool is_valid(smt::Term expr, smt::SmtSolver& solver){
+smt::Result is_sat_res(smt::TermVec expr_vec, smt::SmtSolver& solver){
+    smt::Term sat_check_expr ={};
+    if(expr_vec.size() == 1){
+        sat_check_expr = expr_vec.at(0);
+    }
+    else{
+        sat_check_expr = solver->make_term(smt::And, expr_vec);
+    }
+    solver->push();
+    solver->assert_formula(sat_check_expr);
+    auto r = solver->check_sat();
+    solver->pop();
+    return r;
+}
+
+bool is_sat_bool(smt::TermVec expr_vec, smt::SmtSolver& solver){
+    return is_sat_res(expr_vec, solver).is_sat();
+}
+
+
+bool is_valid_bool(smt::Term expr, smt::SmtSolver& solver){
     auto expr_not = solver->make_term(smt::Not, expr);
-    solver->reset_assertions();
-    solver->assert_formula(expr_not);
+    return (not is_sat_bool(smt::TermVec{expr_not}, solver));
+}
+
+std::vector<std::string> sort_model(smt::UnorderedTermMap cex){
+    std::vector<std::string> cex_vec = {};
+    for(const auto& sv:cex){
+        auto var = sv.first;
+        auto value = sv.second;
+        std::string cex_expr = var->to_string() + " := " + value->to_string();
+        cex_vec.push_back(cex_expr);
+    }
+    std::sort(cex_vec.begin(), cex_vec.end());
+    for(const auto& cex_str:cex_vec){
+        cout << cex_str << endl;
+    }
+    return cex_vec;
 }
 
 

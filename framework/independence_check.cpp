@@ -22,7 +22,10 @@ bool e_is_always_valid(const smt::Term & e, smt::TermVec assumptions /*={}*/, sm
             throw SmtException("[e_is_always_valid] : expecting bit-width to be 1");
     }
 
-    return (s->check_sat_assuming(assumptions).is_unsat());
+    auto r = is_sat_res(assumptions, s);
+    auto ret = r.is_unsat();
+
+    return ret;
 }
 
 bool e_is_always_invalid(const smt::Term & e, smt::TermVec assumptions /*={}*/, smt::SmtSolver& s){
@@ -42,7 +45,10 @@ bool e_is_always_invalid(const smt::Term & e, smt::TermVec assumptions /*={}*/, 
             throw SmtException("[e_is_always_invalid] : expecting bit-width to be 1");
     }
 
-    return (s->check_sat_assuming(assumptions).is_unsat());
+    auto r = is_sat_res(assumptions, s);
+    auto ret = r.is_unsat();
+
+    return ret;
 }
 
 // will append longer and longer suffix until it becomes a fresh variable
@@ -72,6 +78,10 @@ bool e_is_independent_of_v(const smt::Term & e, const smt::Term & v, const smt::
     // however, it is not the case.
 
     auto localSolver = smt::BoolectorSolverFactory::create(false);
+    localSolver->set_logic("QF_UFBV");
+    localSolver->set_opt("incremental", "true");
+    localSolver->set_opt("produce-models", "true");
+    localSolver->set_opt("produce-unsat-assumptions", "true");
     smt::TermTranslator translator(localSolver);
 
     auto e_local = translator.transfer_term(e);
@@ -94,6 +104,7 @@ bool e_is_independent_of_v(const smt::Term & e, const smt::Term & v, const smt::
 
     auto e1_neq_e2 = localSolver->make_term(smt::Not, 
                        localSolver->make_term(smt::Equal, e1, e2));
+    localSolver->push();
     localSolver->assert_formula(e1_neq_e2);
 
     // cout << "assump: " << assumptionSub_expr << endl;
@@ -104,35 +115,11 @@ bool e_is_independent_of_v(const smt::Term & e, const smt::Term & v, const smt::
     }
 
     auto r = localSolver->check_sat();
+    localSolver->pop();
 
     return r.is_unsat();
 }
 
-// substitute e[v/?] and simplify the formula
-// if no assumptions, then we arbitarily pick a value for v (say 0)
-// if there are assumptions, we can only pick one following the assumptions
-// smt::Term substitute_simplify(smt::Term e, smt::Term v, smt::TermVec assumptions /*={}*/, smt::SmtSolver& s){
-//     smt::Term val;
-//     if (assumptions.empty()){
-//         auto v_sort = v->get_sort();
-//         val = s->make_term(0, v_sort);
-//     }
-//     else{ //this part need to test
-
-//         auto asmpt_term = s->make_term(smt::And, assumptions);
-//         s->assert_formula(asmpt_term);
-//         auto val = s->get_value(v);
-//         s->reset_assertions();
-//     }
-//     smt::UnorderedTermMap submap = {{v,val}};
-//     return s->substitute(e, submap);
-// }
-
-// bool is_valid(smt::Term e, smt::SmtSolver& s){
-//     smt::TermVec e_vec;
-//     e_vec.push_back(e);
-//     return s->check_sat_assuming(e_vec).is_sat();
-// }
 
 }
     

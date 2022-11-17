@@ -160,10 +160,10 @@ int main(){
     auto is_not_start = executor.interpret_state_expr_on_curr_frame(is_not_start0);
     auto init_asmpt = s_init.asmpt_;
     init_asmpt.push_back(is_not_start);
-    solver->assert_formula(solver->make_term(smt::And, init_asmpt));
-    auto r_t = solver->check_sat();
+    auto r_t = is_sat_res(init_asmpt, solver);
+    assert(not r_t.is_sat());
     
-    // auto r_t = solver->check_sat_assuming(init_asmpt);
+
     smt::TermVec pop_vec = {};
     for(const auto& sv : s_init.sv_){
         auto s = sv.first;

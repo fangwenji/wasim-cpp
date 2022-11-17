@@ -38,3 +38,5 @@ build/*
 deps/*
 __pycache__/*
 
+output/
+

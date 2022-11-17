@@ -29,12 +29,16 @@ int is_reducible_bool(smt::Term expr, smt::TermVec assumptions, smt::SmtSolver& 
     smt::TermVec check_vec_true (assumptions);
     smt::Term eq_expr_true = solver->make_term(smt::Equal, expr, solver->make_term(1));
     check_vec_true.push_back(eq_expr_true);
-    auto r_t = solver->check_sat_assuming(check_vec_true);
+    // auto r_t = solver->check_sat_assuming(check_vec_true);
+    auto r_t = is_sat_res(check_vec_true, solver);
+
+    
 
     smt::TermVec check_vec_false (assumptions);
     smt::Term eq_expr_false = solver->make_term(smt::Equal, expr, solver->make_term(0));
     check_vec_false.push_back(eq_expr_false);
-    auto r_f = solver->check_sat_assuming(check_vec_false);
+    // auto r_f = solver->check_sat_assuming(check_vec_false);
+    auto r_f = is_sat_res(check_vec_false, solver);
     if(not r_t.is_sat()){
         return 0;
     }
@@ -49,12 +53,14 @@ int is_reducible_bv_width1(smt::Term expr, smt::TermVec assumptions, smt::SmtSol
     auto bv_sort = solver->make_sort(smt::BV, 1);
     smt::Term eq_expr_true = solver->make_term(smt::Equal, expr, solver->make_term(1, bv_sort));
     check_vec_true.push_back(eq_expr_true);
-    auto r_t = solver->check_sat_assuming(check_vec_true);
+    // auto r_t = solver->check_sat_assuming(check_vec_true);
+    auto r_t = is_sat_res(check_vec_true, solver);
 
     smt::TermVec check_vec_false (assumptions);
     smt::Term eq_expr_false = solver->make_term(smt::Equal, expr, solver->make_term(0, bv_sort));
     check_vec_false.push_back(eq_expr_false);
-    auto r_f = solver->check_sat_assuming(check_vec_false);
+    // auto r_f = solver->check_sat_assuming(check_vec_false);
+    auto r_f = is_sat_res(check_vec_false, solver);
     if(not r_t.is_sat()){
         return 0;
     }

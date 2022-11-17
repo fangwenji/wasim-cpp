@@ -7,6 +7,7 @@
 #include "smt-switch/smt.h"
 #include "smt-switch/exceptions.h"
 #include "assert.h"
+#include "term_manip.h"
 
 // #include "ts.h"
 

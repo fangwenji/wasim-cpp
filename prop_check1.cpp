@@ -100,7 +100,7 @@ int main(){
     smt::TermVec post_vec = {};
     auto reg_v_comp_trans_not = solver->make_term(smt::Not, reg_v_comp_trans);
     for(const auto& reg:post_reg){
-        auto eq_expr = solver->make_term(smt::Equal, reg_v_comp_trans_not, reg);
+        auto eq_expr = solver->make_term(smt::Equal, reg_v_comp_trans, reg);
         post_vec.push_back(eq_expr);
     }
 
@@ -116,9 +116,11 @@ int main(){
     cout << sat_check->to_string() << endl;
 
 
-    solver->push();
-    solver->assert_formula(sat_check);
-    smt::Result r = solver->check_sat();
+    // solver->push();
+    // solver->assert_formula(sat_check);
+    // smt::Result r = solver->check_sat();
+
+    auto r = is_sat_res(smt::TermVec{sat_check}, solver);
 
     if(r.is_unsat()){
         cout << "Formal Property Check Pass!" << endl;
@@ -127,8 +129,9 @@ int main(){
         cout << "Formal Property Check Fail!" << endl;
         cout << "Please check the following counter-example:" << endl;
         auto cex = get_model(sat_check, solver);
+        auto cex_str = sort_model(cex);
     }
-    solver->pop();
+    // solver->pop();
 
 
 

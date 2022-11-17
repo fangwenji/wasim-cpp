@@ -89,6 +89,9 @@ smt::TermVec one_hot(smt::TermVec one_hot_vec, smt::SmtSolver& solver);
 smt::UnorderedTermMap get_model(smt::Term expr, smt::SmtSolver& solver);
 smt::UnorderedTermMap get_invalid_model(smt::Term expr, smt::SmtSolver& solver);
 
-bool is_valid(smt::Term expr, smt::SmtSolver& solver);
+smt::Result is_sat_res(smt::TermVec expr_vec, smt::SmtSolver& solver);
+bool is_sat_bool(smt::TermVec expr_vec, smt::SmtSolver& solver);
+bool is_valid_bool(smt::Term expr, smt::SmtSolver& solver);
 
-}
+std::vector<std::string> sort_model(smt::UnorderedTermMap cex);
+} 

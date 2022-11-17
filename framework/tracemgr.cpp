@@ -93,7 +93,8 @@ bool TraceManager::abs_eq(StateAsmpt s_abs, StateAsmpt s2){
     assumptions.insert(assumptions.end(), s_abs.asmpt_.begin(), s_abs.asmpt_.end());
     assumptions.insert(assumptions.end(), s2.asmpt_.begin(), s2.asmpt_.end());
 
-    auto r = solver_->check_sat_assuming(assumptions);
+    // auto r = solver_->check_sat_assuming(assumptions);
+    auto r = is_sat_res(assumptions, solver_);
     if(not(r.is_sat())){
         return false;
     }
@@ -105,7 +106,8 @@ bool TraceManager::abs_eq(StateAsmpt s_abs, StateAsmpt s2){
 
 bool TraceManager::check_reachable(StateAsmpt s_in){
     auto asmpt = s_in.asmpt_;
-    auto r = solver_->check_sat_assuming(asmpt);
+    // auto r = solver_->check_sat_assuming(asmpt);
+    auto r = is_sat_res(asmpt, solver_);
     auto current_asmpt_sat = r.is_sat();
     return current_asmpt_sat;
 }

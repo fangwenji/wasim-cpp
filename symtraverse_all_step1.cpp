@@ -151,31 +151,4 @@ int main(){
     std::string out_dir = PROJECT_SOURCE_DIR "/output/c1/";
     staterw.StateWriteTree(branch_list, out_dir);
 
-
-
-    // auto state = branch_list[0][1];
-    // state.print();
-    // state.print_assumptions();
-
-    // // auto branch_list_new = staterw.StateReadTree(out_dir,  6, 1);
-    // auto branch_list_new = staterw.StateReadTree(out_dir, 322, 7);
-
-    // cout << branch_list.size() << " -- " << branch_list[0].size() << endl;
-    // cout << branch_list_new.size() << " -- " << branch_list_new[0].size() << endl;
-    
-
-
-    // for(const auto& state_list:branch_list){
-    //     for(auto state:state_list){
-    //         state.print();
-    //         state.print_assumptions();
-    //     }
-    // }
-
-    // for(const auto& state_list:branch_list_new){
-    //     for(auto state:state_list){
-    //         state.print();
-    //         state.print_assumptions();
-    //     }
-    // }
 }
