@@ -3,44 +3,12 @@
 
 namespace wasim {
 
-void TraceManager::record_x_var(wasim::type_record var)
-{
-  if (std::holds_alternative<smt::TermVec>(var)) {
-    auto var_vec = std::get<smt::TermVec>(var);
-    smt::UnorderedTermSet var_set(var_vec.begin(), var_vec.end());
-    Xvar_.insert(var_set.begin(), var_set.end());
-  } else if (std::holds_alternative<smt::UnorderedTermSet>(var)) {
-    auto var_set = std::get<smt::UnorderedTermSet>(var);
-    Xvar_.insert(var_set.begin(), var_set.end());
-  } else {
-    auto var_term = std::get<smt::Term>(var);
-    Xvar_.insert(var_term);
-  }
-}
-
-void TraceManager::record_base_var(wasim::type_record var)
-{
-  if (std::holds_alternative<smt::TermVec>(var)) {
-    auto var_vec = std::get<smt::TermVec>(var);
-    smt::UnorderedTermSet var_set(var_vec.begin(), var_vec.end());
-    base_var_.insert(var_set.begin(), var_set.end());
-  } else if (std::holds_alternative<smt::UnorderedTermSet>(var)) {
-    auto var_set = std::get<smt::UnorderedTermSet>(var);
-    base_var_.insert(var_set.begin(), var_set.end());
-  } else {
-    auto var_term = std::get<smt::Term>(var);
-    base_var_.insert(var_term);
-  }
-}
-
-void TraceManager::remove_base_var(smt::Term var) { base_var_.erase(var); }
-
-bool TraceManager::record_state_w_asmpt(StateAsmpt state,
-                                        wasim::type_record Xvar)
+bool TraceManager::record_state(const StateAsmpt & state,
+                                const smt::UnorderedTermSet & Xvar)
 {
   record_x_var(Xvar);
 
-  for (auto s : abs_state_) {
+  for (const auto & s : abs_state_) {
     if (abs_eq(s, state)) {
       return false;
     }
@@ -49,14 +17,15 @@ bool TraceManager::record_state_w_asmpt(StateAsmpt state,
   return true;
 }
 
-bool TraceManager::record_state_w_asmpt3(std::vector<StateAsmpt> new_state_vec,
-                                         StateAsmpt state,
-                                         wasim::type_record Xvar)
+bool TraceManager::record_state_nonexisted_in_vec(
+                          const std::vector<StateAsmpt> & new_state_vec,
+                          const StateAsmpt & state,
+                          const smt::UnorderedTermSet & Xvar)
 {
   record_x_var(Xvar);
 
-  for (auto s : new_state_vec) {
-    if (abs_eq(abstract(s), state)) {
+  for (const auto & s : new_state_vec) {
+    if (abs_eq(s, state)) { // abs_eq will ensure it only compare on base_var
       return false;
     }
   }
@@ -64,19 +33,18 @@ bool TraceManager::record_state_w_asmpt3(std::vector<StateAsmpt> new_state_vec,
   return true;
 }
 
-bool TraceManager::record_state_w_asmpt_one_step(StateAsmpt state)
-{
-  abs_state_one_step_.push_back(abstract(state));
-  return true;
-}
 
-bool TraceManager::abs_eq(StateAsmpt s_abs, StateAsmpt s2)
+bool TraceManager::abs_eq(const StateAsmpt & s_abs, const StateAsmpt & s2)
 {
   smt::TermVec expr_vec;
+  // for each of the state var in s_abs, find the expression in both
   for (const auto & sv : s_abs.sv_) {
-    if (s2.sv_.find(sv.first) == s2.sv_.end()) {
+    if (base_var_.find(sv.first) == base_var_.end())
+      continue;
+    // now sv.first is in base var
+    if (s2.sv_.find(sv.first) == s2.sv_.end())
       return false;
-    }
+    
     auto v2 = s2.sv_.at(sv.first);
 
     auto expr_tmp = solver_->make_term(
@@ -98,23 +66,25 @@ bool TraceManager::abs_eq(StateAsmpt s_abs, StateAsmpt s2)
 
   // auto r = solver_->check_sat_assuming(assumptions);
   auto r = is_sat_res(assumptions, solver_);
-  if (not(r.is_sat())) {
+  if (!r.is_sat()) {
+    // add this sanity check
+    throw SmtException("[TraceManager::abs_eq] overly constrained!");
     return false;
   }
   auto valid = e_is_always_valid(expr, assumptions, solver_);
   return valid;
 }
 
-bool TraceManager::check_reachable(StateAsmpt s_in)
+bool TraceManager::check_reachable(const StateAsmpt & s_in)
 {
-  auto asmpt = s_in.asmpt_;
+  const auto & asmpt = s_in.asmpt_;
   // auto r = solver_->check_sat_assuming(asmpt);
   auto r = is_sat_res(asmpt, solver_);
   auto current_asmpt_sat = r.is_sat();
   return current_asmpt_sat;
 }
 
-bool TraceManager::check_concrete_enough(StateAsmpt s_in, wasim::type_record Xs)
+bool TraceManager::check_concrete_enough(const StateAsmpt & s_in, const smt::UnorderedTermSet & Xs)
 {
   record_x_var(Xs);
 
@@ -131,29 +101,24 @@ bool TraceManager::check_concrete_enough(StateAsmpt s_in, wasim::type_record Xs)
     }
     smt::UnorderedTermSet allv_in_v = get_free_variables(v);
     smt::UnorderedTermSet intersec_res;
-    // std::set_intersection(allv_in_v.begin(), allv_in_v.end(), Xvar_.begin(),
-    // Xvar_.end(), inserter(intersec_res, intersec_res.begin()));
 
-    for (const auto var : allv_in_v) {
+    for (const auto & var : allv_in_v) {
       if (Xvar_.find(var) != Xvar_.end()) {
         intersec_res.insert(var);
-        // cout << var->to_string() << endl;
       }
-    }
-
-    // allv_in_v.insert(Xvar_.begin(), Xvar_.end());
+    } // intersec_res is now all X contained in v
 
     for (const auto & X : intersec_res) {
       auto ind = e_is_independent_of_v(v, X, s_in.asmpt_);
-      if (not ind) {
+      if (!ind) {
         return false;
       }
     }
   }
   return true;
-}
+} // end of check_concrete_enough
 
-StateAsmpt TraceManager::abstract(StateAsmpt s)
+StateAsmpt TraceManager::abstract(const StateAsmpt & s)
 {
   if (base_var_.size() == 0) {
     cout << "WARNING: set base_var first!" << endl;
@@ -163,7 +128,7 @@ StateAsmpt TraceManager::abstract(StateAsmpt s)
     auto s = sv.first;
     auto v = sv.second;
     if (base_var_.find(s) != base_var_.end()) {
-      s2.sv_[s] = v;
+      s2.sv_.emplace(s, v);
     }
   }
   return s2;

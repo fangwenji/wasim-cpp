@@ -21,7 +21,8 @@ class TraceManager
       : ts_(ts), solver_(s), invar_(ts.inputvars()), svar_(ts.statevars())
   {
   }
-
+ 
+ protected:
   const TransitionSystem & ts_;
   smt::SmtSolver solver_;
   const smt::UnorderedTermSet & invar_;
@@ -31,18 +32,41 @@ class TraceManager
   std::vector<StateAsmpt> abs_state_;
   std::vector<StateAsmpt> abs_state_one_step_;
 
-  void record_x_var(wasim::type_record var);
-  void record_base_var(wasim::type_record var);
-  void remove_base_var(smt::Term var);
-  bool record_state_w_asmpt(StateAsmpt state, wasim::type_record Xvar);
-  bool record_state_w_asmpt3(std::vector<StateAsmpt> new_state_vec,
-                             StateAsmpt state,
-                             wasim::type_record Xvar);
-  bool record_state_w_asmpt_one_step(StateAsmpt state);
+ public:
+  const std::vector<StateAsmpt> & get_abs_state() const { return abs_state_; }
+  const std::vector<StateAsmpt> & abs_state_one_step() const { return abs_state_one_step_; }
+
+  void record_x_var(const smt::Term & var) { Xvar_.insert(var); }
+  void record_x_var(const smt::TermVec & var) { Xvar_.insert(var.begin(), var.end()); }
+  void record_x_var(const smt::UnorderedTermSet & var) { Xvar_.insert(var.begin(), var.end()); }
+
+  void record_base_var(const smt::Term & var) { base_var_.insert(var); }
+  void record_base_var(const smt::TermVec & var) { base_var_.insert(var.begin(), var.end()); }
+  void record_base_var(const smt::UnorderedTermSet & var) { base_var_.insert(var.begin(), var.end()); }
+
+  void remove_base_var(const smt::Term & var) { base_var_.erase(var); };
+
+  // record a state into abs_state_, return true if it is not abstractly
+  // equivalent to any state in abs_state_
+  bool record_state(const StateAsmpt & state, 
+                    const smt::UnorderedTermSet & Xvar);
+
+  // record a state into abs_state_, return true if it is not abstractly
+  // equivalent to any state in new_state_vec
+  bool record_state_nonexisted_in_vec(
+                             const std::vector<StateAsmpt> & new_state_vec,
+                             const StateAsmpt & state,
+                             const smt::UnorderedTermSet & Xvar);
+
+   // record a state into abs_state_one_step_, no comparison at all
+  void record_state_one_step_no_comparison(const StateAsmpt & state) {
+    abs_state_one_step_.push_back(abstract(state)); }
+
   // void _debug_abs_check(smt::Term expr, smt::TermVec assumptions);
-  bool abs_eq(StateAsmpt s_abs, StateAsmpt s2);
-  bool check_reachable(StateAsmpt s_in);
-  bool check_concrete_enough(StateAsmpt s_in, wasim::type_record Xs);
-  StateAsmpt abstract(StateAsmpt s);
+  bool abs_eq(const StateAsmpt & s_abs, const StateAsmpt & s2);
+  bool check_reachable(const StateAsmpt & s_in);
+  // check if all base_var in s_in are free from Xs
+  bool check_concrete_enough(const StateAsmpt & s_in, const smt::UnorderedTermSet & Xs);
+  StateAsmpt abstract(const StateAsmpt & s);
 };
 }  // namespace wasim

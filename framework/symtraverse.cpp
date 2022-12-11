@@ -154,7 +154,7 @@ void SymbolicTraverse::traverse_one_step(
   auto concrete_enough =
       tracemgr_.check_concrete_enough(state, executor_.get_Xs());
   assert(concrete_enough);
-  auto is_new_state = tracemgr_.record_state_w_asmpt(state, executor_.get_Xs());
+  auto is_new_state = tracemgr_.record_state(state, executor_.get_Xs());
   assert(is_new_state);
 
   PerStateStack init_choice(branching_point, executor_, solver_);
@@ -196,11 +196,11 @@ void SymbolicTraverse::traverse_one_step(
     }
 
     auto is_new_state =
-        tracemgr_.record_state_w_asmpt(state, executor_.get_Xs());
+        tracemgr_.record_state(state, executor_.get_Xs());
 
     if (is_new_state) {
       cout << "new state!" << endl;
-      tracemgr_.record_state_w_asmpt_one_step(state);
+      tracemgr_.record_state_one_step_no_comparison(state);
     } else {
       cout << "already exeists." << endl;
     }
@@ -257,7 +257,7 @@ void SymbolicTraverse::traverse(
   auto concrete_enough =
       tracemgr_.check_concrete_enough(state, executor_.get_Xs());
   assert(concrete_enough);
-  auto is_new_state = tracemgr_.record_state_w_asmpt(state, executor_.get_Xs());
+  auto is_new_state = tracemgr_.record_state(state, executor_.get_Xs());
   assert(is_new_state);
 
   PerStateStack init_stack(branching_point, executor_, solver_);
@@ -350,7 +350,7 @@ void SymbolicTraverse::traverse(
     }
 
     auto is_new_state =
-        tracemgr_.record_state_w_asmpt3(state_vec, state, executor_.get_Xs());
+        tracemgr_.record_state_nonexisted_in_vec(state_vec, state, executor_.get_Xs());
 
     if (is_new_state) {
       cout << "A new state!" << endl;

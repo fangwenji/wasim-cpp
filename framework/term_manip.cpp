@@ -362,15 +362,15 @@ StateAsmpt StateTransfer(const wasim::StateAsmpt & state,
                          smt::SmtSolver & solver_old,
                          smt::SmtSolver & solver_new)
 {
-  smt::UnorderedTermMap sv_new = {};
-  smt::TermVec asmpt_vec_new = {};
+  smt::UnorderedTermMap sv_new;
+  smt::TermVec asmpt_vec_new;
   for (const auto & sv : state.sv_) {
     auto var = sv.first;
     auto value = sv.second;
 
     auto var_new = TermTransfer(var, solver_old, solver_new);
     auto value_new = TermTransfer(value, solver_old, solver_new);
-    sv_new[var_new] = value_new;
+    sv_new.emplace(var_new, value_new);
   }
 
   for (const auto & asmpt : state.asmpt_) {
@@ -449,14 +449,9 @@ smt::UnorderedTermMap get_invalid_model(const smt::Term & expr, smt::SmtSolver &
 
 smt::Result is_sat_res(const smt::TermVec & expr_vec, smt::SmtSolver & solver)
 {
-  smt::Term sat_check_expr = {};
-  if (expr_vec.size() == 1) {
-    sat_check_expr = expr_vec.at(0);
-  } else {
-    sat_check_expr = solver->make_term(smt::And, expr_vec);
-  }
   solver->push();
-  solver->assert_formula(sat_check_expr);
+  for (const auto & a : expr_vec)
+    solver->assert_formula(a);
   auto r = solver->check_sat();
   solver->pop();
   return r;
@@ -470,7 +465,7 @@ bool is_sat_bool(const smt::TermVec & expr_vec, smt::SmtSolver & solver)
 bool is_valid_bool(const smt::Term & expr, smt::SmtSolver & solver)
 {
   auto expr_not = solver->make_term(smt::Not, expr);
-  return (not is_sat_bool(smt::TermVec{ expr_not }, solver));
+  return (! is_sat_bool(smt::TermVec{ expr_not }, solver));
 }
 
 std::vector<std::string> sort_model(const smt::UnorderedTermMap & cex)
