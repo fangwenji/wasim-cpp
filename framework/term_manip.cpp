@@ -61,7 +61,7 @@ smt::Term free_make_symbol(const std::string & n,
   } while (true);
 }
 
-PropertyInterface::PropertyInterface(std::string filename,
+PropertyInterface::PropertyInterface(const std::string & filename,
                                      smt::SmtSolver & solver)
     : super(solver), filename_(filename), solver_(solver)
 {
@@ -96,7 +96,7 @@ smt::Term PropertyInterface::return_defs()
   }
 }
 
-void StateRW::write_term(std::string outfile, smt::Term expr)
+void StateRW::write_term(const std::string & outfile, const smt::Term & expr)
 {
   auto free_value_var = get_free_variables(expr);
   std::ofstream f;
@@ -116,7 +116,7 @@ void StateRW::write_term(std::string outfile, smt::Term expr)
   f << expr_name + line_end << endl;
 }
 
-void StateRW::write_single_term(std::string outfile, smt::Term expr)
+void StateRW::write_single_term(const std::string & outfile, const smt::Term & expr)
 {
   std::ofstream f;
   f.open(outfile.c_str(), ios::out | ios::app);
@@ -136,14 +136,14 @@ void StateRW::write_single_term(std::string outfile, smt::Term expr)
   }
 }
 
-void StateRW::write_string(std::string outfile, std::string asmpt_interp)
+void StateRW::write_string(const std::string & outfile, const std::string & asmpt_interp)
 {
   std::ofstream f;
   f.open(outfile.c_str(), ios::out | ios::app);
   f << asmpt_interp << endl;
 }
 
-bool StateRW::is_bv_const(smt::Term expr)
+bool StateRW::is_bv_const(const smt::Term & expr)
 {
   if (expr->get_sort()->get_sort_kind() == smt::BOOL) {
     return true;
@@ -158,7 +158,7 @@ bool StateRW::is_bv_const(smt::Term expr)
   }
 }
 
-smt::Term StateRW::str2bvnum(std::string int_num)
+smt::Term StateRW::str2bvnum(const std::string & int_num)
 {
   auto str_num = int_num.substr(2);
   int bitwidth = static_cast<int>(str_num.size());
@@ -174,9 +174,9 @@ smt::Term StateRW::str2bvnum(std::string int_num)
   return ret_term;
 }
 
-void StateRW::StateWrite(wasim::StateAsmpt state,
-                         std::string outfile_sv,
-                         std::string outfile_asmpt)
+void StateRW::StateWrite(const wasim::StateAsmpt & state,
+                         const std::string & outfile_sv,
+                         const std::string & outfile_asmpt)
 {
   // 1. write state variables and expressions to outfile_sv
   for (auto sv : state.sv_) {
@@ -212,7 +212,7 @@ void StateRW::StateWrite(wasim::StateAsmpt state,
   }
 }
 
-StateAsmpt StateRW::StateRead(std::string infile_sv, std::string infile_asmpt)
+StateAsmpt StateRW::StateRead(const std::string & infile_sv, const std::string & infile_asmpt)
 {
   // 1. read sv
   std::ifstream f(infile_sv.c_str());
@@ -303,8 +303,8 @@ StateAsmpt StateRW::StateRead(std::string infile_sv, std::string infile_asmpt)
   return state_ret;
 }
 
-void StateRW::StateWriteTree(std::vector<std::vector<StateAsmpt>> branch_list,
-                             std::string out_dir)
+void StateRW::StateWriteTree(const std::vector<std::vector<StateAsmpt>> & branch_list,
+                             const std::string & out_dir)
 {
   for (int i = 0; i < branch_list.size(); i++) {
     auto state_list = branch_list.at(i);
@@ -321,7 +321,7 @@ void StateRW::StateWriteTree(std::vector<std::vector<StateAsmpt>> branch_list,
   }
 }
 
-std::vector<std::vector<StateAsmpt>> StateRW::StateReadTree(std::string in_dir,
+std::vector<std::vector<StateAsmpt>> StateRW::StateReadTree(const std::string & in_dir,
                                                             int num_i,
                                                             int num_j)
 {
@@ -348,7 +348,7 @@ std::vector<std::vector<StateAsmpt>> StateRW::StateReadTree(std::string in_dir,
   return branch_list;
 }
 
-smt::Term TermTransfer(smt::Term expr,
+smt::Term TermTransfer(const smt::Term & expr,
                        smt::SmtSolver & solver_old,
                        smt::SmtSolver & solver_new)
 {
@@ -358,7 +358,7 @@ smt::Term TermTransfer(smt::Term expr,
   return expr_new;
 }
 
-StateAsmpt StateTransfer(wasim::StateAsmpt state,
+StateAsmpt StateTransfer(const wasim::StateAsmpt & state,
                          smt::SmtSolver & solver_old,
                          smt::SmtSolver & solver_new)
 {
@@ -399,11 +399,11 @@ StateAsmpt StateTransfer(wasim::StateAsmpt state,
   return state_ret;
 }
 
-smt::UnorderedTermSet SetTransfer(smt::UnorderedTermSet expr_set,
+smt::UnorderedTermSet SetTransfer(const smt::UnorderedTermSet & expr_set,
                                   smt::SmtSolver & solver_old,
                                   smt::SmtSolver & solver_new)
 {
-  smt::UnorderedTermSet expr_set_new = {};
+  smt::UnorderedTermSet expr_set_new;
   for (const auto & expr : expr_set) {
     auto expr_new = TermTransfer(expr, solver_old, solver_new);
     expr_set_new.insert(expr_new);
@@ -412,9 +412,9 @@ smt::UnorderedTermSet SetTransfer(smt::UnorderedTermSet expr_set,
   return expr_set_new;
 }
 
-smt::TermVec one_hot(smt::TermVec one_hot_vec, smt::SmtSolver & solver)
+smt::TermVec one_hot(const smt::TermVec & one_hot_vec, smt::SmtSolver & solver)
 {
-  smt::TermVec ret = {};
+  smt::TermVec ret;
   auto ll = one_hot_vec.size();
   for (int i = 0; i < ll; i++) {
     for (int j = i + 1; j < ll; j++) {
@@ -428,51 +428,26 @@ smt::TermVec one_hot(smt::TermVec one_hot_vec, smt::SmtSolver & solver)
   return ret;
 }
 
-/**
- * @brief Get the model object
- * should be used after 'solver->assert_formula'
- *
- * @param expr
- * @param solver
- * @return std::string
- */
-// smt::UnorderedTermMap get_model(smt::Term expr, smt::SmtSolver& solver){
-//     smt::UnorderedTermMap ret_model = {};
-//     if(solver->check_sat().is_sat()){
-//         smt::TermVec free_var_vec(get_free_variables(expr).begin(),
-//         get_free_variables(expr).end()); for (auto t : free_var_vec)
-//         {
-//             cout << "\t" << t->to_string() << " := " << solver->get_value(t)
-//             << endl; ret_model[t] = solver->get_value(t);
-//         }
-//     }
-//     else{
-//         cout << "No model exists!" << endl;
-//     }
 
-// }
-
-smt::UnorderedTermMap get_model(smt::Term expr, smt::SmtSolver & solver)
+smt::UnorderedTermMap get_model(const smt::Term & expr, smt::SmtSolver & solver)
 {
   // cout << "get_model" << endl;
-  smt::UnorderedTermMap ret_model = {};
-  smt::TermVec free_var_vec(get_free_variables(expr).begin(),
-                            get_free_variables(expr).end());
-  for (auto t : free_var_vec) {
-    // cout << "\t" << t->to_string() << " := " << solver->get_value(t) << endl;
-    ret_model[t] = solver->get_value(t);
+  smt::UnorderedTermMap ret_model;
+  auto free_var_set = get_free_variables(expr);
+  for (const auto & t : free_var_set) {
+    ret_model.emplace(t, solver->get_value(t));
   }
   return ret_model;
 }
 
-smt::UnorderedTermMap get_invalid_model(smt::Term expr, smt::SmtSolver & solver)
+smt::UnorderedTermMap get_invalid_model(const smt::Term & expr, smt::SmtSolver & solver)
 {
   // cout << "get_invalid_model" << endl;
   auto expr_not = solver->make_term(smt::Not, expr);
   return get_model(expr_not, solver);
 }
 
-smt::Result is_sat_res(smt::TermVec expr_vec, smt::SmtSolver & solver)
+smt::Result is_sat_res(const smt::TermVec & expr_vec, smt::SmtSolver & solver)
 {
   smt::Term sat_check_expr = {};
   if (expr_vec.size() == 1) {
@@ -487,20 +462,20 @@ smt::Result is_sat_res(smt::TermVec expr_vec, smt::SmtSolver & solver)
   return r;
 }
 
-bool is_sat_bool(smt::TermVec expr_vec, smt::SmtSolver & solver)
+bool is_sat_bool(const smt::TermVec & expr_vec, smt::SmtSolver & solver)
 {
   return is_sat_res(expr_vec, solver).is_sat();
 }
 
-bool is_valid_bool(smt::Term expr, smt::SmtSolver & solver)
+bool is_valid_bool(const smt::Term & expr, smt::SmtSolver & solver)
 {
   auto expr_not = solver->make_term(smt::Not, expr);
   return (not is_sat_bool(smt::TermVec{ expr_not }, solver));
 }
 
-std::vector<std::string> sort_model(smt::UnorderedTermMap cex)
+std::vector<std::string> sort_model(const smt::UnorderedTermMap & cex)
 {
-  std::vector<std::string> cex_vec = {};
+  std::vector<std::string> cex_vec;
   for (const auto & sv : cex) {
     auto var = sv.first;
     auto value = sv.second;

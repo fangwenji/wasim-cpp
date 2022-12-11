@@ -118,6 +118,7 @@ int main()
   } else {
     cout << "Formal Property Check Fail!" << endl;
     cout << "Please check the following counter-example:" << endl;
+    #error HERE is a problem. is_sat_res already pop. Model might be unavailable/unreliable
     auto cex = get_model(sat_check, solver);
     auto cex_str = sort_model(cex);
   }

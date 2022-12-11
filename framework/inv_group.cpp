@@ -180,6 +180,7 @@ check_res init_check(smt::Term init,
   check_res res = {};
   if (check_result == false) {
     cout << "Counter Example:" << endl;
+    #error HERE is a problem. is_sat_res already pop. Model might be unavailable/unreliable
     auto cex = get_invalid_model(sat_check_expr, solver);
     auto cex_str = sort_model(cex);
     res = make_pair(check_result, cex);
@@ -208,6 +209,7 @@ check_res inv_check(smt::Term inv,
   check_res res = {};
   if (check_result == false) {
     cout << "Counter Example:" << endl;
+    #error HERE is a problem. is_sat_res already pop. Model might be unavailable/unreliable
     auto cex = get_invalid_model(sat_check_expr, solver);
     auto cex_str = sort_model(cex);
     res = make_pair(check_result, cex);
@@ -233,6 +235,7 @@ check_res prop_check(smt::Term prop,
   check_res res = {};
   if (check_result == false) {
     cout << "Counter Example:" << endl;
+    #error HERE is a problem. is_sat_res already pop. Model might be unavailable/unreliable
     auto cex = get_invalid_model(sat_check_expr, solver);
     auto cex_str = sort_model(cex);
     res = make_pair(check_result, cex);

@@ -51,37 +51,40 @@ class PropertyInterface : public smt::SmtLibReader
 class StateRW
 {
  public:
-  StateRW(smt::SmtSolver & s) { this->solver_ = s; }
+  StateRW(smt::SmtSolver & s) : solver_(s) { }
 
-  void StateWrite(wasim::StateAsmpt state,
-                  std::string outfile_sv,
-                  std::string outfile_asmpt);
-  StateAsmpt StateRead(std::string infile_sv, std::string infile_asmpt);
-  void write_single_term(std::string outfile, smt::Term expr);
-  void write_term(std::string outfile, smt::Term expr);
-  void write_string(std::string outfile, std::string asmpt_interp);
-  bool is_bv_const(smt::Term expr);
-  smt::Term str2bvnum(std::string int_num);
-  void StateWriteTree(std::vector<std::vector<StateAsmpt>> branch_list,
-                      std::string out_dir);
-  std::vector<std::vector<StateAsmpt>> StateReadTree(std::string in_dir,
+  // Read/Write a single state
+  void StateWrite(const wasim::StateAsmpt & state,
+                  const std::string & outfile_sv,
+                  const std::string & outfile_asmpt);
+  StateAsmpt StateRead(const std::string & infile_sv, const std::string & infile_asmpt);
+
+  // Read/Write a tree of states
+  void StateWriteTree(const std::vector<std::vector<StateAsmpt>> & branch_list,
+                      const std::string & out_dir);
+  std::vector<std::vector<StateAsmpt>> StateReadTree(const std::string & in_dir,
                                                      int i,
                                                      int j);
+ protected:
+  // functions only used internally
+  void write_single_term(const std::string & outfile, const smt::Term & expr);
+  void write_term(const std::string & outfile, const smt::Term & expr);
+  void write_string(const std::string & outfile, const std::string & asmpt_interp);
+  bool is_bv_const(cosnt smt::Term & expr);
+  smt::Term str2bvnum(const std::string & int_num);
 
  private:
   smt::SmtSolver solver_;
   // smt::SmtSolver solver_asmpt_;
 };
 
-void getFileNames(string path, vector<string> & files);
-
-smt::Term TermTransfer(smt::Term expr,
+smt::Term TermTransfer(const smt::Term & expr,
                        smt::SmtSolver & solver_old,
                        smt::SmtSolver & solver_new);
-StateAsmpt StateTransfer(wasim::StateAsmpt state,
+StateAsmpt StateTransfer(const wasim::StateAsmpt & state,
                          smt::SmtSolver & solver_old,
                          smt::SmtSolver & solver_new);
-smt::UnorderedTermSet SetTransfer(smt::UnorderedTermSet expr_set,
+smt::UnorderedTermSet SetTransfer(const smt::UnorderedTermSet & expr_set,
                                   smt::SmtSolver & solver_old,
                                   smt::SmtSolver & solver_new);
 
@@ -92,15 +95,17 @@ smt::UnorderedTermSet SetTransfer(smt::UnorderedTermSet expr_set,
  * @param solver
  * @return smt::TermVec
  */
-smt::TermVec one_hot(smt::TermVec one_hot_vec, smt::SmtSolver & solver);
+smt::TermVec one_hot(const smt::TermVec & one_hot_vec, smt::SmtSolver & solver);
 
-smt::UnorderedTermMap get_model(smt::Term expr, smt::SmtSolver & solver);
-smt::UnorderedTermMap get_invalid_model(smt::Term expr,
+// get the assignment to all variables in expr
+smt::UnorderedTermMap get_model(const smt::Term & expr, smt::SmtSolver & solver);
+#error Rethink about this. get_invalid_model works no different from get_model
+smt::UnorderedTermMap get_invalid_model(const smt::Term & expr,
                                         smt::SmtSolver & solver);
 
-smt::Result is_sat_res(smt::TermVec expr_vec, smt::SmtSolver & solver);
-bool is_sat_bool(smt::TermVec expr_vec, smt::SmtSolver & solver);
-bool is_valid_bool(smt::Term expr, smt::SmtSolver & solver);
+smt::Result is_sat_res(const smt::TermVec & expr_vec, smt::SmtSolver & solver);
+bool is_sat_bool(const smt::TermVec & expr_vec, smt::SmtSolver & solver);
+bool is_valid_bool(const smt::Term & expr, smt::SmtSolver & solver);
 
-std::vector<std::string> sort_model(smt::UnorderedTermMap cex);
+std::vector<std::string> sort_model(const smt::UnorderedTermMap & cex);
 }  // namespace wasim
