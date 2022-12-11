@@ -16,7 +16,6 @@
 
 #pragma once
 
-
 extern "C" {
 #include "btor2parser/btor2parser.h"
 }
@@ -28,8 +27,8 @@ extern "C" {
 #include <unordered_map>
 #include "assert.h"
 
-#include "ts.h"
 #include "smt-switch/exceptions.h"
+#include "ts.h"
 
 #include "smt-switch/smt.h"
 
@@ -53,7 +52,6 @@ class BTOR2Encoder
   {
     return no_next_states_;
   }
-  
 
  protected:
   // converts booleans to bitvector of size one
@@ -64,12 +62,11 @@ class BTOR2Encoder
   // takes a list of booleans / bitvectors of size one
   // and lazily converts them to the majority
   smt::TermVec lazy_convert(const smt::TermVec &) const;
-  
+
   // preprocess a btor2 file
   void preprocess(const std::string & filename);
   // parse a btor2 file
   void parse(const std::string filename);
-  
 
   // Important members
   const smt::SmtSolver & solver_;

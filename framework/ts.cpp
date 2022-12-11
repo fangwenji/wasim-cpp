@@ -26,71 +26,75 @@ using namespace smt;
 using namespace std;
 
 namespace wasim {
-smt::TermVec args(const smt::Term & term){
+smt::TermVec args(const smt::Term & term)
+{
   smt::TermVec arg_vec;
-  for(auto pos = term->begin(); pos != term->end(); ++pos)
-      arg_vec.push_back(*pos);
-  
+  for (auto pos = term->begin(); pos != term->end(); ++pos)
+    arg_vec.push_back(*pos);
+
   return arg_vec;
 }
 
-smt::UnorderedTermSet get_free_variables(const smt::Term & term){
-    smt::UnorderedTermSet free_var;
-    smt::TermVec search_stack;
-    if(term->is_symbol()){
-        free_var.insert(term);
+smt::UnorderedTermSet get_free_variables(const smt::Term & term)
+{
+  smt::UnorderedTermSet free_var;
+  smt::TermVec search_stack;
+  if (term->is_symbol()) {
+    free_var.insert(term);
+  } else {  // DFS
+    search_stack.push_back(term);
+    while (search_stack.size() != 0) {
+      auto node = search_stack.back();
+      search_stack.pop_back();
+      if (node->is_symbol()) {  // check
+        free_var.insert(node);
+      }
+      auto children_vec = args(node);
+      std::reverse(std::begin(children_vec), std::end(children_vec));
+      search_stack.insert(
+          search_stack.end(), children_vec.begin(), children_vec.end());
     }
-    else{ // DFS
-        search_stack.push_back(term);
-        while (search_stack.size() != 0)
-        {
-            auto node = search_stack.back();
-            search_stack.pop_back();
-            if(node->is_symbol()){ // check
-                free_var.insert(node);
-            }
-            auto children_vec = args(node);
-            std::reverse(std::begin(children_vec), std::end(children_vec));
-            search_stack.insert(search_stack.end(), children_vec.begin(), children_vec.end());
-        }
-        
-    }
-    return free_var;
+  }
+  return free_var;
 }
 
-void StateAsmpt::print(){
-  const auto& prev_sv = this->sv_;
+void StateAsmpt::print()
+{
+  const auto & prev_sv = this->sv_;
   // std::cout << "sv rhs" << std::endl;
   // std::cout << "-----" << std::endl;
 
   cout << "--------------------------------" << endl;
-  cout  << "| " << setiosflags(ios::left) << setw(20) << "sv"  << "| " << setw(20) << "value" << endl;
+  cout << "| " << setiosflags(ios::left) << setw(20) << "sv"
+       << "| " << setw(20) << "value" << endl;
   cout << "--------------------------------" << endl;
-  for (const auto& sv : prev_sv){
-      cout << "| "  << setiosflags(ios::left) << setw(20) << sv.first->to_string() 
-      << "| "  << setw(20) << sv.second->to_string() << endl;
+  for (const auto & sv : prev_sv) {
+    cout << "| " << setiosflags(ios::left) << setw(20) << sv.first->to_string()
+         << "| " << setw(20) << sv.second->to_string() << endl;
   }
 }
 
-void StateAsmpt::print_assumptions(){
+void StateAsmpt::print_assumptions()
+{
   smt::TermVec prev_asmpt;
   vector<std::string> prev_asmpt_interp;
   prev_asmpt = this->asmpt_;
   prev_asmpt_interp = this->assumption_interp_;
   int idx = 0;
-  for(auto asmpt: prev_asmpt){
+  for (auto asmpt : prev_asmpt) {
     std::cout << "A" << idx << ": " << prev_asmpt_interp[idx] << std::endl;
     std::cout << "A" << idx << ": " << asmpt << std::endl;
     idx++;
-  } 
+  }
 }
 
-bool StateAsmpt::is_contain_x(smt::UnorderedTermSet set_of_Xvar){
-  for(auto sv:this->sv_){
+bool StateAsmpt::is_contain_x(smt::UnorderedTermSet set_of_Xvar)
+{
+  for (auto sv : this->sv_) {
     auto value = sv.second;
     auto free_var = get_free_variables(value);
-    for(const auto& var:free_var){
-      if(set_of_Xvar.find(var)!=set_of_Xvar.end()){
+    for (const auto & var : free_var) {
+      if (set_of_Xvar.find(var) != set_of_Xvar.end()) {
         cout << "\nWARNING: State Contains X!\n" << endl;
         this->print();
         return true;
@@ -203,20 +207,16 @@ TransitionSystem::TransitionSystem(const TransitionSystem & other_ts,
 
 bool TransitionSystem::operator==(const TransitionSystem & other) const
 {
-  return (solver_ == other.solver_ &&
-          init_ == other.init_ &&
-          trans_ == other.trans_ &&
-          statevars_ == other.statevars_ &&
-          next_statevars_ == other.next_statevars_ &&
-          inputvars_ == other.inputvars_ &&
-          named_terms_ == other.named_terms_ &&
-          term_to_name_ == other.term_to_name_ &&
-          state_updates_ == other.state_updates_ &&
-          next_map_ == other.next_map_ &&
-          curr_map_ == other.curr_map_ &&
-          functional_ == other.functional_ &&
-          deterministic_ == other.deterministic_ &&
-          constraints_ == other.constraints_);
+  return (
+      solver_ == other.solver_ && init_ == other.init_ && trans_ == other.trans_
+      && statevars_ == other.statevars_
+      && next_statevars_ == other.next_statevars_
+      && inputvars_ == other.inputvars_ && named_terms_ == other.named_terms_
+      && term_to_name_ == other.term_to_name_
+      && state_updates_ == other.state_updates_ && next_map_ == other.next_map_
+      && curr_map_ == other.curr_map_ && functional_ == other.functional_
+      && deterministic_ == other.deterministic_
+      && constraints_ == other.constraints_);
 }
 
 bool TransitionSystem::operator!=(const TransitionSystem & other) const
@@ -566,13 +566,12 @@ void TransitionSystem::rebuild_trans_based_on_coi(
   for (const auto & state_var : state_vars_in_coi) {
     Term next_func = NULL;
     const auto & elem = state_updates_.find(state_var);
-    if (elem != state_updates_.end())
-      next_func = elem->second;
+    if (elem != state_updates_.end()) next_func = elem->second;
     /* May find state variables without next-function. */
     if (next_func != NULL) {
-        Term eq = solver_->make_term(Equal, next_map_.at(state_var), next_func);
-        trans_ = solver_->make_term(And, trans_, eq);
-      }
+      Term eq = solver_->make_term(Equal, next_map_.at(state_var), next_func);
+      trans_ = solver_->make_term(And, trans_, eq);
+    }
   }
 
   /* Add global constraints added to previous 'trans_'. */

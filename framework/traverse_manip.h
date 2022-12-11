@@ -12,9 +12,9 @@
 
 // #include "../utils/exceptions.h"
 
-#include "ts.h"
 #include "symsim.h"
 #include "symtraverse.h"
+#include "ts.h"
 
 // #include <iostream>
 // #include <unordered_map>
@@ -22,20 +22,43 @@
 // #include <functional>
 // #include <vector>
 // #include <set>
-#include <vector>
+#include <algorithm>
 #include <iostream>
 #include <iterator>
-#include <algorithm>
 #include <variant>
+#include <vector>
 
 using namespace std;
 
-namespace wasim
-{
-void extend_branch_init(std::vector<std::vector<StateAsmpt>>& branch_list, SymbolicExecutor & executor, TransitionSystem & sts, std::unordered_set<std::string> base_sv, std::string flag, smt::TermVec flag_asmpt, std::vector<TraverseBranchingNode> order, smt::SmtSolver & solver);
+namespace wasim {
+void extend_branch_init(std::vector<std::vector<StateAsmpt>> & branch_list,
+                        SymbolicExecutor & executor,
+                        TransitionSystem & sts,
+                        std::unordered_set<std::string> base_sv,
+                        std::string flag,
+                        smt::TermVec flag_asmpt,
+                        std::vector<TraverseBranchingNode> order,
+                        smt::SmtSolver & solver);
 
-void extend_branch_next_phase(std::vector<std::vector<StateAsmpt>>& branch_list, SymbolicExecutor & executor, TransitionSystem & sts, std::unordered_set<std::string> base_sv, std::string flag, smt::TermVec flag_asmpt, assignment_type phase_maker, std::vector<TraverseBranchingNode> order, smt::SmtSolver & solver);
+void extend_branch_next_phase(
+    std::vector<std::vector<StateAsmpt>> & branch_list,
+    SymbolicExecutor & executor,
+    TransitionSystem & sts,
+    std::unordered_set<std::string> base_sv,
+    std::string flag,
+    smt::TermVec flag_asmpt,
+    assignment_type phase_maker,
+    std::vector<TraverseBranchingNode> order,
+    smt::SmtSolver & solver);
 
-
-void extend_branch_same_phase(std::vector<std::vector<StateAsmpt>>& branch_list, SymbolicExecutor & executor, TransitionSystem & sts, std::unordered_set<std::string> base_sv, std::string flag, smt::TermVec flag_asmpt, assignment_type phase_maker, std::vector<TraverseBranchingNode> order, smt::SmtSolver & solver);
-}
+void extend_branch_same_phase(
+    std::vector<std::vector<StateAsmpt>> & branch_list,
+    SymbolicExecutor & executor,
+    TransitionSystem & sts,
+    std::unordered_set<std::string> base_sv,
+    std::string flag,
+    smt::TermVec flag_asmpt,
+    assignment_type phase_maker,
+    std::vector<TraverseBranchingNode> order,
+    smt::SmtSolver & solver);
+}  // namespace wasim

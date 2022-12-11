@@ -25,10 +25,10 @@
 #include "utils/exceptions.h"
 // #include "framework/term_manip.h"
 
+#include <iomanip>
 #include <iostream>
 #include <map>
 #include <vector>
-#include <iomanip>
 
 namespace wasim {
 
@@ -37,12 +37,13 @@ smt::UnorderedTermSet get_free_variables(const smt::Term & term);
 
 class StateAsmpt
 {
-public:
-  StateAsmpt(const smt::UnorderedTermMap & sv, 
-             const smt::TermVec & asmpt, 
-             const std::vector<std::string> & assumption_interp) :
-    sv_(sv), asmpt_(asmpt), assumption_interp_(assumption_interp)
-  { }
+ public:
+  StateAsmpt(const smt::UnorderedTermMap & sv,
+             const smt::TermVec & asmpt,
+             const std::vector<std::string> & assumption_interp)
+      : sv_(sv), asmpt_(asmpt), assumption_interp_(assumption_interp)
+  {
+  }
 
   void print();
   void print_assumptions();
@@ -51,7 +52,6 @@ public:
   smt::UnorderedTermMap sv_;
   smt::TermVec asmpt_;
   std::vector<std::string> assumption_interp_;
-
 };
 
 class TransitionSystem
@@ -505,10 +505,8 @@ class TransitionSystem
   void rebuild_trans_based_on_coi(
       const smt::UnorderedTermSet & state_vars_in_coi,
       const smt::UnorderedTermSet & input_vars_in_coi);
-  
-  
 
-protected:
+ protected:
   // solver
   smt::SmtSolver solver_;
 

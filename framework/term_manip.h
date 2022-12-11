@@ -1,24 +1,22 @@
 #pragma once
+#include "framework/symsim.h"
+#include "framework/ts.h"
 #include "smt-switch/boolector_factory.h"
 #include "smt-switch/smt.h"
 #include "smt-switch/smtlib_reader.h"
-#include "framework/ts.h"
-#include "framework/symsim.h"
 
-#include <vector>
+#include <algorithm>
+#include <fstream>
 #include <iostream>
 #include <iterator>
-#include <algorithm>
-#include <variant>
-#include <fstream>
 #include <regex>
+#include <variant>
+#include <vector>
 #include "math.h"
-
 
 using namespace std;
 
-namespace wasim
-{
+namespace wasim {
 
 // //  return the arguments of a term, <left, right>
 // smt::TermVec args(const smt::Term & term);
@@ -26,72 +24,83 @@ namespace wasim
 // // DFS of a term (arg), free var --> symbol
 // smt::UnorderedTermSet get_free_variables(const smt::Term & term);
 
-smt::Term free_make_symbol(const std::string & n, smt::Sort symb_sort, std::unordered_map<std::string, int>& name_cnt, smt::SmtSolver& solver);
+smt::Term free_make_symbol(const std::string & n,
+                           smt::Sort symb_sort,
+                           std::unordered_map<std::string, int> & name_cnt,
+                           smt::SmtSolver & solver);
 
 class PropertyInterface : public smt::SmtLibReader
 {
  public:
-    PropertyInterface(std::string filename, smt::SmtSolver &solver);
+  PropertyInterface(std::string filename, smt::SmtSolver & solver);
 
-    typedef SmtLibReader super;
+  typedef SmtLibReader super;
 
-    smt::Term return_defs();
+  smt::Term return_defs();
 
  protected:
-    // overloaded function, used when arg list of function is parsed
-    // NOTE: | |  pipe quotes are removed.
-    virtual smt::Term register_arg(const std::string & name, const smt::Sort & sort) override;
+  // overloaded function, used when arg list of function is parsed
+  // NOTE: | |  pipe quotes are removed.
+  virtual smt::Term register_arg(const std::string & name,
+                                 const smt::Sort & sort) override;
 
-    
-
-    std::string filename_;
-    smt::SmtSolver & solver_;
-
+  std::string filename_;
+  smt::SmtSolver & solver_;
 };
 
-class StateRW{
-public:
-   StateRW(smt::SmtSolver & s){
-      this->solver_ = s;
-   }
+class StateRW
+{
+ public:
+  StateRW(smt::SmtSolver & s) { this->solver_ = s; }
 
-   void StateWrite(wasim::StateAsmpt state, std::string outfile_sv, std::string outfile_asmpt);
-   StateAsmpt StateRead(std::string infile_sv, std::string infile_asmpt);
-   void write_single_term(std::string outfile, smt::Term expr);
-   void write_term(std::string outfile, smt::Term expr);
-   void write_string(std::string outfile, std::string asmpt_interp);
-   bool is_bv_const(smt::Term expr);
-   smt::Term str2bvnum(std::string int_num);
-   void StateWriteTree(std::vector<std::vector<StateAsmpt>> branch_list, std::string out_dir);
-   std::vector<std::vector<StateAsmpt>> StateReadTree(std::string in_dir, int i, int j);
+  void StateWrite(wasim::StateAsmpt state,
+                  std::string outfile_sv,
+                  std::string outfile_asmpt);
+  StateAsmpt StateRead(std::string infile_sv, std::string infile_asmpt);
+  void write_single_term(std::string outfile, smt::Term expr);
+  void write_term(std::string outfile, smt::Term expr);
+  void write_string(std::string outfile, std::string asmpt_interp);
+  bool is_bv_const(smt::Term expr);
+  smt::Term str2bvnum(std::string int_num);
+  void StateWriteTree(std::vector<std::vector<StateAsmpt>> branch_list,
+                      std::string out_dir);
+  std::vector<std::vector<StateAsmpt>> StateReadTree(std::string in_dir,
+                                                     int i,
+                                                     int j);
 
-private:
-   smt::SmtSolver solver_;
-   // smt::SmtSolver solver_asmpt_; 
-   
+ private:
+  smt::SmtSolver solver_;
+  // smt::SmtSolver solver_asmpt_;
 };
 
-void getFileNames(string path, vector<string>& files);
+void getFileNames(string path, vector<string> & files);
 
-smt::Term TermTransfer(smt::Term expr, smt::SmtSolver& solver_old, smt::SmtSolver& solver_new);
-StateAsmpt StateTransfer(wasim::StateAsmpt state, smt::SmtSolver& solver_old, smt::SmtSolver& solver_new);
-smt::UnorderedTermSet SetTransfer(smt::UnorderedTermSet expr_set, smt::SmtSolver& solver_old, smt::SmtSolver& solver_new);
+smt::Term TermTransfer(smt::Term expr,
+                       smt::SmtSolver & solver_old,
+                       smt::SmtSolver & solver_new);
+StateAsmpt StateTransfer(wasim::StateAsmpt state,
+                         smt::SmtSolver & solver_old,
+                         smt::SmtSolver & solver_new);
+smt::UnorderedTermSet SetTransfer(smt::UnorderedTermSet expr_set,
+                                  smt::SmtSolver & solver_old,
+                                  smt::SmtSolver & solver_new);
 
 /**
- * @brief 
- * 
- * @param one_hot_vec 
- * @param solver 
- * @return smt::TermVec 
+ * @brief
+ *
+ * @param one_hot_vec
+ * @param solver
+ * @return smt::TermVec
  */
-smt::TermVec one_hot(smt::TermVec one_hot_vec, smt::SmtSolver& solver);
+smt::TermVec one_hot(smt::TermVec one_hot_vec, smt::SmtSolver & solver);
 
-smt::UnorderedTermMap get_model(smt::Term expr, smt::SmtSolver& solver);
-smt::UnorderedTermMap get_invalid_model(smt::Term expr, smt::SmtSolver& solver);
+smt::UnorderedTermMap get_model(smt::Term expr, smt::SmtSolver & solver);
+smt::UnorderedTermMap get_invalid_model(smt::Term expr,
+                                        smt::SmtSolver & solver);
 
-smt::Result is_sat_res(smt::TermVec expr_vec, smt::SmtSolver& solver);
-bool is_sat_bool(smt::TermVec expr_vec, smt::SmtSolver& solver);
-bool is_valid_bool(smt::Term expr, smt::SmtSolver& solver);
+smt::Result is_sat_res(smt::TermVec expr_vec, smt::SmtSolver & solver);
+bool is_sat_bool(smt::TermVec expr_vec, smt::SmtSolver & solver);
+bool is_valid_bool(smt::Term expr, smt::SmtSolver & solver);
 
 std::vector<std::string> sort_model(smt::UnorderedTermMap cex);
-} 
+}  // namespace wasim
