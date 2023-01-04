@@ -104,21 +104,6 @@ bool PerStateStack::deeper_choice()
   return true;
 }
 
-bool PerStateStack::check_stack()
-{
-  auto count = 0;
-  for (const auto & node : stack_) {
-    if (node.value() == 1) {
-      count++;
-    }
-  }
-
-  if (count > 1) {
-    return false;
-  } else {
-    return true;
-  }
-}
 
 void SymbolicTraverse::traverse_one_step(
     smt::TermVec assumptions,

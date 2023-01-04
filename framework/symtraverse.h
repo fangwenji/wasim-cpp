@@ -90,6 +90,7 @@ class PerStateStack
 
   std::string repr() const;
   bool has_valid_choice() const { return !no_next_choice_; }
+  
   std::pair<smt::UnorderedTermMap, smt::TermVec> get_iv_asmpt(
       smt::TermVec assumptions);
   bool next_choice();
