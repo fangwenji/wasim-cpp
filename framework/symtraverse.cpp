@@ -263,7 +263,7 @@ void SymbolicTraverse::traverse(
     }
     cout << " ] : ";
 
-    if (not stack_per_state.back().has_valid_choice()) {
+    if (! stack_per_state.back().has_valid_choice()) {
       cout << " no new choices, back to prev state" << endl;
       stack_per_state.pop_back();
       if (stack_per_state.size() != 0) {
@@ -286,7 +286,7 @@ void SymbolicTraverse::traverse(
     auto & curr_state = state;
 
     auto reachable = tracemgr_.check_reachable(state);
-    if (not reachable) {
+    if (! reachable) {
       cout << " not reachable." << endl;
       stack_per_state.back().next_choice();
       executor_.backtrack();
@@ -296,7 +296,7 @@ void SymbolicTraverse::traverse(
 
     auto concrete_enough =
         tracemgr_.check_concrete_enough(state, executor_.get_Xs());
-    if (not concrete_enough) {
+    if (! concrete_enough) {
       cout << "not concrete. Retry with deeper choice." << endl;
       auto succ = stack_per_state.back().deeper_choice();
       if (succ) {
