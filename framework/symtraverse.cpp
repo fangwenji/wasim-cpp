@@ -10,9 +10,9 @@ bool TraverseBranchingNode::next()
   return true;
 }
 
-TraverseBranchingNode TraverseBranchingNode::get_node()
+TraverseBranchingNode TraverseBranchingNode::get_node() const
 {
-  wasim::type_v iv_vec;
+  type_v iv_vec;
   iv_vec.push_back(make_pair(v_name_, v_width_));
   // TraverseBranchingNode tmp;
   if (branch_on_inputvar_) {
@@ -24,21 +24,16 @@ TraverseBranchingNode TraverseBranchingNode::get_node()
   }
 }
 
-std::string TraverseBranchingNode::repr()
+std::string TraverseBranchingNode::repr() const
 {
   auto ret_str = v_name_ + " == " + to_string(value_) + " ";
   return ret_str;
 }
 
-std::string PerStateStack::repr()
+std::string PerStateStack::repr() const
 {
-  // std::vector<std::string> stack_vec_str;
-  // for(auto& node : stack_){
-  //     stack_vec_str.push_back(node.repr());
-  // }
-  // std::string stack_str(stack_vec_str.begin(), stack_vec_str.end());
   std::string stack_str;
-  for (auto & node : stack_) {
+  for (const auto & node : stack_) {
     stack_str += node.repr();
   }
   std::string suffix;
@@ -52,7 +47,6 @@ std::string PerStateStack::repr()
   return ret_str;
 }
 
-bool PerStateStack::has_valid_choice() { return not no_next_choice_; }
 
 std::pair<smt::UnorderedTermMap, smt::TermVec> PerStateStack::get_iv_asmpt(
     smt::TermVec assumptions)
@@ -114,7 +108,7 @@ bool PerStateStack::check_stack()
 {
   auto count = 0;
   for (const auto & node : stack_) {
-    if (node.value_ == 1) {
+    if (node.value() == 1) {
       count++;
     }
   }

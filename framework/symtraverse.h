@@ -1,16 +1,11 @@
 #pragma once
 #include "assert.h"
 #include "math.h"
-// #include <string>
-// #include <iomanip>
-// #include <unordered_map>
 
 #include "smt-switch/boolector_factory.h"
-// #include "../deps/smt-switch/local/include/smt-switch/boolector_extensions.h"
 
 #include "smt-switch/smt.h"
 #include "term_manip.h"
-// #include "../deps/smt-switch/local/include/smt-switch/generic_sort.h"
 
 #include "utils/exceptions.h"
 
@@ -20,58 +15,53 @@
 #include "tracemgr.h"
 #include "ts.h"
 
-// #include <iostream>
-// #include <unordered_map>
-// #include <utility>
-// #include <functional>
-// #include <vector>
-// #include <set>
-// #include <any>
 #include <variant>
 
 using namespace std;
 
 namespace wasim {
 
-using type_v = std::vector<std::pair<std::string, int>>;
 
 class TraverseBranchingNode
 {
- public:
-  TraverseBranchingNode(wasim::type_v input_v /*={}*/,
-                        wasim::type_v signal_v /*={}*/)
-  {
-    assert((input_v.size() <= 1) && (signal_v.size() <= 1));
-    assert((input_v.size() == 0) || (signal_v.size() == 0));
-    assert(not((input_v.size() == 0) && (signal_v.size() == 0)));
-    wasim::type_v iv_vec;
-    if (input_v.size() == 1) {
-      iv_vec.assign(input_v.begin(), input_v.end());
-    } else if (signal_v.size() == 1) {
-      iv_vec.assign(signal_v.begin(), signal_v.end());
-    } else {
-      cout << "ERROR: wrong input type!" << endl;
-      assert(false);
-    }
+  protected:
+    bool branch_on_inputvar_;
+    std::string v_name_;
+    int v_width_;
+    int value_;
+  public:
+    using type_v = std::vector<std::pair<std::string, int>>;
 
-    if (input_v.size() == 1) {
-      this->branch_on_inputvar_ = true;
-    } else {
-      this->branch_on_inputvar_ = false;
-    }
-    this->v_name_ = iv_vec.back().first;
-    this->v_width_ = iv_vec.back().second;
-    this->value_ = 0;
-  }
+    TraverseBranchingNode(type_v input_v,
+                          type_v signal_v):
+        value_(0)
+    {
+      assert((input_v.size() <= 1) && (signal_v.size() <= 1));
+      assert((input_v.size() == 0) || (signal_v.size() == 0));
+      assert(!((input_v.size() == 0) && (signal_v.size() == 0)));
+      type_v iv_vec;
+      if (input_v.size() == 1) {
+        iv_vec.assign(input_v.begin(), input_v.end());
+      } else if (signal_v.size() == 1) {
+        iv_vec.assign(signal_v.begin(), signal_v.end());
+      } else {
+        cout << "ERROR: wrong input type!" << endl;
+        assert(false);
+      }
 
-  bool branch_on_inputvar_;
-  std::string v_name_;
-  int v_width_;
-  int value_;
+      if (input_v.size() == 1) {
+        branch_on_inputvar_ = true;
+      } else {
+        branch_on_inputvar_ = false;
+      }
+      v_name_ = iv_vec.back().first;
+      v_width_ = iv_vec.back().second;
+    }
 
   bool next();
-  TraverseBranchingNode get_node();
-  std::string repr();
+  TraverseBranchingNode get_node() const;
+  std::string repr() const;
+  int value() const {return value_;}
 };
 
 class PerStateStack
@@ -90,16 +80,6 @@ class PerStateStack
     // this->simulator_ = executor;
   }
 
-  // PerStateStack(std::vector<TraverseBranchingNode> branching_point,
-  // smt::SmtSolver & s, SymbolicExecutor& simulator)
-  // {
-  //     this->solver_ = s;
-  //     this->stack_ = {};
-  //     this->ptr_ = 0;
-  //     this->branching_point_ = branching_point;
-  //     this->no_next_choice_ = false;
-  //     this->simulator_ = simulator;
-  // }
 
   smt::SmtSolver solver_;
   std::vector<TraverseBranchingNode> stack_;
@@ -108,13 +88,12 @@ class PerStateStack
   bool no_next_choice_;
   SymbolicExecutor simulator_;
 
-  std::string repr();
-  bool has_valid_choice();
+  std::string repr() const;
+  bool has_valid_choice() const { return !no_next_choice_; }
   std::pair<smt::UnorderedTermMap, smt::TermVec> get_iv_asmpt(
       smt::TermVec assumptions);
   bool next_choice();
   bool deeper_choice();
-  bool check_stack();
 };
 
 class SymbolicTraverse
