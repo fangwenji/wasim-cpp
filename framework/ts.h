@@ -46,7 +46,7 @@ class StateAsmpt
 
   void print();
   void print_assumptions();
-  bool is_contain_x(smt::UnorderedTermSet set_of_Xvar);
+  bool contains_x(smt::UnorderedTermSet set_of_Xvar);
 
   smt::UnorderedTermMap sv_;
   smt::TermVec asmpt_;

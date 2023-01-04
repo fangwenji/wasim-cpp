@@ -65,7 +65,7 @@ void StateAsmpt::print_assumptions()
   }
 }
 
-bool StateAsmpt::is_contain_x(smt::UnorderedTermSet set_of_Xvar)
+bool StateAsmpt::contains_x(smt::UnorderedTermSet set_of_Xvar)
 {
   for (auto sv : this->sv_) {
     auto value = sv.second;

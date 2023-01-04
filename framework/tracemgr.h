@@ -34,7 +34,10 @@ class TraceManager
 
  public:
   const std::vector<StateAsmpt> & get_abs_state() const { return abs_state_; }
-  const std::vector<StateAsmpt> & abs_state_one_step() const { return abs_state_one_step_; }
+  const std::vector<StateAsmpt> & get_abs_state_one_step() const { return abs_state_one_step_; }
+
+  std::vector<StateAsmpt> & update_abs_state() { return abs_state_; }
+  std::vector<StateAsmpt> & update_abs_state_one_step() { return abs_state_one_step_; }
 
   void record_x_var(const smt::Term & var) { Xvar_.insert(var); }
   void record_x_var(const smt::TermVec & var) { Xvar_.insert(var.begin(), var.end()); }
