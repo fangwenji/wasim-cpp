@@ -18,12 +18,8 @@ using namespace std;
 
 namespace wasim {
 
-// //  return the arguments of a term, <left, right>
-// smt::TermVec args(const smt::Term & term);
-
-// // DFS of a term (arg), free var --> symbol
-// smt::UnorderedTermSet get_free_variables(const smt::Term & term);
-
+// will try to create a variable starting with name n and will add number suffix
+// to avoid naming conflicts
 smt::Term free_make_symbol(const std::string & n,
                            smt::Sort symb_sort,
                            std::unordered_map<std::string, int> & name_cnt,
@@ -32,7 +28,7 @@ smt::Term free_make_symbol(const std::string & n,
 class PropertyInterface : public smt::SmtLibReader
 {
  public:
-  PropertyInterface(std::string filename, smt::SmtSolver & solver);
+  PropertyInterface(const std::string & filename, smt::SmtSolver & solver);
 
   typedef SmtLibReader super;
 
@@ -45,13 +41,12 @@ class PropertyInterface : public smt::SmtLibReader
                                  const smt::Sort & sort) override;
 
   std::string filename_;
-  smt::SmtSolver & solver_;
 };
 
 class StateRW
 {
  public:
-  StateRW(smt::SmtSolver & s) : solver_(s) { }
+  StateRW(const smt::SmtSolver & s) : solver_(s) { }
 
   // Read/Write a single state
   void StateWrite(const wasim::StateAsmpt & state,
@@ -70,7 +65,7 @@ class StateRW
   void write_single_term(const std::string & outfile, const smt::Term & expr);
   void write_term(const std::string & outfile, const smt::Term & expr);
   void write_string(const std::string & outfile, const std::string & asmpt_interp);
-  bool is_bv_const(cosnt smt::Term & expr);
+  bool is_bv_const(const smt::Term & expr);
   smt::Term str2bvnum(const std::string & int_num);
 
  private:
@@ -78,15 +73,13 @@ class StateRW
   // smt::SmtSolver solver_asmpt_;
 };
 
-smt::Term TermTransfer(const smt::Term & expr,
-                       smt::SmtSolver & solver_old,
-                       smt::SmtSolver & solver_new);
+#error "TODO: rethink about the interface, try to pass termTranslator rather than solver"
 StateAsmpt StateTransfer(const wasim::StateAsmpt & state,
-                         smt::SmtSolver & solver_old,
-                         smt::SmtSolver & solver_new);
+                         const smt::SmtSolver & solver_old,
+                         const smt::SmtSolver & solver_new);
 smt::UnorderedTermSet SetTransfer(const smt::UnorderedTermSet & expr_set,
-                                  smt::SmtSolver & solver_old,
-                                  smt::SmtSolver & solver_new);
+                                  const smt::SmtSolver & solver_old,
+                                  const smt::SmtSolver & solver_new);
 
 /**
  * @brief
@@ -103,9 +96,9 @@ smt::UnorderedTermMap get_model(const smt::Term & expr, smt::SmtSolver & solver)
 smt::UnorderedTermMap get_invalid_model(const smt::Term & expr,
                                         smt::SmtSolver & solver);
 
-smt::Result is_sat_res(const smt::TermVec & expr_vec, smt::SmtSolver & solver);
-bool is_sat_bool(const smt::TermVec & expr_vec, smt::SmtSolver & solver);
-bool is_valid_bool(const smt::Term & expr, smt::SmtSolver & solver);
+smt::Result is_sat_res(const smt::TermVec & expr_vec, const smt::SmtSolver & solver);
+bool is_sat_bool(const smt::TermVec & expr_vec, const smt::SmtSolver & solver);
+bool is_valid_bool(const smt::Term & expr, const smt::SmtSolver & solver);
 
 std::vector<std::string> sort_model(const smt::UnorderedTermMap & cex);
 }  // namespace wasim

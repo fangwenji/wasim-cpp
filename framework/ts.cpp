@@ -35,29 +35,6 @@ smt::TermVec args(const smt::Term & term)
   return arg_vec;
 }
 
-smt::UnorderedTermSet get_free_variables(const smt::Term & term)
-{
-  smt::UnorderedTermSet free_var;
-  smt::TermVec search_stack;
-  if (term->is_symbol()) {
-    free_var.insert(term);
-  } else {  // DFS
-    search_stack.push_back(term);
-    while (search_stack.size() != 0) {
-      auto node = search_stack.back();
-      search_stack.pop_back();
-      if (node->is_symbol()) {  // check
-        free_var.insert(node);
-      }
-      auto children_vec = args(node);
-      std::reverse(std::begin(children_vec), std::end(children_vec));
-      search_stack.insert(
-          search_stack.end(), children_vec.begin(), children_vec.end());
-    }
-  }
-  return free_var;
-}
-
 void StateAsmpt::print()
 {
   const auto & prev_sv = this->sv_;
@@ -92,7 +69,8 @@ bool StateAsmpt::is_contain_x(smt::UnorderedTermSet set_of_Xvar)
 {
   for (auto sv : this->sv_) {
     auto value = sv.second;
-    auto free_var = get_free_variables(value);
+    smt::UnorderedTermSet free_var;
+    smt::get_free_symbols(value, free_var);
     for (const auto & var : free_var) {
       if (set_of_Xvar.find(var) != set_of_Xvar.end()) {
         cout << "\nWARNING: State Contains X!\n" << endl;

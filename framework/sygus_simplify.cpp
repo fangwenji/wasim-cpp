@@ -1,5 +1,7 @@
 #include "sygus_simplify.h"
 
+#include "smt-switch/utils.h"
+
 namespace wasim {
 
 Process::Process(std::string & cmd, const int timeout)
@@ -79,7 +81,8 @@ void run_cmd(std::string cmd_string, int timeout)
 
 bool expr_contians_X(smt::Term expr, smt::UnorderedTermSet set_of_xvar)
 {
-  auto vars_in_expr = get_free_variables(expr);
+  smt::UnorderedTermSet vars_in_expr;
+  smt::get_free_symbols(expr, vars_in_expr);
   for (const auto & var : vars_in_expr) {
     if (set_of_xvar.find(var) != set_of_xvar.end()) {
       return true;
@@ -99,9 +102,11 @@ std::string GetTimeStamp()
 parsed_info parse_state(StateAsmpt state, smt::Term v, smt::SmtSolver & solver)
 {
   auto asmpt_and = solver->make_term(smt::And, state.asmpt_);
-  auto free_var_asmpt = get_free_variables(asmpt_and);
+  smt::UnorderedTermSet free_var_asmpt;
+  smt::get_free_symbols(asmpt_and, free_var_asmpt);
   auto Fun = v;
-  auto free_var = get_free_variables(v);
+  smt::UnorderedTermSet free_var;
+  smt::get_free_symbols(v, free_var);
   auto Fun_type = v->get_sort()->to_string();
   auto ret =
       std::make_tuple(free_var, free_var_asmpt, asmpt_and, Fun, Fun_type);

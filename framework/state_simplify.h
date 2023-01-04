@@ -1,31 +1,37 @@
 #include <queue>
-#include "smt-switch/substitution_walker.h"
 #include "term_manip.h"
 
 using namespace std;
 
 namespace wasim {
-smt::UnorderedTermMap get_xvar_sub(smt::TermVec assumptions,
-                                   smt::UnorderedTermSet set_of_xvar,
-                                   smt::UnorderedTermSet free_var,
-                                   smt::SmtSolver & solver);
 
-int is_reducible_bool(smt::Term expr,
-                      smt::TermVec assumptions,
-                      smt::SmtSolver & solver);
+// will update xvar_sub with each xvar in (set_of_xvar AND free_var)
+// such that it is fixed to 0/1
+void get_xvar_sub(const smt::TermVec & assumptions,
+                  const smt::UnorderedTermSet & set_of_xvar,
+                  const smt::UnorderedTermSet & free_var,
+                  const smt::SmtSolver & solver,
+                  smt::UnorderedTermMap & xvar_sub);
 
-int is_reducible_bv_width1(smt::Term expr,
-                           smt::TermVec assumptions,
-                           smt::SmtSolver & solver);
+// decide if expr (bool) == 0 or 1 under the assumptions
+// return 0/1/2 (unknown)
+int is_reducible_bool(const smt::Term & expr,
+                      const smt::TermVec & assumptions,
+                      const smt::SmtSolver & solver);
 
-smt::Term expr_simplify_ite_new(smt::Term expr,
-                                smt::TermVec assumptions,
-                                smt::SmtSolver & solver);
+// decide if expr (bv1) == 0 or 1 under the assumptions
+// return 0/1/2 (unknown)
+int is_reducible_bv_width1(const smt::Term & expr,
+                           const smt::TermVec & assumptions,
+                           const smt::SmtSolver & solver);
 
-smt::TermVec remove_ites_under_model(const smt::SmtSolver & solver,
-                                     const smt::TermVec & terms);
+// try to simplify the conditions in the ITEs of expr
+smt::Term expr_simplify_ite(const smt::Term & expr,
+                            const smt::TermVec & assumptions,
+                            const smt::SmtSolver & solver);
 
+// this function will try some heuristics to simplify state update functions in s
 void state_simplify_xvar(StateAsmpt & s,
-                         smt::UnorderedTermSet set_of_xvar,
-                         smt::SmtSolver & solver);
+                         const smt::UnorderedTermSet & set_of_xvar,
+                         const smt::SmtSolver & solver);
 }  // namespace wasim

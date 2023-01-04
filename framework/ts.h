@@ -33,7 +33,6 @@
 namespace wasim {
 
 smt::TermVec args(const smt::Term & term);
-smt::UnorderedTermSet get_free_variables(const smt::Term & term);
 
 class StateAsmpt
 {

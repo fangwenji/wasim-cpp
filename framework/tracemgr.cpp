@@ -1,6 +1,8 @@
 #include "tracemgr.h"
 #include "independence_check.h"
 
+#include "smt-switch/utils.h"
+
 namespace wasim {
 
 bool TraceManager::record_state(const StateAsmpt & state,
@@ -99,9 +101,10 @@ bool TraceManager::check_concrete_enough(const StateAsmpt & s_in, const smt::Uno
     if (base_var_.find(s) == base_var_.end()) {
       continue;
     }
-    smt::UnorderedTermSet allv_in_v = get_free_variables(v);
+    smt::UnorderedTermSet allv_in_v;
     smt::UnorderedTermSet intersec_res;
 
+    smt::get_free_symbols(v, allv_in_v);
     for (const auto & var : allv_in_v) {
       if (Xvar_.find(var) != Xvar_.end()) {
         intersec_res.insert(var);
