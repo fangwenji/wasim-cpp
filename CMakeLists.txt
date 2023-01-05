@@ -90,7 +90,7 @@ if (NOT EXISTS "${PROJECT_SOURCE_DIR}/deps/btor2tools/src")
 endif()
 
 
-if (NOT EXISTS "${PROJECT_SOURCE_DIR}/deps/glog/libglog.a")
+if (NOT EXISTS "${PROJECT_SOURCE_DIR}/deps/glog/build/libglog.a")
   message(FATAL_ERROR "Missing glog -- try running ./contrib/setup-glog.sh")
 endif()
 
