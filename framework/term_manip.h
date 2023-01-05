@@ -21,8 +21,6 @@ namespace wasim {
 // //  return the arguments of a term, <left, right>
 // smt::TermVec args(const smt::Term & term);
 
-// // DFS of a term (arg), free var --> symbol
-// smt::UnorderedTermSet get_free_variables(const smt::Term & term);
 
 smt::Term free_make_symbol(const std::string & n,
                            smt::Sort symb_sort,

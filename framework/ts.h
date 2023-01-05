@@ -33,7 +33,6 @@
 namespace wasim {
 
 smt::TermVec args(const smt::Term & term);
-smt::UnorderedTermSet get_free_variables(const smt::Term & term);
 
 class StateAsmpt
 {
@@ -45,9 +44,9 @@ class StateAsmpt
   {
   }
 
-  void print();
-  void print_assumptions();
-  bool is_contain_x(smt::UnorderedTermSet set_of_Xvar);
+  void print() const;
+  void print_assumptions() const;
+  bool syntactically_contains_x(const smt::UnorderedTermSet & set_of_Xvar) const;
 
   smt::UnorderedTermMap sv_;
   smt::TermVec asmpt_;

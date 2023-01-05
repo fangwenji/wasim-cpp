@@ -1,5 +1,7 @@
 #include "symsim.h"
 
+#include "smt-switch/utils.h"
+
 namespace wasim {
 
 unsigned SymbolicExecutor::tracelen() const { return trace_.size(); }
@@ -60,7 +62,8 @@ void SymbolicExecutor::_check_only_invar(
 
 bool SymbolicExecutor::_expr_only_sv(const smt::Term & expr) const
 {
-  smt::UnorderedTermSet var_set = get_free_variables(expr);
+  smt::UnorderedTermSet var_set;
+  smt::get_free_symbols(expr, var_set);
 
   for (const auto & v : var_set) {
     if (svar_.find(v) != svar_.end())

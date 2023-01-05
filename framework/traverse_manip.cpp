@@ -29,7 +29,7 @@ void extend_branch_init(std::vector<std::vector<StateAsmpt>> & branch_list,
     state_vec_extend.push_back(nextstate);
     branch_list.push_back(state_vec_extend);
     nextstate.print();
-    if (nextstate.is_contain_x(executor.get_Xs())) {
+    if (nextstate.syntactically_contains_x(executor.get_Xs())) {
       assert(false);
     }
     // nextstate.print_assumptions();
@@ -68,6 +68,7 @@ void extend_branch_next_phase(
     }
     SymbolicTraverse traverse_temp(sts, executor_temp, solver, base_variable);
     auto assumptions = flag_asmpt;
+    // TODO: may you should first set the state to s before this
     traverse_temp.traverse_one_step(assumptions, order, { s });
     cout << "number of state " << flag << ": 1-> "
          << traverse_temp.tracemgr_.abs_state_one_step_.size() << endl;
