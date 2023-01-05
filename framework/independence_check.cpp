@@ -6,7 +6,7 @@ namespace wasim {
 // TODO: need to distinguish constant and op?
 bool e_is_always_valid(const smt::Term & e,
                        smt::TermVec assumptions /*={}*/,
-                       smt::SmtSolver & s)
+                       const smt::SmtSolver & s)
 {
   bool is_bool = (e->get_sort()->get_sort_kind() == smt::BOOL);
   bool is_bv = (e->get_sort()->get_sort_kind() == smt::BV);
@@ -32,7 +32,7 @@ bool e_is_always_valid(const smt::Term & e,
 
 bool e_is_always_invalid(const smt::Term & e,
                          smt::TermVec assumptions /*={}*/,
-                         smt::SmtSolver & s)
+                         const smt::SmtSolver & s)
 {
   bool is_bool = (e->get_sort()->get_sort_kind() == smt::BOOL);
   bool is_bv = (e->get_sort()->get_sort_kind() == smt::BV);

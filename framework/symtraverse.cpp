@@ -84,15 +84,15 @@ void SymbolicTraverse::traverse_one_step(
   StateAsmpt state_init(state);  // shallow copy?
   auto reachable = tracemgr_.check_reachable(state);
   if (! reachable) {
-    tracemgr_.abs_state_one_step_.insert(
-        tracemgr_.abs_state_one_step_.end(), s_init.begin(), s_init.end());
-    assert(tracemgr_.abs_state_one_step_.size() == 1);
+    tracemgr_.update_abs_state_one_step().insert(
+        tracemgr_.get_abs_state_one_step().end(), s_init.begin(), s_init.end());
+    assert(tracemgr_.get_abs_state_one_step().size() == 1);
     cout << "not reachable! skip!" << endl;
     cout << "==============================" << endl;
     cout << "Finished!" << endl;
-    cout << "Get #state: " << tracemgr_.abs_state_one_step_.size() << endl;
+    cout << "Get #state: " << tracemgr_.get_abs_state_one_step().size() << endl;
 
-    auto abs_state = tracemgr_.abs_state_one_step_.at(0);
+    auto abs_state = tracemgr_.get_abs_state_one_step().at(0);
     // TODO : SIMPLIFICATION
     state_simplify_xvar(abs_state, executor_.get_Xs(), solver_);
     sygus_simplify(abs_state, executor_.get_Xs(), solver_);
@@ -118,7 +118,7 @@ void SymbolicTraverse::traverse_one_step(
     auto state = executor_.get_curr_state();
     auto reachable = tracemgr_.check_reachable(state);
 
-    if (not reachable) {
+    if (! reachable) {
       cout << "not reachable." << endl;
       init_choice.next_choice();
       executor_.backtrack();
@@ -128,7 +128,7 @@ void SymbolicTraverse::traverse_one_step(
 
     auto concrete_enough =
         tracemgr_.check_concrete_enough(state, executor_.get_Xs());
-    if (not concrete_enough) {
+    if (! concrete_enough) {
       cout << "not concrete. Retry with deeper choice." << endl;
       auto succ = init_choice.deeper_choice();
       if (succ) {
@@ -161,15 +161,15 @@ void SymbolicTraverse::traverse_one_step(
 
   cout << "=============================" << endl;
   cout << "Finish!" << endl;
-  cout << "Get #state: " << tracemgr_.abs_state_one_step_.size() << endl;
+  cout << "Get #state: " << tracemgr_.get_abs_state_one_step().size() << endl;
 
   // TODO : simplification procedure
-  for (auto & abs_state_one_step : tracemgr_.abs_state_one_step_) {
+  for (auto & abs_state_one_step : tracemgr_.update_abs_state_one_step()) {
     bool reachable_before_simplification =
         tracemgr_.check_reachable(abs_state_one_step);
     state_simplify_xvar(abs_state_one_step, executor_.get_Xs(), solver_);
     sygus_simplify(abs_state_one_step, executor_.get_Xs(), solver_);
-    assert(not abs_state_one_step.syntactically_contains_x(executor_.get_Xs()));
+    assert(! abs_state_one_step.syntactically_contains_x(executor_.get_Xs()));
     bool reachable_after_simplification =
         tracemgr_.check_reachable(abs_state_one_step);
     assert(reachable_before_simplification);
@@ -307,7 +307,7 @@ unsigned SymbolicTraverse::traverse(
   cout << "Get #state: " << tracemgr_.get_abs_state().size() << endl;
 
   // TODO : simplification procedure
-  for (const auto & abs_state : tracemgr_.get_abs_state()) {
+  for (auto & abs_state : tracemgr_.update_abs_state()) {
     bool reachable_before_simplification = tracemgr_.check_reachable(abs_state);
     state_simplify_xvar(abs_state, executor_.get_Xs(), solver_);
     sygus_simplify(abs_state, executor_.get_Xs(), solver_);

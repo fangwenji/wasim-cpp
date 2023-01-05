@@ -68,7 +68,7 @@ void extend_branch_next_phase(
     }
     SymbolicTraverse traverse_temp(sts, executor_temp, solver, base_variable);
     auto assumptions = flag_asmpt;
-    // TODO: may you should first set the state to s before this
+    // TODO: you should first set the state to s before this (due to API change of traverse_one_step
     traverse_temp.traverse_one_step(assumptions, order, { s });
     cout << "number of state " << flag << ": 1-> "
          << traverse_temp.tracemgr_.abs_state_one_step_.size() << endl;

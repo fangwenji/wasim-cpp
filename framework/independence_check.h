@@ -31,12 +31,12 @@ namespace wasim {
 // returns ( ! SAT(e == 0) ) given assumptions
 bool e_is_always_valid(const smt::Term & e,
                        smt::TermVec assumptions /*={}*/,
-                       smt::SmtSolver & s);  // no test
+                       const smt::SmtSolver & s);  // no test
 
 // returns ( ! SAT(e == 1) ) given assumptions
 bool e_is_always_invalid(const smt::Term & e,
                          smt::TermVec assumptions /*={}*/,
-                         smt::SmtSolver & s);  // no test
+                         const smt::SmtSolver & s);  // no test
 
 // make two copies of v : v1, v2.  Check if  UNSAT( e[v/v1] != e[v/v2] ) , given
 // the assumptions

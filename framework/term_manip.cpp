@@ -1,39 +1,8 @@
 #include "term_manip.h"
 
+#include "smt-switch/utils.h"
+
 namespace wasim {
-
-// smt::TermVec args(const smt::Term & term){
-//     smt::TermVec arg_vec;
-//     for(auto pos = term->begin(); pos != term->end(); ++pos)
-//         arg_vec.push_back(*pos);
-
-//     return arg_vec;
-// }
-
-// smt::UnorderedTermSet get_free_variables(const smt::Term & term){
-//     smt::UnorderedTermSet free_var;
-//     smt::TermVec search_stack;
-//     if(term->is_symbol()){
-//         free_var.insert(term);
-//     }
-//     else{ // DFS
-//         search_stack.push_back(term);
-//         while (search_stack.size() != 0)
-//         {
-//             auto node = search_stack.back();
-//             search_stack.pop_back();
-//             if(node->is_symbol()){ // check
-//                 free_var.insert(node);
-//             }
-//             auto children_vec = args(node);
-//             std::reverse(std::begin(children_vec), std::end(children_vec));
-//             search_stack.insert(search_stack.end(), children_vec.begin(),
-//             children_vec.end());
-//         }
-
-//     }
-//     return free_var;
-// }
 
 smt::Term free_make_symbol(const std::string & n,
                            smt::Sort symb_sort,
@@ -63,7 +32,7 @@ smt::Term free_make_symbol(const std::string & n,
 
 PropertyInterface::PropertyInterface(const std::string & filename,
                                      smt::SmtSolver & solver)
-    : super(solver), filename_(filename), solver_(solver)
+    : super(solver), filename_(filename)
 {
   set_logic_all();
   int res = parse(filename_);
@@ -98,7 +67,8 @@ smt::Term PropertyInterface::return_defs()
 
 void StateRW::write_term(const std::string & outfile, const smt::Term & expr)
 {
-  auto free_value_var = get_free_variables(expr);
+  smt::UnorderedTermSet free_value_var;
+  smt::get_free_symbols(expr, free_value_var);
   std::ofstream f;
   f.open(outfile.c_str(), ios::out | ios::app);
   auto line_start = "(define-fun FunNew (";
@@ -186,7 +156,8 @@ void StateRW::StateWrite(const wasim::StateAsmpt & state,
 
     // 1.2 for value expression (RHs)
     auto value = sv.second;
-    auto free_value_var = get_free_variables(value);
+    smt::UnorderedTermSet free_value_var;
+    smt::get_free_symbols(value, free_value_var);
     if (is_bv_const(value)) {
       write_single_term(outfile_sv, value);
     } else if ((free_value_var.size() == 1) && (value->get_op().is_null())) {
@@ -198,7 +169,8 @@ void StateRW::StateWrite(const wasim::StateAsmpt & state,
   // 2. write assumptions and interpretations to outfile_asmpt
   for (int i = 0; i < state.asmpt_.size(); i++) {
     auto asmpt = state.asmpt_.at(i);
-    auto free_asmpt_var = get_free_variables(asmpt);
+    smt::UnorderedTermSet free_asmpt_var;
+    smt::get_free_symbols(asmpt, free_asmpt_var);
     if (is_bv_const(asmpt)) {
       write_single_term(outfile_asmpt, asmpt);
     } else if ((free_asmpt_var.size() == 1) && (asmpt->get_op().is_null())) {
@@ -348,15 +320,6 @@ std::vector<std::vector<StateAsmpt>> StateRW::StateReadTree(const std::string & 
   return branch_list;
 }
 
-smt::Term TermTransfer(const smt::Term & expr,
-                       smt::SmtSolver & solver_old,
-                       smt::SmtSolver & solver_new)
-{
-  smt::TermTranslator tt(solver_new);
-  auto expr_new = tt.transfer_term(expr);
-
-  return expr_new;
-}
 
 StateAsmpt StateTransfer(const wasim::StateAsmpt & state,
                          smt::SmtSolver & solver_old,
@@ -367,7 +330,7 @@ StateAsmpt StateTransfer(const wasim::StateAsmpt & state,
   for (const auto & sv : state.sv_) {
     auto var = sv.first;
     auto value = sv.second;
-
+    #error "it is very inefficient if you do not share the translator"
     auto var_new = TermTransfer(var, solver_old, solver_new);
     auto value_new = TermTransfer(value, solver_old, solver_new);
     sv_new.emplace(var_new, value_new);
@@ -433,7 +396,8 @@ smt::UnorderedTermMap get_model(const smt::Term & expr, smt::SmtSolver & solver)
 {
   // cout << "get_model" << endl;
   smt::UnorderedTermMap ret_model;
-  auto free_var_set = get_free_variables(expr);
+  smt::UnorderedTermSet free_var_set;
+  smt::get_free_symbols(expr, free_var_set);
   for (const auto & t : free_var_set) {
     ret_model.emplace(t, solver->get_value(t));
   }
@@ -447,7 +411,7 @@ smt::UnorderedTermMap get_invalid_model(const smt::Term & expr, smt::SmtSolver &
   return get_model(expr_not, solver);
 }
 
-smt::Result is_sat_res(const smt::TermVec & expr_vec, smt::SmtSolver & solver)
+smt::Result is_sat_res(const smt::TermVec & expr_vec, const smt::SmtSolver & solver)
 {
   solver->push();
   for (const auto & a : expr_vec)
@@ -457,12 +421,12 @@ smt::Result is_sat_res(const smt::TermVec & expr_vec, smt::SmtSolver & solver)
   return r;
 }
 
-bool is_sat_bool(const smt::TermVec & expr_vec, smt::SmtSolver & solver)
+bool is_sat_bool(const smt::TermVec & expr_vec, const smt::SmtSolver & solver)
 {
   return is_sat_res(expr_vec, solver).is_sat();
 }
 
-bool is_valid_bool(const smt::Term & expr, smt::SmtSolver & solver)
+bool is_valid_bool(const smt::Term & expr, const smt::SmtSolver & solver)
 {
   auto expr_not = solver->make_term(smt::Not, expr);
   return (! is_sat_bool(smt::TermVec{ expr_not }, solver));
