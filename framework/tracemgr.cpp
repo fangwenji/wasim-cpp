@@ -77,13 +77,9 @@ bool TraceManager::abs_eq(const StateAsmpt & s_abs, const StateAsmpt & s2)
   return valid;
 }
 
-bool TraceManager::check_reachable(const StateAsmpt & s_in)
+bool TraceManager::check_reachable(const StateAsmpt & s_in) const
 {
-  const auto & asmpt = s_in.asmpt_;
-  // auto r = solver_->check_sat_assuming(asmpt);
-  auto r = is_sat_res(asmpt, solver_);
-  auto current_asmpt_sat = r.is_sat();
-  return current_asmpt_sat;
+  return s_in.is_reachable(solver_);
 }
 
 bool TraceManager::check_concrete_enough(const StateAsmpt & s_in, const smt::UnorderedTermSet & Xs)

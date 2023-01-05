@@ -121,7 +121,9 @@ class SymbolicTraverse
     tracemgr_.record_base_var(base_variable);
   }
 
-  // return the total number of states
+  // return the total number of states -- it is suggested these functions are called
+  // from a brand-new SymbolicTraverse object
+  // do not share SymbolicTraverse among different traversal
   unsigned traverse_one_step(const smt::TermVec & assumptions,
                          const std::vector<TraverseBranchingNode> & branching_point );
 

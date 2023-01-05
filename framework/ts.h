@@ -47,6 +47,7 @@ class StateAsmpt
   void print() const;
   void print_assumptions() const;
   bool syntactically_contains_x(const smt::UnorderedTermSet & set_of_Xvar) const;
+  bool is_reachable(const smt::SmtSolver & slv) const;
 
   smt::UnorderedTermMap sv_;
   smt::TermVec asmpt_;

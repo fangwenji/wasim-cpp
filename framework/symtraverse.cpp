@@ -1,4 +1,5 @@
 #include "symtraverse.h"
+#include "utils/logger.h"
 
 namespace wasim {
 
@@ -76,31 +77,18 @@ bool PerStateStack::deeper_choice()
   return true;
 }
 
-void SymbolicTraverse::traverse_one_step(
+unsigned SymbolicTraverse::traverse_one_step(
     const smt::TermVec & assumptions,
     const std::vector<TraverseBranchingNode> & branching_point)
 {
   auto state = executor_.get_curr_state(assumptions);
-  StateAsmpt state_init(state);  // shallow copy?
-  auto reachable = tracemgr_.check_reachable(state);
-  if (! reachable) {
-    tracemgr_.update_abs_state_one_step().insert(
-        tracemgr_.get_abs_state_one_step().end(), s_init.begin(), s_init.end());
-    assert(tracemgr_.get_abs_state_one_step().size() == 1);
-    cout << "not reachable! skip!" << endl;
-    cout << "==============================" << endl;
-    cout << "Finished!" << endl;
-    cout << "Get #state: " << tracemgr_.get_abs_state_one_step().size() << endl;
+  bool reachable = tracemgr_.check_reachable(state);
+  
+  WASIM_WARN_IF(! reachable) << "[DEBUG warning] not reachable! skip!";
+  if (! reachable)
+    return 0;
 
-    auto abs_state = tracemgr_.get_abs_state_one_step().at(0);
-    // TODO : SIMPLIFICATION
-    state_simplify_xvar(abs_state, executor_.get_Xs(), solver_);
-    sygus_simplify(abs_state, executor_.get_Xs(), solver_);
-    assert(! abs_state.syntactically_contains_x(executor_.get_Xs()));
-    // exit(1);
-    return;
-  }
-  auto concrete_enough =
+  bool concrete_enough =
       tracemgr_.check_concrete_enough(state, executor_.get_Xs());
   assert(concrete_enough);
   auto is_new_state = tracemgr_.record_state(state, executor_.get_Xs());
@@ -109,62 +97,56 @@ void SymbolicTraverse::traverse_one_step(
   PerStateStack init_choice(branching_point, executor_, solver_);
 
   while (init_choice.has_valid_choice()) {
-    cout << ">> [" << init_choice.repr() << "]  ";
+    WASIM_DLOG("traverse_one_step") << ">> [" << init_choice.repr() << "]  ";
     auto iv_asmpt_pair = init_choice.get_iv_asmpt(assumptions);
     auto iv = iv_asmpt_pair.first;
     auto asmpt = iv_asmpt_pair.second;
     executor_.set_input(iv, asmpt);
     executor_.sim_one_step();
     auto state = executor_.get_curr_state();
-    auto reachable = tracemgr_.check_reachable(state);
+    bool reachable = tracemgr_.check_reachable(state);
 
     if (! reachable) {
-      cout << "not reachable." << endl;
+      WASIM_DLOG("traverse_one_step") << "not reachable.";
       init_choice.next_choice();
       executor_.backtrack();
       executor_.undo_set_input();
       continue;
     }
 
-    auto concrete_enough =
+    bool concrete_enough =
         tracemgr_.check_concrete_enough(state, executor_.get_Xs());
     if (! concrete_enough) {
-      cout << "not concrete. Retry with deeper choice." << endl;
+      WASIM_DLOG("traverse_one_step")  << "not concrete. Retry with deeper choice.";
       auto succ = init_choice.deeper_choice();
       if (succ) {
         executor_.backtrack();
         executor_.undo_set_input();
         continue;
       }
-      cout << "<ERROR>: cannot reach a concrete state even if all choices are "
-              "made. Future work."
-           << endl;
+      WASIM_ERROR
+           << "cannot reach a concrete state even if all choices are "
+              "made. Future work.";
+
       auto state = executor_.get_curr_state();
       // state.print();
-      assert(false);
+      WASIM_CHECK(false);
     }
 
-    auto is_new_state =
+    bool is_new_state =
         tracemgr_.record_state(state, executor_.get_Xs());
-
-    if (is_new_state) {
-      cout << "new state!" << endl;
-      tracemgr_.record_state_one_step_no_comparison(state);
-    } else {
-      cout << "already exeists." << endl;
-    }
 
     init_choice.next_choice();
     executor_.backtrack();
     executor_.undo_set_input();
   }
 
-  cout << "=============================" << endl;
-  cout << "Finish!" << endl;
-  cout << "Get #state: " << tracemgr_.get_abs_state_one_step().size() << endl;
+  WASIM_DLOG("traverse_one_step") << "=============================" ;
+  WASIM_DLOG("traverse_one_step") << "Finish!" ;
+  WASIM_DLOG("traverse_one_step") << "Get #state: " << tracemgr_.get_abs_state().size();
 
   // TODO : simplification procedure
-  for (auto & abs_state_one_step : tracemgr_.update_abs_state_one_step()) {
+  for (auto & abs_state_one_step : tracemgr_.update_abs_state()) {
     bool reachable_before_simplification =
         tracemgr_.check_reachable(abs_state_one_step);
     state_simplify_xvar(abs_state_one_step, executor_.get_Xs(), solver_);
@@ -175,6 +157,7 @@ void SymbolicTraverse::traverse_one_step(
     assert(reachable_before_simplification);
     assert(reachable_after_simplification);
   }
+  return tracemgr_.update_abs_state().size();
 }
 
 unsigned SymbolicTraverse::traverse(
@@ -184,7 +167,7 @@ unsigned SymbolicTraverse::traverse(
   auto state = executor_.get_curr_state(assumptions);
   auto reachable = tracemgr_.check_reachable(state);
   if (! reachable) {
-    cout << "[DEBUG warning] not reachable! skip!" << endl;
+    WASIM_WARN << "[traverse] state is not reachable! skip!";
     return 0;
   }
 
@@ -198,8 +181,8 @@ unsigned SymbolicTraverse::traverse(
   PerStateStack init_stack(branching_point, executor_, solver_);
   std::vector<PerStateStack> stack_per_state;
   stack_per_state.push_back(init_stack);
-  cout << "init stack per state: " << init_stack.repr() << endl;
-  cout << "init tracelen: " << executor_.tracelen() << endl;
+  WASIM_DLOG("traverse") << "init stack per state: " << init_stack.repr() ;
+  WASIM_DLOG("traverse") << "init tracelen: " << executor_.tracelen() ;
   unsigned init_tracelen = executor_.tracelen() - 1;
   new_state_vec_.push_back(state);
 
@@ -208,16 +191,16 @@ unsigned SymbolicTraverse::traverse(
   while (stack_per_state.size() != 0) {
     state = executor_.get_curr_state();
 
-    cout << "Trace: " << executor_.tracelen() - init_tracelen
-         << " Stack: " << stack_per_state.size() << endl;
-    cout << ">> [";
-    for (const auto & perstack : stack_per_state) {
-      cout << perstack.repr() << " ";
-    }
-    cout << " ] : ";
+    WASIM_DLOG("traverse")
+         << "Trace: " << executor_.tracelen() - init_tracelen
+         << " Stack: " << stack_per_state.size();
+    WASIM_DLOG("traverse") << ">> [";
+    for (const auto & perstack : stack_per_state)
+      WASIM_DLOG("traverse") << perstack.repr() << " ";
+    WASIM_DLOG("traverse") << " ] : ";
 
     if (! stack_per_state.back().has_valid_choice()) {
-      cout << " no new choices, back to prev state" << endl;
+      WASIM_DLOG("traverse") << " no new choices, back to prev state";
       stack_per_state.pop_back();
       if (stack_per_state.size() != 0) {
         executor_.backtrack();
@@ -243,7 +226,7 @@ unsigned SymbolicTraverse::traverse(
 
     auto reachable = tracemgr_.check_reachable(state);
     if (! reachable) {
-      cout << " not reachable." << endl;
+      WASIM_DLOG("traverse") << " not reachable." ;
       stack_per_state.back().next_choice();
       executor_.backtrack();
       executor_.undo_set_input();
@@ -253,7 +236,7 @@ unsigned SymbolicTraverse::traverse(
     auto concrete_enough =
         tracemgr_.check_concrete_enough(state, executor_.get_Xs());
     if (! concrete_enough) {
-      cout << "not concrete. Retry with deeper choice." << endl;
+      WASIM_DLOG("traverse") << "not concrete. Retry with deeper choice.";
       auto succ = stack_per_state.back().deeper_choice();
       if (succ) {
         executor_.backtrack();
@@ -267,13 +250,13 @@ unsigned SymbolicTraverse::traverse(
         auto s = sv.first;
         auto v = sv.second;
         if (expr_contians_X(v, executor_.get_Xs())) {
-          cout << v << endl;
+          WASIM_DLOG("traverse") << v;
         }
       }
-      cout << "<ERROR>: cannot reach a concrete state even if all choices are "
-              "made. Future work."
-           << endl;
-      assert(false);
+      WASIM_ERROR
+           << "cannot reach a concrete state even if all choices are "
+              "made. Future work.";
+      WASIM_CHECK(false);
     }
 
     std::vector<wasim::StateAsmpt> state_vec;
@@ -288,13 +271,13 @@ unsigned SymbolicTraverse::traverse(
         tracemgr_.record_state_nonexisted_in_vec(state_vec, state, executor_.get_Xs());
 
     if (is_new_state) {
-      cout << "A new state!" << endl;
+      WASIM_DLOG("traverse") << "A new state!" ;
       new_state_vec_.push_back(curr_state);
 
       PerStateStack stack(branching_point, executor_, solver_);
       stack_per_state.push_back(stack);
     } else {
-      cout << " not new state. Go back. Try next." << endl;
+      WASIM_DLOG("traverse") << " not new state. Go back. Try next." ;
 
       auto test = stack_per_state.back().next_choice();
       executor_.backtrack();
@@ -302,9 +285,9 @@ unsigned SymbolicTraverse::traverse(
     }
   }
 
-  cout << "=============================" << endl;
-  cout << "Finish!" << endl;
-  cout << "Get #state: " << tracemgr_.get_abs_state().size() << endl;
+  WASIM_DLOG("traverse") << "=============================" ;
+  WASIM_DLOG("traverse") << "Finish!" ;
+  WASIM_DLOG("traverse") << "Get #state: " << tracemgr_.get_abs_state().size() ;
 
   // TODO : simplification procedure
   for (auto & abs_state : tracemgr_.update_abs_state()) {

@@ -15,6 +15,7 @@
  **/
 
 #include "ts.h"
+#include "term_manip.h"
 
 #include <functional>
 
@@ -78,6 +79,12 @@ bool StateAsmpt::syntactically_contains_x(const smt::UnorderedTermSet &  set_of_
   }
 
   return false;
+}
+
+
+bool StateAsmpt::is_reachable(const smt::SmtSolver & slv) const {
+  auto r = is_sat_res(asmpt_, slv);
+  return r.is_sat();
 }
 
 void swap(TransitionSystem & ts1, TransitionSystem & ts2)
