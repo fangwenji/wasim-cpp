@@ -186,7 +186,7 @@ target_include_directories(wasim-bin PUBLIC
 
 target_link_libraries(wasim-bin PUBLIC wasim-lib)
 
-if ("${PONO_STATIC_EXEC}" STREQUAL "YES")
+if ("${WASIM_STATIC_EXEC}" STREQUAL "YES")
   target_link_libraries(wasim-bin PUBLIC -static)
 endif()
 
