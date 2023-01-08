@@ -21,8 +21,12 @@
 
 #include <fmt/format.h>
 #include <iostream>
+#include <set>
 
 #include <smt-switch/smt.h>
+
+#define GLOG_NO_ABBREVIATED_SEVERITIES
+#include <glog/logging.h>
 
 #include "exceptions.h"
 
@@ -183,7 +187,7 @@ class Log
     }
     else
     {
-      throw PonoException("Can only set logger verbosity once.");
+      throw SimulatorException("Can only set logger verbosity once.");
     }
   }
 

@@ -22,9 +22,9 @@ void extend_branch_init(std::vector<std::vector<StateAsmpt>> & branch_list,
   auto assumptions = flag_asmpt;
   traverse_temp.traverse(assumptions, order, {});
   cout << "number of state " << flag << ": 1-> "
-       << traverse_temp.tracemgr_.abs_state_.size() << endl;
+       << traverse_temp.tracemgr_.get_abs_state().size() << endl;
 
-  for (auto & nextstate : traverse_temp.tracemgr_.abs_state_) {
+  for (const auto & nextstate : traverse_temp.tracemgr_.get_abs_state()) {
     std::vector<StateAsmpt> state_vec_extend;
     state_vec_extend.push_back(nextstate);
     branch_list.push_back(state_vec_extend);
@@ -45,7 +45,7 @@ void extend_branch_next_phase(
     std::unordered_set<std::string> base_sv,
     std::string flag,
     smt::TermVec flag_asmpt,
-    assignment_type phase_maker,
+    assignment_type phase_marker,
     std::vector<TraverseBranchingNode> order,
     smt::SmtSolver & solver)
 {
@@ -55,7 +55,7 @@ void extend_branch_next_phase(
     auto state_list(state_list_old);
     auto s = state_list.back();
     auto executor_temp(executor);
-    auto d = executor_temp.convert(phase_maker);
+    auto d = executor_temp.convert(phase_marker);
     std::swap(s.sv_, d);
     s.sv_.insert(d.begin(),
                  d.end());  // for the same variable, d will overwrite s
@@ -94,7 +94,7 @@ void extend_branch_same_phase(
     std::unordered_set<std::string> base_sv,
     std::string flag,
     smt::TermVec flag_asmpt,
-    assignment_type phase_maker,
+    assignment_type phase_marker,
     std::vector<TraverseBranchingNode> order,
     smt::SmtSolver & solver)
 {
@@ -105,7 +105,7 @@ void extend_branch_same_phase(
     auto s = state_list.back();
     auto s_init(s);
     auto executor_temp(executor);
-    auto d = executor_temp.convert(phase_maker);
+    auto d = executor_temp.convert(phase_marker);
     std::swap(s.sv_, d);  // swap will only exchange the pointers
     s.sv_.insert(d.begin(),
                  d.end());  // for the same variable, d will overwrite s
@@ -118,9 +118,9 @@ void extend_branch_same_phase(
     auto assumptions = flag_asmpt;
     traverse_temp.traverse(assumptions, order, { s_init });
     cout << "number of state " << flag << ": 1-> "
-         << traverse_temp.tracemgr_.abs_state_.size() << endl;
+         << traverse_temp.get_abs_state().size() << endl;
 
-    for (auto & nextstate : traverse_temp.tracemgr_.abs_state_) {
+    for (const auto & nextstate : traverse_temp.get_abs_state()) {
       auto state_vec_extend(state_list);
       state_vec_extend.push_back(nextstate);
       branch_list.push_back(state_vec_extend);

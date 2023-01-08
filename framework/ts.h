@@ -36,7 +36,12 @@ smt::TermVec args(const smt::Term & term);
 
 class StateAsmpt
 {
- public:
+protected:
+  // it is suggested not to create an empty state
+  // therefore, it is defined as protected
+  StateAsmpt() {}
+
+public:
   StateAsmpt(const smt::UnorderedTermMap & sv,
              const smt::TermVec & asmpt,
              const std::vector<std::string> & assumption_interp)
@@ -44,11 +49,23 @@ class StateAsmpt
   {
   }
 
+  StateAsmpt(const StateAsmpt & another, smt::TermTranslator & tt);
+
   void print() const;
   void print_assumptions() const;
   bool syntactically_contains_x(const smt::UnorderedTermSet & set_of_Xvar) const;
   bool is_reachable(const smt::SmtSolver & slv) const;
 
+  // getter and setter
+  const smt::UnorderedTermMap & get_sv() const { return sv_; }
+  const smt::TermVec & get_assumptions() const { return asmpt_; }
+  const std::vector<std::string> & get_assumption_interpretations() const { return assumption_interp_; }
+
+  smt::UnorderedTermMap & update_sv() { return sv_; }
+  smt::TermVec & update_assumptions() { return asmpt_; }
+  std::vector<std::string> & update_assumption_interpretations() { return assumption_interp_; }
+
+protected:
   smt::UnorderedTermMap sv_;
   smt::TermVec asmpt_;
   std::vector<std::string> assumption_interp_;
@@ -129,7 +146,7 @@ class TransitionSystem
    * Represents a functional update
    * @param state the state variable you are updating
    * @param val the value it should get
-   * Throws a PonoException if:
+   * Throws a SimulatorException if:
    *  1) state is not a state variable
    *  2) val contains any next state variables (assign next is for functional
    * assignment)
@@ -234,7 +251,7 @@ class TransitionSystem
   /** Find a term by name in the transition system.
    *  searches current and next state variables, inputs,
    *  and named terms.
-   *  Throws a PonoException if there is no matching term.
+   *  Throws a SimulatorException if there is no matching term.
    *
    *  @param name the name to look for
    *  @return the matching term if found

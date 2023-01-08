@@ -40,14 +40,14 @@ bool TraceManager::abs_eq(const StateAsmpt & s_abs, const StateAsmpt & s2)
 {
   smt::TermVec expr_vec;
   // for each of the state var in s_abs, find the expression in both
-  for (const auto & sv : s_abs.sv_) {
+  for (const auto & sv : s_abs.get_sv()) {
     if (base_var_.find(sv.first) == base_var_.end())
       continue;
     // now sv.first is in base var
-    if (s2.sv_.find(sv.first) == s2.sv_.end())
+    if (s2.get_sv().find(sv.first) == s2.get_sv().end())
       return false;
     
-    auto v2 = s2.sv_.at(sv.first);
+    auto v2 = s2.get_sv().at(sv.first);
 
     auto expr_tmp = solver_->make_term(
         smt::Equal, sv.second, v2);  // TODO: need test, expr no initialization
@@ -63,8 +63,8 @@ bool TraceManager::abs_eq(const StateAsmpt & s_abs, const StateAsmpt & s2)
 
   smt::TermVec assumptions;
   assumptions.insert(
-      assumptions.end(), s_abs.asmpt_.begin(), s_abs.asmpt_.end());
-  assumptions.insert(assumptions.end(), s2.asmpt_.begin(), s2.asmpt_.end());
+      assumptions.end(), s_abs.get_assumptions().begin(), s_abs.get_assumptions().end());
+  assumptions.insert(assumptions.end(), s2.get_assumptions().begin(), s2.get_assumptions().end());
 
   // auto r = solver_->check_sat_assuming(assumptions);
   auto r = is_sat_res(assumptions, solver_);
@@ -91,7 +91,7 @@ bool TraceManager::check_concrete_enough(const StateAsmpt & s_in, const smt::Uno
     assert(false);
   }
 
-  for (const auto & sv : s_in.sv_) {
+  for (const auto & sv : s_in.get_sv()) {
     auto s = sv.first;
     auto v = sv.second;
     if (base_var_.find(s) == base_var_.end()) {
@@ -108,7 +108,7 @@ bool TraceManager::check_concrete_enough(const StateAsmpt & s_in, const smt::Uno
     } // intersec_res is now all X contained in v
 
     for (const auto & X : intersec_res) {
-      auto ind = e_is_independent_of_v(v, X, s_in.asmpt_);
+      auto ind = e_is_independent_of_v(v, X, s_in.get_assumptions());
       if (!ind) {
         return false;
       }
@@ -122,12 +122,12 @@ StateAsmpt TraceManager::abstract(const StateAsmpt & s)
   if (base_var_.size() == 0) {
     cout << "WARNING: set base_var first!" << endl;
   }
-  StateAsmpt s2({}, s.asmpt_, s.assumption_interp_);
-  for (const auto & sv : s.sv_) {
-    auto s = sv.first;
-    auto v = sv.second;
+  StateAsmpt s2({}, s.get_assumptions(), s.get_assumption_interpretations());
+  for (const auto & sv : s.get_sv()) {
+    const auto & s = sv.first;
+    const auto & v = sv.second;
     if (base_var_.find(s) != base_var_.end()) {
-      s2.sv_.emplace(s, v);
+      s2.update_sv().emplace(s, v);
     }
   }
   return s2;

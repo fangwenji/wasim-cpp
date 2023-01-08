@@ -55,7 +55,7 @@ void SymbolicExecutor::_check_only_invar(
 {
   for (const auto & v : vdict) {
     if (invar_.find(v.first) == invar_.end())
-      throw PonoException("Expecting " + v.first->to_string()
+      throw SimulatorException("Expecting " + v.first->to_string()
                           + " to be input var");
   }
 }
@@ -86,7 +86,7 @@ smt::UnorderedTermMap SymbolicExecutor::convert(
     smt::Term key_new = var(key);
     // if(svar_.find(key_new) == svar_.end() && invar_.find(key_new) ==
     // invar_.end())
-    //    throw PonoException("var name " + key + " is not a state/input
+    //    throw SimulatorException("var name " + key + " is not a state/input
     //    variable");
 
     if (std::holds_alternative<std::string>(value)) {
@@ -101,7 +101,7 @@ smt::UnorderedTermMap SymbolicExecutor::convert(
       auto value_new = solver_->make_term(value_int, key_sort);
       retdict.emplace(key_new, value_new);
     } else
-      throw PonoException("Unhandled case in assignment_type");
+      throw SimulatorException("Unhandled case in assignment_type");
   }
   return retdict;
 }
@@ -141,16 +141,16 @@ void SymbolicExecutor::init(
 void SymbolicExecutor::set_current_state(const StateAsmpt & s)
 {
   trace_.clear();
-  trace_.push_back(s.sv_);
+  trace_.push_back(s.get_sv());
 
   // smt::TermVec asmpt_copy(s.asmpt_.begin(), s.asmpt_.end());
   // std::vector<std::string> asmpt_interp_copy(s.assumption_interp_.begin(),
   // s.assumption_interp_.end());
 
   history_assumptions_.clear();
-  history_assumptions_.push_back(s.asmpt_);
+  history_assumptions_.push_back(s.get_assumptions());
   history_assumptions_interp_.clear();
-  history_assumptions_interp_.push_back(s.assumption_interp_);
+  history_assumptions_interp_.push_back(s.get_assumption_interpretations());
   history_choice_.clear();
 }
 
@@ -262,7 +262,7 @@ smt::Term SymbolicExecutor::interpret_state_expr_on_curr_frame(
     const smt::Term & expr) const
 {
   if (!_expr_only_sv(expr))
-    throw PonoException("expr should only contain only state variables");
+    throw SimulatorException("expr should only contain only state variables");
   const auto & prev_sv = trace_.back();
   return solver_->substitute(expr, prev_sv);
 }

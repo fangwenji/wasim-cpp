@@ -59,10 +59,11 @@ smt::Term PropertyInterface::register_arg(const std::string & name,
 
 smt::Term PropertyInterface::return_defs()
 {
-  for (const auto & d : defs_) {
+  for (const auto & d : defs_)
     // cout << d.first << " : " << d.second << endl;
     return d.second;
-  }
+  throw SimulatorException("No function definitions loaded so far");
+  return NULL;
 }
 
 void StateRW::write_term(const std::string & outfile, const smt::Term & expr)
@@ -149,13 +150,13 @@ void StateRW::StateWrite(const wasim::StateAsmpt & state,
                          const std::string & outfile_asmpt)
 {
   // 1. write state variables and expressions to outfile_sv
-  for (auto sv : state.sv_) {
+  for (const auto & sv : state.get_sv()) {
     // 1.1 for variable (LHS)
-    auto var = sv.first;
+    const auto & var = sv.first;
     write_single_term(outfile_sv, var);
 
     // 1.2 for value expression (RHs)
-    auto value = sv.second;
+    const auto & value = sv.second;
     smt::UnorderedTermSet free_value_var;
     smt::get_free_symbols(value, free_value_var);
     if (is_bv_const(value)) {
@@ -167,8 +168,8 @@ void StateRW::StateWrite(const wasim::StateAsmpt & state,
     }
   }
   // 2. write assumptions and interpretations to outfile_asmpt
-  for (int i = 0; i < state.asmpt_.size(); i++) {
-    auto asmpt = state.asmpt_.at(i);
+  for (int i = 0; i < state.get_assumptions().size(); i++) {
+    const auto & asmpt = state.get_assumptions().at(i);
     smt::UnorderedTermSet free_asmpt_var;
     smt::get_free_symbols(asmpt, free_asmpt_var);
     if (is_bv_const(asmpt)) {
@@ -179,7 +180,7 @@ void StateRW::StateWrite(const wasim::StateAsmpt & state,
       write_term(outfile_asmpt, asmpt);
     }
 
-    auto asmpt_interp = state.assumption_interp_.at(i);
+    const auto & asmpt_interp = state.get_assumption_interpretations().at(i);
     write_string(outfile_asmpt, asmpt_interp);
   }
 }
@@ -321,61 +322,8 @@ std::vector<std::vector<StateAsmpt>> StateRW::StateReadTree(const std::string & 
 }
 
 
-StateAsmpt StateTransfer(const wasim::StateAsmpt & state,
-                         smt::SmtSolver & solver_old,
-                         smt::SmtSolver & solver_new)
-{
-  smt::UnorderedTermMap sv_new;
-  smt::TermVec asmpt_vec_new;
-  for (const auto & sv : state.sv_) {
-    auto var = sv.first;
-    auto value = sv.second;
-    #error "it is very inefficient if you do not share the translator"
-    auto var_new = TermTransfer(var, solver_old, solver_new);
-    auto value_new = TermTransfer(value, solver_old, solver_new);
-    sv_new.emplace(var_new, value_new);
-  }
 
-  for (const auto & asmpt : state.asmpt_) {
-    auto asmpt_new = TermTransfer(asmpt, solver_old, solver_new);
-    smt::Term asmpt_expr;
-    if (asmpt_new->get_sort()->get_sort_kind() == smt::BV) {
-      // convert bitvector 1 term to boolean term
-      auto bvs = solver_new->make_sort(smt::BV, 1);
-      smt::TermVec ite_term = {
-        solver_new->make_term(
-            smt::Equal, asmpt_new, solver_new->make_term(1, bvs)),
-        solver_new->make_term(1),
-        solver_new->make_term(0)
-      };
-      auto asmpt_temp = solver_new->make_term(smt::Ite, ite_term);
-      asmpt_expr = asmpt_temp;
-    } else {
-      asmpt_expr = asmpt_new;
-    }
-
-    asmpt_vec_new.push_back(asmpt_expr);
-  }
-
-  StateAsmpt state_ret(sv_new, asmpt_vec_new, state.assumption_interp_);
-
-  return state_ret;
-}
-
-smt::UnorderedTermSet SetTransfer(const smt::UnorderedTermSet & expr_set,
-                                  smt::SmtSolver & solver_old,
-                                  smt::SmtSolver & solver_new)
-{
-  smt::UnorderedTermSet expr_set_new;
-  for (const auto & expr : expr_set) {
-    auto expr_new = TermTransfer(expr, solver_old, solver_new);
-    expr_set_new.insert(expr_new);
-  }
-  assert(expr_set.size() == expr_set_new.size());
-  return expr_set_new;
-}
-
-smt::TermVec one_hot(const smt::TermVec & one_hot_vec, smt::SmtSolver & solver)
+smt::TermVec one_hot0(const smt::TermVec & one_hot_vec, smt::SmtSolver & solver)
 {
   smt::TermVec ret;
   auto ll = one_hot_vec.size();
@@ -392,38 +340,29 @@ smt::TermVec one_hot(const smt::TermVec & one_hot_vec, smt::SmtSolver & solver)
 }
 
 
-smt::UnorderedTermMap get_model(const smt::Term & expr, smt::SmtSolver & solver)
-{
-  // cout << "get_model" << endl;
-  smt::UnorderedTermMap ret_model;
-  smt::UnorderedTermSet free_var_set;
-  smt::get_free_symbols(expr, free_var_set);
-  for (const auto & t : free_var_set) {
-    ret_model.emplace(t, solver->get_value(t));
-  }
-  return ret_model;
-}
-
-smt::UnorderedTermMap get_invalid_model(const smt::Term & expr, smt::SmtSolver & solver)
-{
-  // cout << "get_invalid_model" << endl;
-  auto expr_not = solver->make_term(smt::Not, expr);
-  return get_model(expr_not, solver);
-}
-
-smt::Result is_sat_res(const smt::TermVec & expr_vec, const smt::SmtSolver & solver)
+smt::Result is_sat_res(const smt::TermVec & expr_vec, const smt::SmtSolver & solver, smt::UnorderedTermMap * out)
 {
   solver->push();
   for (const auto & a : expr_vec)
     solver->assert_formula(a);
   auto r = solver->check_sat();
+
+  if (r.is_sat() && out != NULL) {
+    smt::UnorderedTermSet free_var_set;
+    for (const auto & a : expr_vec)
+      smt::get_free_symbols(a, free_var_set);
+    for (const auto & t : free_var_set) {
+      out->emplace(t, solver->get_value(t));
+    }
+  } // end of is_sat and requires model
+
   solver->pop();
   return r;
 }
 
 bool is_sat_bool(const smt::TermVec & expr_vec, const smt::SmtSolver & solver)
 {
-  return is_sat_res(expr_vec, solver).is_sat();
+  return is_sat_res(expr_vec, solver, NULL).is_sat();
 }
 
 bool is_valid_bool(const smt::Term & expr, const smt::SmtSolver & solver)

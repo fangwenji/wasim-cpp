@@ -27,7 +27,7 @@
      classes of this.
  */
 
-class PonoException : public std::exception
+class SimulatorException : public std::exception
 {
  public:
   /** Constructor (C strings).
@@ -36,17 +36,17 @@ class PonoException : public std::exception
    *                 Hence, responsibility for deleting the char* lies
    *                 with the caller.
    */
-  explicit PonoException(const char * message) : msg(message) {}
+  explicit SimulatorException(const char * message) : msg(message) {}
 
   /** Constructor (C++ STL strings).
    *  @param message The error message.
    */
-  explicit PonoException(const std::string & message) : msg(message) {}
+  explicit SimulatorException(const std::string & message) : msg(message) {}
 
   /** Destructor.
    * Virtual to allow for subclassing.
    */
-  virtual ~PonoException() throw() {}
+  virtual ~SimulatorException() throw() {}
 
   /** Returns a pointer to the (constant) error description.
    *  @return A pointer to a const char*. The underlying memory

@@ -137,7 +137,7 @@ Term BTOR2Encoder::bv_to_bool(const Term & t) const
   Sort sort = t->get_sort();
   if (sort->get_sort_kind() == BV) {
     if (sort->get_width() != 1) {
-      throw PonoException("Can't convert non-width 1 bitvector to bool.");
+      throw SimulatorException("Can't convert non-width 1 bitvector to bool.");
     }
     return solver_->make_term(
         Equal, t, solver_->make_term(1, solver_->make_sort(BV, 1)));
@@ -195,13 +195,13 @@ void BTOR2Encoder::preprocess(const std::string & filename)
   FILE * input_file = fopen(filename.c_str(), "r");
 
   if (!input_file) {
-    throw PonoException("Could not open " + filename);
+    throw SimulatorException("Could not open " + filename);
   }
 
   reader_ = btor2parser_new();
 
   if (!btor2parser_read_lines(reader_, input_file)) {
-    throw PonoException(std::string(btor2parser_error(reader_)));
+    throw SimulatorException(std::string(btor2parser_error(reader_)));
   }
 
   it_ = btor2parser_iter_init(reader_);
@@ -215,7 +215,7 @@ void BTOR2Encoder::preprocess(const std::string & filename)
     } else if (l_->tag == BTOR2_TAG_output && l_->symbol) {
       // if we see an output with name
       if (l_->nargs == 0)
-        throw PonoException("Missing term for id " + std::to_string(l_->id));
+        throw SimulatorException("Missing term for id " + std::to_string(l_->id));
       // we'd like to know if it refers to a state without name
       auto pos = unamed_state_ids.find(l_->args[0]);  // so, *pos is its btor id
       if (pos != unamed_state_ids.end()) {
@@ -237,13 +237,13 @@ void BTOR2Encoder::parse(const std::string filename)
   FILE * input_file = fopen(filename.c_str(), "r");
 
   if (!input_file) {
-    throw PonoException("Could not open " + filename);
+    throw SimulatorException("Could not open " + filename);
   }
 
   reader_ = btor2parser_new();
 
   if (!btor2parser_read_lines(reader_, input_file)) {
-    throw PonoException(std::string(btor2parser_error(reader_)));
+    throw SimulatorException(std::string(btor2parser_error(reader_)));
   }
 
   uint64_t num_states = 0;
@@ -269,7 +269,7 @@ void BTOR2Encoder::parse(const std::string filename)
         idx_ = -idx_;
       }
       if (terms_.find(idx_) == terms_.end()) {
-        throw PonoException("Missing term for id " + std::to_string(idx_));
+        throw SimulatorException("Missing term for id " + std::to_string(idx_));
       }
 
       Term term_ = terms_.at(idx_);
@@ -323,7 +323,7 @@ void BTOR2Encoder::parse(const std::string filename)
       try {
         ts_.name_term(symbol_, termargs_[0]);
       }
-      catch (PonoException & e) {
+      catch (SimulatorException & e) {
         ts_.name_term("_out_" + symbol_, termargs_[0]);
       }
       terms_[l_->id] = termargs_[0];
@@ -344,7 +344,7 @@ void BTOR2Encoder::parse(const std::string filename)
         default:
           // TODO: maybe only check this in debug? or could always check cause
           // it's really bad
-          throw PonoException("Unknown sort tag");
+          throw SimulatorException("Unknown sort tag");
       }
     } else if (l_->tag == BTOR2_TAG_constraint) {
       Term constraint = bv_to_bool(termargs_[0]);
@@ -366,9 +366,9 @@ void BTOR2Encoder::parse(const std::string filename)
       terms_[l_->id] = constraint;
     } else if (l_->tag == BTOR2_TAG_init) {
       if (termargs_.size() != 2) {
-        throw PonoException("Expecting two term arguments to init");
+        throw SimulatorException("Expecting two term arguments to init");
       } else if (linesort_ != termargs_[0]->get_sort()) {
-        throw PonoException(
+        throw SimulatorException(
             "Expecting to init sort to match first argument's sort");
       }
 
@@ -384,7 +384,7 @@ void BTOR2Encoder::parse(const std::string filename)
           init_eq = solver_->make_term(Equal, termargs_[0], termargs_[1]);
         }
       } else {
-        throw PonoException("Unhandled sort: "
+        throw SimulatorException("Unhandled sort: "
                             + termargs_[0]->get_sort()->to_string());
       }
 
@@ -393,7 +393,7 @@ void BTOR2Encoder::parse(const std::string filename)
 
     } else if (l_->tag == BTOR2_TAG_next) {
       if (termargs_.size() != 2) {
-        throw PonoException("Expecting two arguments to next");
+        throw SimulatorException("Expecting two arguments to next");
       }
 
       Term t0 = termargs_[0];
@@ -412,7 +412,7 @@ void BTOR2Encoder::parse(const std::string filename)
         ts_.assign_next(bool_to_bv(t0), bool_to_bv(t1));
         terms_[l_->id] = bool_to_bv(t1);
       } else {
-        throw PonoException("Got two different sorts in next update.");
+        throw SimulatorException("Got two different sorts in next update.");
       }
       no_next_states_.erase(id2statenum.at(l_->args[0]));
     } else if (l_->tag == BTOR2_TAG_bad) {
@@ -440,7 +440,7 @@ void BTOR2Encoder::parse(const std::string filename)
       terms_[l_->id] = solver_->make_term(0, linesort_);
     } else if (l_->tag == BTOR2_TAG_eq) {
       if (termargs_.size() != 2) {
-        throw PonoException("Expecting two arguments to eq");
+        throw SimulatorException("Expecting two arguments to eq");
       }
       Term t0 = termargs_[0];
       Term t1 = termargs_[1];
@@ -457,7 +457,7 @@ void BTOR2Encoder::parse(const std::string filename)
           sk0 = BV;
           sk1 = BV;
         } else {
-          throw PonoException(
+          throw SimulatorException(
               "Expecting arguments to eq to have the same sort");
         }
       }
@@ -469,7 +469,7 @@ void BTOR2Encoder::parse(const std::string filename)
       }
     } else if (l_->tag == BTOR2_TAG_neq) {
       if (termargs_.size() != 2) {
-        throw PonoException("Expecting two arguments to neq");
+        throw SimulatorException("Expecting two arguments to neq");
       }
       Term t0 = termargs_[0];
       Term t1 = termargs_[1];
@@ -486,7 +486,7 @@ void BTOR2Encoder::parse(const std::string filename)
           sk0 = BV;
           sk1 = BV;
         } else {
-          throw PonoException(
+          throw SimulatorException(
               "Expecting arguments to neq to have the same sort");
         }
       }
@@ -522,7 +522,7 @@ void BTOR2Encoder::parse(const std::string filename)
           solver_->make_term(BVSub, t, solver_->make_term(1, t->get_sort()));
     } else if (l_->tag == BTOR2_TAG_implies) {
       if (termargs_.size() != 2) {
-        throw PonoException("Expecting two arguments to implies");
+        throw SimulatorException("Expecting two arguments to implies");
       }
       Term t0 = termargs_[0];
       Term t1 = termargs_[1];
@@ -539,7 +539,7 @@ void BTOR2Encoder::parse(const std::string filename)
           sk0 = BOOL;
           sk1 = BOOL;
         } else {
-          throw PonoException(
+          throw SimulatorException(
               "Expecting arguments to implies to have the same sort");
         }
       }
@@ -711,7 +711,7 @@ void BTOR2Encoder::parse(const std::string filename)
      ********************************/
     else {
       if (!termargs_.size()) {
-        throw PonoException("Expecting non-zero number of terms");
+        throw SimulatorException("Expecting non-zero number of terms");
       }
 
       if (boolopmap.find(l_->tag) != boolopmap.end()) {
@@ -733,7 +733,7 @@ void BTOR2Encoder::parse(const std::string filename)
         } else if (sk == BOOL) {
           terms_[l_->id] = solver_->make_term(boolopmap.at(l_->tag), termargs_);
         } else {
-          throw PonoException("Unexpected sort");
+          throw SimulatorException("Unexpected sort");
         }
       } else {
         for (int i = 0; i < termargs_.size(); i++) {
@@ -750,7 +750,7 @@ void BTOR2Encoder::parse(const std::string filename)
       try {
         ts_.name_term(l_->symbol, terms_.at(l_->id));
       }
-      catch (PonoException & e) {
+      catch (SimulatorException & e) {
         logger.log(1, "BTOR2Encoder Warning: {}", e.what());
       }
     }

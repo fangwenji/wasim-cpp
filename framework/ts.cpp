@@ -87,6 +87,22 @@ bool StateAsmpt::is_reachable(const smt::SmtSolver & slv) const {
   return r.is_sat();
 }
 
+
+StateAsmpt::StateAsmpt(const StateAsmpt & another, smt::TermTranslator & tt) {
+  for (const auto & sv : another.sv_) {
+    const auto & var = sv.first;
+    const auto & value = sv.second;
+    sv_.emplace(tt.transfer_term(var), tt.transfer_term(value));
+  }
+
+  for (const auto & asmpt : another.asmpt_)
+    asmpt_.push_back(tt.transfer_term(asmpt, smt::SortKind::BOOL));
+  
+  assumption_interp_ = another.assumption_interp_; // just make a copy
+}
+
+// ----------------------------------------------------------------------------------------------
+
 void swap(TransitionSystem & ts1, TransitionSystem & ts2)
 {
   std::swap(ts1.solver_, ts2.solver_);
@@ -210,7 +226,7 @@ void TransitionSystem::set_init(const Term & init)
 {
   // TODO: only do this check in debug mode
   if (!only_curr(init)) {
-    throw PonoException(
+    throw SimulatorException(
         "Initial state constraints should only use current state variables");
   }
 
@@ -221,7 +237,7 @@ void TransitionSystem::constrain_init(const Term & constraint)
 {
   // TODO: Only do this check in debug mode
   if (!only_curr(constraint)) {
-    throw PonoException(
+    throw SimulatorException(
         "Initial state constraints should only use current state variables");
   }
   init_ = solver_->make_term(And, init_, constraint);
@@ -231,17 +247,17 @@ void TransitionSystem::assign_next(const Term & state, const Term & val)
 {
   // TODO: only do this check in debug mode
   if (statevars_.find(state) == statevars_.end()) {
-    throw PonoException("Unknown state variable");
+    throw SimulatorException("Unknown state variable");
   }
 
   if (!no_next(val)) {
-    throw PonoException(
+    throw SimulatorException(
         "Got a symbolic that is not a current state or input variable in RHS "
         "of functional assignment");
   }
 
   if (state_updates_.find(state) != state_updates_.end()) {
-    throw PonoException("State variable " + state->to_string()
+    throw SimulatorException("State variable " + state->to_string()
                         + " already has next-state logic assigned.");
   }
 
@@ -274,7 +290,7 @@ void TransitionSystem::add_invar(const Term & constraint)
     trans_ = solver_->make_term(And, trans_, next_constraint);
     constraints_.push_back({ constraint, true });
   } else {
-    throw PonoException("Invariants should be over current states only.");
+    throw SimulatorException("Invariants should be over current states only.");
   }
 }
 
@@ -288,7 +304,7 @@ void TransitionSystem::constrain_inputs(const Term & constraint)
     trans_ = solver_->make_term(And, trans_, constraint);
     constraints_.push_back({ constraint, true });
   } else {
-    throw PonoException("Cannot have next-states in an input constraint.");
+    throw SimulatorException("Cannot have next-states in an input constraint.");
   }
 }
 
@@ -312,7 +328,7 @@ void TransitionSystem::add_constraint(const Term & constraint,
     trans_ = solver_->make_term(And, trans_, constraint);
     constraints_.push_back({ constraint, to_init_and_next });
   } else {
-    throw PonoException("Constraint cannot have next states");
+    throw SimulatorException("Constraint cannot have next states");
   }
 }
 
@@ -320,7 +336,7 @@ void TransitionSystem::name_term(const string name, const Term & t)
 {
   auto it = named_terms_.find(name);
   if (it != named_terms_.end() && t != it->second) {
-    throw PonoException("Name " + name + " has already been used.");
+    throw SimulatorException("Name " + name + " has already been used.");
   }
   named_terms_[name] = t;
   // save this name as a representative (might overwrite)
@@ -386,7 +402,7 @@ smt::Term TransitionSystem::lookup(std::string name) const
 {
   const auto & it = named_terms_.find(name);
   if (it == named_terms_.end()) {
-    throw PonoException("Could not find term named: " + name);
+    throw SimulatorException("Could not find term named: " + name);
   }
   return it->second;
 }
@@ -398,20 +414,20 @@ void TransitionSystem::add_statevar(const Term & cv, const Term & nv)
   //       saying whether to check these things or not
 
   if (statevars_.find(cv) != statevars_.end()) {
-    throw PonoException("Cannot redeclare a state variable");
+    throw SimulatorException("Cannot redeclare a state variable");
   }
 
   if (next_statevars_.find(nv) != next_statevars_.end()) {
-    throw PonoException("Cannot redeclare a state variable");
+    throw SimulatorException("Cannot redeclare a state variable");
   }
 
   if (next_statevars_.find(cv) != next_statevars_.end()) {
-    throw PonoException(
+    throw SimulatorException(
         "Cannot use an existing next state variable as a current state var");
   }
 
   if (statevars_.find(nv) != statevars_.end()) {
-    throw PonoException(
+    throw SimulatorException(
         "Cannot use an existing state variable as a next state var");
   }
 
@@ -444,7 +460,7 @@ void TransitionSystem::add_inputvar(const Term & v)
   if (statevars_.find(v) != statevars_.end()
       || next_statevars_.find(v) != next_statevars_.end()
       || inputvars_.find(v) != inputvars_.end()) {
-    throw PonoException(
+    throw SimulatorException(
         "Cannot reuse an existing variable as an input variable");
   }
 
@@ -687,7 +703,7 @@ void TransitionSystem::drop_state_updates(const TermVec & svs)
 {
   for (const auto & sv : svs) {
     if (!is_curr_var(sv)) {
-      throw PonoException("Got non-state var in drop_state_updates");
+      throw SimulatorException("Got non-state var in drop_state_updates");
     }
     state_updates_.erase(sv);
   }
@@ -713,7 +729,7 @@ void TransitionSystem::promote_inputvar(const Term & iv)
 {
   size_t num_erased = inputvars_.erase(iv);
   if (!num_erased) {
-    throw PonoException("Tried to promote non-input to state variable: "
+    throw SimulatorException("Tried to promote non-input to state variable: "
                         + iv->to_string());
   }
 
@@ -735,7 +751,7 @@ void TransitionSystem::replace_terms(const UnorderedTermMap & to_replace)
     bool known = contains(elem.first, all_symbols);
     known &= contains(elem.second, all_symbols);
     if (!known) {
-      throw PonoException("Got an unknown symbol in replace_terms map");
+      throw SimulatorException("Got an unknown symbol in replace_terms map");
     }
   }
 
@@ -748,7 +764,7 @@ void TransitionSystem::replace_terms(const UnorderedTermMap & to_replace)
   // now rebuild terms in every data structure with replacements
   init_ = sw.visit(init_);
   if (!only_curr(init_)) {
-    throw PonoException(
+    throw SimulatorException(
         "Replaced a state variable appearing in init with an input in "
         "replace_terms");
   }
@@ -771,7 +787,7 @@ void TransitionSystem::replace_terms(const UnorderedTermMap & to_replace)
     sv = sw.visit(sv);
     update = sw.visit(elem.second);
     if (functional_ && !no_next(update)) {
-      throw PonoException(
+      throw SimulatorException(
           "Got a next state variable in a state update for a functional "
           "TransitionSystem in replace_terms");
     }

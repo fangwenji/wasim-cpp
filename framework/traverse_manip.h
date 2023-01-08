@@ -47,7 +47,7 @@ void extend_branch_next_phase(
     std::unordered_set<std::string> base_sv,
     std::string flag,
     smt::TermVec flag_asmpt,
-    assignment_type phase_maker,
+    assignment_type phase_marker,
     std::vector<TraverseBranchingNode> order,
     smt::SmtSolver & solver);
 
@@ -58,7 +58,7 @@ void extend_branch_same_phase(
     std::unordered_set<std::string> base_sv,
     std::string flag,
     smt::TermVec flag_asmpt,
-    assignment_type phase_maker,
+    assignment_type phase_marker,
     std::vector<TraverseBranchingNode> order,
     smt::SmtSolver & solver);
 }  // namespace wasim

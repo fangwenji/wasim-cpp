@@ -90,7 +90,7 @@ if (NOT EXISTS "${PROJECT_SOURCE_DIR}/deps/btor2tools/src")
 endif()
 
 
-if (NOT EXISTS "${PROJECT_SOURCE_DIR}/deps/glog/build/libglog.a")
+if (NOT EXISTS "${PROJECT_SOURCE_DIR}/deps/glog/install/lib/libglog.a")
   message(FATAL_ERROR "Missing glog -- try running ./contrib/setup-glog.sh")
 endif()
 
@@ -109,7 +109,7 @@ set(INCLUDE_DIRS
   "${PROJECT_SOURCE_DIR}/contrib/"
   "${PROJECT_SOURCE_DIR}/contrib/optionparser-1.7/src"
   "${PROJECT_SOURCE_DIR}/deps/btor2tools/src"
-  "${PROJECT_SOURCE_DIR}/deps/glog/build/"
+  "${PROJECT_SOURCE_DIR}/deps/glog/install/include/"
   "${SMT_SWITCH_DIR}/local/include"
   "${CMAKE_CURRENT_BINARY_DIR}"
   "${GMP_INCLUDE_DIR}"
@@ -148,7 +148,7 @@ if (BUILD_PYTHON_BINDINGS)
   add_subdirectory(python)
 endif()
 
-target_link_libraries(wasim-lib PUBLIC "${PROJECT_SOURCE_DIR}/deps/glog/build/libglog.a")
+target_link_libraries(wasim-lib PUBLIC "${PROJECT_SOURCE_DIR}/deps/glog/install/lib/libglog.a")
 target_link_libraries(wasim-lib PUBLIC "${SMT_SWITCH_DIR}/local/lib/libsmt-switch-btor.a")
 target_link_libraries(wasim-lib PUBLIC "${SMT_SWITCH_DIR}/local/lib/libsmt-switch-cvc5.a")
 target_link_libraries(wasim-lib PUBLIC "${SMT_SWITCH_DIR}/local/lib/libsmt-switch.a")

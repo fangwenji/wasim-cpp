@@ -157,7 +157,7 @@ unsigned SymbolicTraverse::traverse_one_step(
     assert(reachable_before_simplification);
     assert(reachable_after_simplification);
   }
-  return tracemgr_.update_abs_state().size();
+  return tracemgr_.get_abs_state().size();
 }
 
 unsigned SymbolicTraverse::traverse(
@@ -184,9 +184,9 @@ unsigned SymbolicTraverse::traverse(
   WASIM_DLOG("traverse") << "init stack per state: " << init_stack.repr() ;
   WASIM_DLOG("traverse") << "init tracelen: " << executor_.tracelen() ;
   unsigned init_tracelen = executor_.tracelen() - 1;
-  new_state_vec_.push_back(state);
+  vector<StateAsmpt> curr_branch;
+  curr_branch.push_back(state);
 
-  int tree_branch_num = 0;
   bool branch_end_flag = false;
   while (stack_per_state.size() != 0) {
     state = executor_.get_curr_state();
@@ -207,11 +207,8 @@ unsigned SymbolicTraverse::traverse(
         executor_.undo_set_input();
 
         // store current branch (we have finished on this branch)
-        vec_of_state_vec_.push_back(new_state_vec_);
-        tree_branch_num++;
-
-        // we are going to backtrack
-        new_state_vec_.pop_back();
+        all_branches_.push_back(curr_branch);
+        curr_branch.pop_back(); // we are going to backtrack
         branch_end_flag = true;
       }
       continue;
@@ -242,11 +239,11 @@ unsigned SymbolicTraverse::traverse(
         executor_.backtrack();
         executor_.undo_set_input();
         continue;
-      }
+      } // else : run out of choices
 
       auto state = executor_.get_curr_state();
       // state.print();
-      for (const auto & sv : state.sv_) {
+      for (const auto & sv : state.get_sv()) {
         auto s = sv.first;
         auto v = sv.second;
         if (expr_contians_X(v, executor_.get_Xs())) {
@@ -255,30 +252,25 @@ unsigned SymbolicTraverse::traverse(
       }
       WASIM_ERROR
            << "cannot reach a concrete state even if all choices are "
-              "made. Future work.";
-      WASIM_CHECK(false);
-    }
+              "made.";
+      throw SimulatorException("cannot reach a concrete state even if all choices are made");
+    } // end of not concrete enough
 
-    std::vector<wasim::StateAsmpt> state_vec;
-    if (branch_end_flag) {
+    const std::vector<wasim::StateAsmpt> & state_vec = 
+      branch_end_flag ? all_branches_.back() : curr_branch;
+
+    if (branch_end_flag)
       branch_end_flag = false;
-      state_vec = vec_of_state_vec_[tree_branch_num - 1];
-    } else {
-      state_vec = new_state_vec_;
-    }
 
     auto is_new_state =
         tracemgr_.record_state_nonexisted_in_vec(state_vec, state, executor_.get_Xs());
 
     if (is_new_state) {
       WASIM_DLOG("traverse") << "A new state!" ;
-      new_state_vec_.push_back(curr_state);
-
-      PerStateStack stack(branching_point, executor_, solver_);
-      stack_per_state.push_back(stack);
+      curr_branch.push_back(curr_state);
+      stack_per_state.push_back(PerStateStack(branching_point, executor_, solver_)); // new stack
     } else {
       WASIM_DLOG("traverse") << " not new state. Go back. Try next." ;
-
       auto test = stack_per_state.back().next_choice();
       executor_.backtrack();
       executor_.undo_set_input();
@@ -299,5 +291,7 @@ unsigned SymbolicTraverse::traverse(
     assert(reachable_before_simplification);
     assert(reachable_after_simplification);
   }
-}
+  return tracemgr_.get_abs_state().size();
+} // end of traverse
+
 }  // namespace wasim

@@ -131,6 +131,10 @@ class SymbolicTraverse
   unsigned traverse(const smt::TermVec & assumptions,
                 const std::vector<TraverseBranchingNode> & branching_point );
 
+  
+  const std::vector<StateAsmpt> & get_abs_state() const { return tracemgr_.get_abs_state(); }
+  const std::vector<std::vector<StateAsmpt>> & get_all_branches() const { return all_branches_; }
+
  protected:
   const TransitionSystem & sts_;
   smt::SmtSolver solver_;
@@ -139,11 +143,8 @@ class SymbolicTraverse
   smt::UnorderedTermSet base_variable_;
   smt::UnorderedTermMap s_concrete_;
 
-  // this is one branch currently explored
-  std::vector<StateAsmpt> new_state_vec_; 
-
   // this is all branches that have been explored
-  std::vector<std::vector<StateAsmpt>> vec_of_state_vec_; 
+  std::vector<std::vector<StateAsmpt>> all_branches_; 
 };
 
 }  // namespace wasim

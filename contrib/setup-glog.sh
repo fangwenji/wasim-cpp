@@ -12,8 +12,11 @@ if [ ! -d "$DEPS/glog" ]; then
     git clone https://github.com/google/glog.git glog
     cd glog
     git checkout -f $GLOG_VERSION
-    cmake -S . -B build -G "Unix Makefiles" -DBUILD_SHARED_LIBS=OFF
+    mkdir -p "$DEPS/glog/install"
+    cmake -DCMAKE_INSTALL_PREFIX="$DEPS/glog/install" -S . -B build -G "Unix Makefiles" -DBUILD_SHARED_LIBS=OFF 
     cmake --build build
+    cd build
+    make install
 else
     echo "$DEPS/glog already exists. If you want to rebuild, please remove $DEPS/glog and start over."
 fi

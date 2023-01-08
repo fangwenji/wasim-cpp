@@ -73,30 +73,15 @@ class StateRW
   // smt::SmtSolver solver_asmpt_;
 };
 
-#error "TODO: rethink about the interface, try to pass termTranslator rather than solver"
-StateAsmpt StateTransfer(const wasim::StateAsmpt & state,
-                         const smt::SmtSolver & solver_old,
-                         const smt::SmtSolver & solver_new);
-smt::UnorderedTermSet SetTransfer(const smt::UnorderedTermSet & expr_set,
-                                  const smt::SmtSolver & solver_old,
-                                  const smt::SmtSolver & solver_new);
 
 /**
- * @brief
- *
- * @param one_hot_vec
- * @param solver
- * @return smt::TermVec
+ * Create one-hot expression for one_hot_vec, this allows 0 or 1 to be true
  */
-smt::TermVec one_hot(const smt::TermVec & one_hot_vec, smt::SmtSolver & solver);
+smt::TermVec one_hot0(const smt::TermVec & one_hot_vec, smt::SmtSolver & solver);
 
-// get the assignment to all variables in expr
-smt::UnorderedTermMap get_model(const smt::Term & expr, smt::SmtSolver & solver);
-#error Rethink about this. get_invalid_model works no different from get_model
-smt::UnorderedTermMap get_invalid_model(const smt::Term & expr,
-                                        smt::SmtSolver & solver);
+// check satisfiability, if out != NULL, will update it with the sat model
+smt::Result is_sat_res(const smt::TermVec & expr_vec, const smt::SmtSolver & solver, smt::UnorderedTermMap * out = NULL);
 
-smt::Result is_sat_res(const smt::TermVec & expr_vec, const smt::SmtSolver & solver);
 bool is_sat_bool(const smt::TermVec & expr_vec, const smt::SmtSolver & solver);
 bool is_valid_bool(const smt::Term & expr, const smt::SmtSolver & solver);
 
