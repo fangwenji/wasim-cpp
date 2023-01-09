@@ -246,7 +246,7 @@ unsigned SymbolicTraverse::traverse(
       for (const auto & sv : state.get_sv()) {
         auto s = sv.first;
         auto v = sv.second;
-        if (expr_contians_X(v, executor_.get_Xs())) {
+        if (expr_contains_X(v, executor_.get_Xs())) {
           WASIM_DLOG("traverse") << v;
         }
       }

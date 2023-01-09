@@ -120,7 +120,7 @@ void run_cmd(const std::string & cmd_string, int timeout)
   p.run();
 }
 
-static bool expr_contians_X(const smt::Term & expr, const smt::UnorderedTermSet & set_of_xvar)
+bool expr_contains_X(const smt::Term & expr, const smt::UnorderedTermSet & set_of_xvar)
 {
   smt::UnorderedTermSet vars_in_expr;
   smt::get_free_symbols(expr, vars_in_expr);
@@ -279,7 +279,7 @@ static smt::TermVec child_vec_simplify(
 {
   smt::TermVec child_new_vec;
   for (const auto & child : child_vec) {
-    if (expr_contians_X(child, set_of_xvar))
+    if (expr_contains_X(child, set_of_xvar))
       child_new_vec.push_back(
           structure_simplify(child, asmpt, set_of_xvar, translator));
     else 
@@ -359,7 +359,7 @@ void sygus_simplify(StateAsmpt & state_btor,
     const auto & s_btor = sv.first;
     const auto & v_btor = sv.second;
 
-    if (expr_contians_X(v_btor, set_of_xvar_btor)) {
+    if (expr_contains_X(v_btor, set_of_xvar_btor)) {
       auto v_cvc = btor2cvc.transfer_term(v_btor);
       auto new_expr =
           structure_simplify(v_cvc, assmpt_in_cvc, set_of_xvar_in_cvc, btor2cvc);
