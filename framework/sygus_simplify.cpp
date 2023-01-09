@@ -1,10 +1,62 @@
-#include "sygus_simplify.h"
 
+
+#include "term_manip.h"
+#include "symsim.h"
+#include "sygus_simplify.h"
+#include "config/testpath.h"
+#include "utils/exceptions.h"
+
+#include "smt-switch/smt.h"
 #include "smt-switch/utils.h"
+#include "smt-switch/boolector_factory.h"
+#include "smt-switch/cvc5_factory.h"
+
+#include <time.h>
+#include <chrono>
+#include <fstream>
+#include <iostream>
+#include <string>
+#include <boost/asio.hpp>
+#include <boost/bind.hpp>
+#include <boost/process.hpp>
+#include <boost/process/async.hpp>
+
 
 namespace wasim {
 
-Process::Process(std::string & cmd, const int timeout)
+using parsed_info = std::tuple<smt::UnorderedTermSet, // vars in expression
+                               smt::UnorderedTermSet, // vars in assumption
+                               smt::Term,             // conjunction of all assumptions
+                               smt::Term,             // the expression to simplify
+                               std::string>;          // sort string of the expression
+
+
+namespace bp = boost::process;
+class Process
+{
+ public:
+  Process(const std::string & cmd, int timeout);
+  void run();
+
+ private:
+  void timeout_handler(boost::system::error_code ec);
+
+  const std::string command;
+  const int timeout;
+
+  bool killed = false;
+  bool stopped = false;
+
+  std::string stdOut;
+  std::string stdErr;
+  int returnStatus = 0;
+
+  boost::asio::io_service ios;
+  boost::process::group group;
+  boost::asio::deadline_timer deadline_timer;
+};
+
+Process::Process(const std::string & cmd, const int timeout)
     : command(cmd), timeout(timeout), deadline_timer(ios)
 {
 }
@@ -62,36 +114,23 @@ void Process::run()
   returnStatus = c.exit_code();
 }
 
-void run_cmd(std::string cmd_string, int timeout)
+void run_cmd(const std::string & cmd_string, int timeout)
 {
-  /*
-  boost::process::child c(cmd_string);
-  std::error_code ec;
-  if (!c.wait_for(std::chrono::milliseconds(timeout), ec)) {
-      // std::cout << "nTimeout reached. Process terminated after " << timeout
-  << " milliseconds.\n";
-      // exit(1);
-      c.terminate(ec);
-  }
-  */
-
   Process p(cmd_string, timeout);
   p.run();
 }
 
-bool expr_contians_X(smt::Term expr, smt::UnorderedTermSet set_of_xvar)
+static bool expr_contians_X(const smt::Term & expr, const smt::UnorderedTermSet & set_of_xvar)
 {
   smt::UnorderedTermSet vars_in_expr;
   smt::get_free_symbols(expr, vars_in_expr);
-  for (const auto & var : vars_in_expr) {
-    if (set_of_xvar.find(var) != set_of_xvar.end()) {
+  for (const auto & var : vars_in_expr)
+    if (set_of_xvar.find(var) != set_of_xvar.end())
       return true;
-    }
-  }
   return false;
 }
 
-std::string GetTimeStamp()
+static std::string GetTimeStamp()
 {
   auto timeNow = chrono::duration_cast<chrono::milliseconds>(
       chrono::system_clock::now().time_since_epoch());
@@ -99,31 +138,26 @@ std::string GetTimeStamp()
   return std::to_string(timestamp);
 }
 
-parsed_info parse_state(StateAsmpt state, smt::Term v, smt::SmtSolver & solver)
+static parsed_info parse_state(const smt::TermVec & asmpt, const smt::Term & v, const smt::SmtSolver & solver)
 {
-  auto asmpt_and = solver->make_term(smt::And, state.asmpt_);
+  auto asmpt_and = solver->make_term(smt::And, asmpt);
   smt::UnorderedTermSet free_var_asmpt;
   smt::get_free_symbols(asmpt_and, free_var_asmpt);
-  auto Fun = v;
   smt::UnorderedTermSet free_var;
   smt::get_free_symbols(v, free_var);
   auto Fun_type = v->get_sort()->to_string();
-  auto ret =
-      std::make_tuple(free_var, free_var_asmpt, asmpt_and, Fun, Fun_type);
-
-  return ret;
+  return std::make_tuple(free_var, free_var_asmpt, asmpt_and, v, Fun_type);
 }
 
-smt::Term run_sygus(parsed_info info,
-                    smt::UnorderedTermSet set_of_xvar,
-                    smt::SmtSolver & solver)
+smt::Term run_sygus(const parsed_info & info,
+                    const smt::UnorderedTermSet & set_of_xvar,
+                    const smt::SmtSolver & solver)
 {
-  smt::UnorderedTermSet free_var;
-  smt::UnorderedTermSet free_var_asmpt;
-  smt::Term asmpt_and;
-  smt::Term Fun;
-  std::string Fun_type;
-  tie(free_var, free_var_asmpt, asmpt_and, Fun, Fun_type) = info;
+  const smt::UnorderedTermSet & free_var = std::get<0>(info);
+  const smt::UnorderedTermSet & free_var_asmpt = std::get<1>(info);
+  const smt::Term & asmpt_and = std::get<2>(info);
+  const smt::Term & Fun = std::get<3>(info);
+  const std::string & Fun_type = std::get<4>(info);
   auto time_stamp = GetTimeStamp();
   auto template_file = "sygus_template_" + time_stamp + ".sygus";
   auto result_file = "sygus_result_" + time_stamp + ".sygus";
@@ -136,10 +170,6 @@ smt::Term run_sygus(parsed_info info,
   auto line1 = "(set-logic BV)\n\n\n(synth-fun FunNew \n   (";
   f << line1 << endl;
 
-  // for(auto xvar:set_of_xvar){
-  //     cout << xvar->to_string();
-  // }
-  // cout << endl;
   for (const auto & var : free_var) {
     if (set_of_xvar.find(var) == set_of_xvar.end()) {
       auto line2 = "    (" + var->to_string() + " "
@@ -190,7 +220,8 @@ smt::Term run_sygus(parsed_info info,
   bash_f.open(bash_file.c_str(), ios::out | ios::app);
   auto bash_line1 = "#!/bin/bash";
   bash_f << bash_line1 << endl;
-  auto bash_line2 = "/data/wenjifang/cvc5-Linux --lang=sygus2 " + template_file
+  auto bash_line2 = (PROJECT_SOURCE_DIR "/deps/smt-switch/deps/cvc5/build/bin/cvc5 --lang=sygus2 ") 
+                    + template_file
                     + " > " + result_temp_file;
   bash_f << bash_line2 << endl;
   bash_f.close();
@@ -227,7 +258,8 @@ smt::Term run_sygus(parsed_info info,
       new_expr = solver->get_symbol("no_file");
     }
   } else {
-    PropertyInterface pi(result_file, solver);
+    auto solver_copy = solver; // TODO: in the future, change SmtLibReader to use const ref.
+    PropertyInterface pi(result_file, solver_copy);
     new_expr = pi.return_defs();
   }
   int rm;
@@ -237,41 +269,42 @@ smt::Term run_sygus(parsed_info info,
   rm = remove(bash_file.c_str());
 
   return new_expr;
-}
+} // end of run_sygus
 
-smt::TermVec child_vec_simplify(smt::TermVec child_vec,
-                                StateAsmpt state,
-                                smt::UnorderedTermSet set_of_xvar,
-                                smt::SmtSolver & solver,
-                                smt::SmtSolver & solver_cvc5)
+static smt::TermVec child_vec_simplify(
+                                const smt::TermVec & child_vec,
+                                const smt::TermVec & asmpt,
+                                const smt::UnorderedTermSet & set_of_xvar,
+                                smt::TermTranslator & translator)
 {
-  smt::TermVec child_new_vec = {};
-  for (auto child : child_vec) {
-    smt::Term child_new;
-    if (expr_contians_X(child, set_of_xvar)) {
-      child_new =
-          structure_simplify(child, state, set_of_xvar, solver, solver_cvc5);
-    } else {
-      child_new = child;
-    }
-    child_new_vec.push_back(child_new);
+  smt::TermVec child_new_vec;
+  for (const auto & child : child_vec) {
+    if (expr_contians_X(child, set_of_xvar))
+      child_new_vec.push_back(
+          structure_simplify(child, asmpt, set_of_xvar, translator));
+    else 
+      child_new_vec.push_back(child);
+    
   }
   return child_new_vec;
 }
 
-smt::Term structure_simplify(smt::Term v,
-                             StateAsmpt state,
-                             smt::UnorderedTermSet set_of_xvar,
-                             smt::SmtSolver & solver,
-                             smt::SmtSolver & solver_cvc5)
+// attempt to hierarchically simplify
+static smt::Term structure_simplify(
+                             const smt::Term & v,
+                             const smt::TermVec & assumptions,
+                             const smt::UnorderedTermSet & set_of_xvar,
+                             smt::TermTranslator & translator)
 {
   smt::Term new_expr;
-  auto expr_info = parse_state(state, v, solver_cvc5);
-  auto new_expr_direct = run_sygus(expr_info, set_of_xvar, solver_cvc5);
+  auto expr_info = parse_state(assumptions, v, translator.get_solver());
+  auto new_expr_direct = run_sygus(expr_info, set_of_xvar, translator.get_solver());
   if (new_expr_direct->to_string() == "no_file") {
     auto child_vec = args(v);
     auto child_new_vec =
-        child_vec_simplify(child_vec, state, set_of_xvar, solver, solver_cvc5);
+        child_vec_simplify(child_vec, assumptions, set_of_xvar, translator);
+
+    const auto & solver_cvc5 = translator.get_solver();
     if ((v->get_op() == smt::Ite) && (child_vec.size() == 3)) {
       new_expr = solver_cvc5->make_term(smt::Ite, child_new_vec);
     } else if ((v->get_op() == smt::BVNot) && (child_vec.size() == 1)) {
@@ -293,40 +326,48 @@ smt::Term structure_simplify(smt::Term v,
     }
     // else if
     else {
-      cout << "new structure?\n" << v->to_string() << endl;
-      cout << "node op: " << v->get_op() << endl;
-      cout << "num of args: " << child_vec.size() << endl;
-      exit(1);
+      throw SimulatorException("new structure of " + v->to_string() + " is not handled");
     }
   } else {
     new_expr = new_expr_direct;
   }
 
   return new_expr;
-}
+} // end of structure_simplify
 
 void sygus_simplify(StateAsmpt & state_btor,
-                    smt::UnorderedTermSet set_of_xvar_btor,
+                    const smt::UnorderedTermSet & set_of_xvar_btor,
                     smt::SmtSolver & solver)
 {
   smt::SmtSolver solver_cvc5 = smt::Cvc5SolverFactory::create(false);
   solver_cvc5->set_logic("QF_BV");
   solver_cvc5->set_opt("produce-models", "true");
   solver_cvc5->set_opt("incremental", "true");
-  for (auto sv : state_btor.sv_) {
-    auto s_btor = sv.first;
-    auto v_btor = sv.second;
+  smt::TermTranslator btor2cvc(solver_cvc5);
+  smt::TermTranslator cvc2btor(solver);
+
+  smt::UnorderedTermSet set_of_xvar_in_cvc;
+  smt::TermVec assmpt_in_cvc;
+
+  for (const auto & x : set_of_xvar_btor)
+    set_of_xvar_in_cvc.emplace(btor2cvc.transfer_term(x));
+  for (const auto & a : state_btor.get_assumptions())
+    assmpt_in_cvc.push_back(btor2cvc.transfer_term(a));
+
+
+  for (const auto & sv : state_btor.get_sv()) {
+    const auto & s_btor = sv.first;
+    const auto & v_btor = sv.second;
+
     if (expr_contians_X(v_btor, set_of_xvar_btor)) {
-      auto v = TermTransfer(v_btor, solver, solver_cvc5);
-      auto state = StateTransfer(state_btor, solver, solver_cvc5);
-      auto set_of_xvar = SetTransfer(set_of_xvar_btor, solver, solver_cvc5);
+      auto v_cvc = btor2cvc.transfer_term(v_btor);
       auto new_expr =
-          structure_simplify(v, state, set_of_xvar, solver, solver_cvc5);
+          structure_simplify(v_cvc, assmpt_in_cvc, set_of_xvar_in_cvc, btor2cvc);
       // cout << "new_expr: " << new_expr->to_string() << endl;
-      auto new_expr_btor = TermTransfer(new_expr, solver_cvc5, solver);
-      state_btor.sv_.insert_or_assign(s_btor, new_expr_btor);
-    }
-  }
-}
+      auto new_expr_btor = cvc2btor.transfer_term(new_expr);
+      state_btor.update_sv().insert_or_assign(s_btor, new_expr_btor);
+    } // end of if contains X
+  } // end of for each sv
+} // end of sygus_simplify
 
 }  // namespace wasim
