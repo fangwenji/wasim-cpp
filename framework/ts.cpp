@@ -37,30 +37,30 @@ smt::TermVec args(const smt::Term & term)
 }
 
 
-void StateAsmpt::print() const
+string StateAsmpt::print() const
 {
-  const auto & prev_sv = this->sv_;
-  // std::cout << "sv rhs" << std::endl;
-  // std::cout << "-----" << std::endl;
-
-  cout << "--------------------------------" << endl;
-  cout << "| " << setiosflags(ios::left) << setw(20) << "sv"
+  stringstream ss;
+  ss << "--------------------------------" << endl;
+  ss << "| " << setiosflags(ios::left) << setw(20) << "sv"
        << "| " << setw(20) << "value" << endl;
-  cout << "--------------------------------" << endl;
-  for (const auto & sv : prev_sv) {
-    cout << "| " << setiosflags(ios::left) << setw(20) << sv.first->to_string()
+  ss << "--------------------------------" << endl;
+  for (const auto & sv : sv_) {
+    ss << "| " << setiosflags(ios::left) << setw(20) << sv.first->to_string()
          << "| " << setw(20) << sv.second->to_string() << endl;
   }
+  return ss.str();
 }
 
-void StateAsmpt::print_assumptions() const
+string StateAsmpt::print_assumptions() const
 {
+  stringstream ss;
   int idx = 0;
   for (const auto & asmpt : asmpt_) {
-    std::cout << "A" << idx << ": " << assumption_interp_.at(idx) << std::endl;
-    std::cout << "A" << idx << ": " << asmpt << std::endl;
+    ss << "A" << idx << ": " << assumption_interp_.at(idx) << std::endl;
+    ss << "A" << idx << ": " << asmpt << std::endl;
     idx++;
   }
+  return ss.str();
 }
 
 bool StateAsmpt::syntactically_contains_x(const smt::UnorderedTermSet &  set_of_Xvar) const

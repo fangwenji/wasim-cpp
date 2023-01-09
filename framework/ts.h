@@ -51,8 +51,8 @@ public:
 
   StateAsmpt(const StateAsmpt & another, smt::TermTranslator & tt);
 
-  void print() const;
-  void print_assumptions() const;
+  std::string print() const;
+  std::string print_assumptions() const;
   bool syntactically_contains_x(const smt::UnorderedTermSet & set_of_Xvar) const;
   bool is_reachable(const smt::SmtSolver & slv) const;
 
@@ -64,6 +64,9 @@ public:
   smt::UnorderedTermMap & update_sv() { return sv_; }
   smt::TermVec & update_assumptions() { return asmpt_; }
   std::vector<std::string> & update_assumption_interpretations() { return assumption_interp_; }
+
+  // in Python interface, you will not be allowed to update members in place
+  // but you can create new ones
 
 protected:
   smt::UnorderedTermMap sv_;
