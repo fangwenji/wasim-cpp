@@ -300,17 +300,17 @@ void SymbolicExecutor::sim_one_step()
   history_assumptions_interp_.push_back({});
 }
 
-void SymbolicExecutor::sim_one_step_direct()
-{
-  const auto & prev_sv = trace_.back();
-  smt::UnorderedTermMap svmap;
-  for (const auto & sv : ts_.state_updates()) {
-    svmap[sv.first] = solver_->substitute(sv.second, prev_sv);
-  }
-  trace_.push_back(std::move(svmap));
-  history_assumptions_.push_back({});
-  history_assumptions_interp_.push_back({});
-}
+// void SymbolicExecutor::sim_one_step_direct()
+// {
+//   const auto & prev_sv = trace_.back();
+//   smt::UnorderedTermMap svmap;
+//   for (const auto & sv : ts_.state_updates()) {
+//     svmap[sv.first] = solver_->substitute(sv.second, prev_sv);
+//   }
+//   trace_.push_back(std::move(svmap));
+//   history_assumptions_.push_back({});
+//   history_assumptions_interp_.push_back({});
+// }
 
 smt::Term SymbolicExecutor::new_var(int bitwdth,
                                     const std::string & vname /*"=var"*/,

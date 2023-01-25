@@ -138,10 +138,6 @@ class SymbolicExecutor
   /// do simulation
   void sim_one_step();
 
-  /// do simulation (will not substitue for the input variables)
-  /// warning: expert-only
-  void sim_one_step_direct();
-
   /// get the set of all X variables
   const smt::UnorderedTermSet & get_Xs() const { return Xvar_; }
 
@@ -149,5 +145,9 @@ class SymbolicExecutor
   StateAsmpt get_curr_state(const smt::TermVec & assumptions = {});
   /// a shortcut to create a variable
   smt::Term set_var(int bitwdth, std::string vname = "var");
+
+  /// get solver
+  smt::SmtSolver get_solver() const { return solver_; }
+
 };
 }  // namespace wasim

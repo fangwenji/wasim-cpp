@@ -94,7 +94,7 @@ unsigned SymbolicTraverse::traverse_one_step(
   auto is_new_state = tracemgr_.record_state(state, executor_.get_Xs());
   assert(is_new_state);
 
-  PerStateStack init_choice(branching_point, executor_, solver_);
+  PerStateStack init_choice(branching_point, executor_);
 
   while (init_choice.has_valid_choice()) {
     WASIM_DLOG("traverse_one_step") << ">> [" << init_choice.repr() << "]  ";
@@ -178,7 +178,7 @@ unsigned SymbolicTraverse::traverse(
   bool is_new_state = tracemgr_.record_state(state, executor_.get_Xs());
   assert(is_new_state);
 
-  PerStateStack init_stack(branching_point, executor_, solver_);
+  PerStateStack init_stack(branching_point, executor_);
   std::vector<PerStateStack> stack_per_state;
   stack_per_state.push_back(init_stack);
   WASIM_DLOG("traverse") << "init stack per state: " << init_stack.repr() ;
@@ -268,7 +268,7 @@ unsigned SymbolicTraverse::traverse(
     if (is_new_state) {
       WASIM_DLOG("traverse") << "A new state!" ;
       curr_branch.push_back(curr_state);
-      stack_per_state.push_back(PerStateStack(branching_point, executor_, solver_)); // new stack
+      stack_per_state.push_back(PerStateStack(branching_point, executor_)); // new stack
     } else {
       WASIM_DLOG("traverse") << " not new state. Go back. Try next." ;
       auto test = stack_per_state.back().next_choice();

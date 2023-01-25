@@ -1,6 +1,5 @@
 #pragma once
 #include <set>
-#include <variant>
 #include "smt-switch/boolector_factory.h"
 #include "smt-switch/cvc5_factory.h"
 #include "smt-switch/smt.h"
@@ -10,10 +9,7 @@
 using namespace std;
 
 namespace wasim {
-using type_record =
-    std::variant<smt::TermVec, smt::UnorderedTermSet, smt::Term>;
 
-// TODO: we need to re-think about the interface around base_var here
 class TraceManager
 {
  public:
@@ -67,4 +63,5 @@ class TraceManager
   bool check_concrete_enough(const StateAsmpt & s_in, const smt::UnorderedTermSet & Xs);
   StateAsmpt abstract(const StateAsmpt & s);
 };
+
 }  // namespace wasim

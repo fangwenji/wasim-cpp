@@ -76,9 +76,8 @@ class PerStateStack
 {
  public:
   PerStateStack(const std::vector<TraverseBranchingNode> & branching_point,
-                const SymbolicExecutor & executor,
-                smt::SmtSolver & s)
-      : solver_(s), simulator_(executor), branching_point_(branching_point),
+                const SymbolicExecutor & executor)
+      : solver_(executor.get_solver()), simulator_(executor), branching_point_(branching_point),
         ptr_(0), no_next_choice_(false)
   {  }
 
