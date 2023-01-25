@@ -57,18 +57,19 @@ namespace wasim {
       return lstr;
   }
 
-  boost::python::object cppint_to_pyint(const boost::multiprecision::cpp_int& i)
-  { 
-      std::string si = i.str();
-      return string_to_pyint(si);
-  }
-
   boost::python::object string_to_pyint(const std::string& s)
   {
       PyObject* oi = PyLong_FromString((char*)s.c_str(), NULL, 0);
       boost::python::object pi(boost::python::handle<>(boost::python::borrowed(oi)));
       return pi;
   }
+
+  boost::python::object cppint_to_pyint(const boost::multiprecision::cpp_int& i)
+  { 
+      std::string si = i.str();
+      return string_to_pyint(si);
+  }
+
 
   bool is_py_int_or_long(const boost::python::object& l)
   {
@@ -111,9 +112,9 @@ namespace wasim {
 
     NodeRef(const NodeRef& nr) : node(nr.node), solver(nr.solver) { }
 
-    NodeRef::~NodeRef()  { }
+    ~NodeRef()  { }
 
-    NodeRef NodeRef::operator=(const NodeRef& other)
+    NodeRef operator=(const NodeRef& other)
     {
         if(this != &other) { 
             node = other.node;
@@ -138,7 +139,7 @@ namespace wasim {
   /* TODO : tracemgr */
 
   /* TODO : TraverseBranchingNode */
-  
+
   /* TODO : TraverseBranchingNode */
 
 } // end namespace wasim
