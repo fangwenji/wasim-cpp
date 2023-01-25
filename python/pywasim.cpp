@@ -83,7 +83,6 @@ namespace wasim {
 
 
   struct NodeType {
-    smt::Sort sort;
 
     NodeType()  { throw PyWASIMException(PyExc_RuntimeError, "Cannot create NodeType directly. Use the context object."); }
     NodeType(const smt::Sort& ptr) : sort(ptr) { }
@@ -99,12 +98,13 @@ namespace wasim {
 
     std::string to_string() const { return sort->to_string(); }
     size_t hash() const {return sort->hash();}
+
+  protected:
+    smt::Sort sort;
   };
 
 
   struct NodeRef {
-    smt::Term node;
-    smt::SmtSolver solver;
 
     NodeRef() { throw PyWASIMException(PyExc_RuntimeError, "Cannot create Term directly. Use the context object."); }
 
@@ -134,6 +134,9 @@ namespace wasim {
     size_t hash() const { return node->hash();  }
 
   protected:
+
+    smt::Term node;
+    smt::SmtSolver solver;
 
     unsigned bvwidth() const { 
       if ( node->get_sort()->get_sort_kind() != smt::SortKind::BV) return 0;
@@ -263,7 +266,42 @@ namespace wasim {
 
   }; // end of NodeRef
 
+  /* TODO : State */
+  struct StateRef {
+    StateRef() { throw PyWASIMException(PyExc_RuntimeError, "Cannot create State directly. Use the context object."); }
+    StateRef(const StateRef & other) : sptr(other.sptr) , solver(other.solver ){ }
+    StateRef(StateAsmpt * ptr, smt::SmtSolver osolver) : sptr(ptr), solver(osolver) { }
+
+    StateRef * clone() const {
+      return new StateRef(new StateAsmpt(*sptr), solver);
+    }
+
+    // test the type of the return list and see how that works
+    boost::python::list get_assumptions() const { /*TODO*/ 
+      boost::python::list ret;
+      for (const auto & a : sptr->get_assumptions())
+        ret.append( new NodeRef(a, solver) );
+      return ret;
+    }
+
+    // NodeRef* get_assumption(size_t idx) const { /*TODO*/ } // can we return a list of NodeRef?
+    void set_assumptions(boost::python::list l) { /*TODO : use extract */ }
+
+    boost::python::list get_assumption_interps() const { /*TODO*/ }
+    void set_assumption_interps(boost::python::list l) { /*TODO*/ }
+
+    boost::python::list get_var() const {} // list of string
+    NodeRef* get_term(const std::string & name) const { /*TODO*/ }
+    void set_sv(boost::python::dict v) { /*TODO*/ }
+
+    protected:
+      std::shared_ptr<StateAsmpt> sptr;
+      smt::SmtSolver solver;
+  };
+
   /* TODO : ts */
+  // terms() return all named_terms boost::python::dict
+  // lookup() return a term by its name
 
   /* TODO : executor */
 
@@ -294,6 +332,9 @@ BOOST_PYTHON_MODULE(pywasim)
     .def("__hash__", &NodeType::hash)
   ;
 
-
+  class_<StateRef>("StateRef")
+    .def("get_assumptions",&StateRef::get_assumptions)
+    .def("set_assumptions",&StateRef::set_assumptions)
+  ;
 
 }
