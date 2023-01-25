@@ -15,9 +15,6 @@ Configures the CMAKE build environment.
 --build-dir=STR         custom build directory  (default: build)
 --with-msat             build with MathSAT which has a custom non-BSD compliant license.  (default : off)
                         Required for interpolant based model checking
---with-msat-ic3ia       build with the open-source IC3IA implementation as a backend. (default: off)
---with-coreir           build the CoreIR frontend (default: off)
---with-coreir-extern    build the CoreIR frontend using an installation of coreir in /usr/local/lib (default: off)
 --debug                 build debug with debug symbols (default: off)
 --python                compile with python bindings (default: off)
 --static-lib            build a static library (default: shared)
@@ -36,9 +33,6 @@ build_dir=build
 install_prefix=default
 build_type=default
 with_msat=default
-with_msat_ic3ia=default
-with_coreir=default
-with_coreir_extern=default
 debug=default
 python=default
 lib_type=SHARED
@@ -72,9 +66,6 @@ do
             esac
             ;;
         --with-msat) with_msat=ON;;
-        --with-msat-ic3ia) with_msat_ic3ia=ON;;
-        --with-coreir) with_coreir=ON;;
-        --with-coreir-extern) with_coreir_extern=ON;;
         --debug)
             debug=yes;
             buildtype=Debug
@@ -95,8 +86,6 @@ do
     shift
 done
 
-[ $lib_type = STATIC ] && [ $with_coreir = ON -o $with_coreir_extern = ON ] && \
-    die "CoreIR and static build are incompatible, must omit either '--static/--static-lib' or '--with-coreir/--with-coreir-extern'"
 
 cmake_opts="-DCMAKE_BUILD_TYPE=$buildtype -DWASIM_LIB_TYPE=${lib_type} -DWASIM_STATIC_EXEC=${static_exec}"
 
@@ -105,15 +94,6 @@ cmake_opts="-DCMAKE_BUILD_TYPE=$buildtype -DWASIM_LIB_TYPE=${lib_type} -DWASIM_S
 
 [ $with_msat != default ] \
     && cmake_opts="$cmake_opts -DWITH_MSAT=$with_msat"
-
-[ $with_msat_ic3ia != default ] \
-    && cmake_opts="$cmake_opts -DWITH_MSAT_IC3IA=$with_msat_ic3ia"
-
-[ $with_coreir != default ] \
-    && cmake_opts="$cmake_opts -DWITH_COREIR=$with_coreir"
-
-[ $with_coreir_extern != default ] \
-    && cmake_opts="$cmake_opts -DWITH_COREIR_EXTERN=$with_coreir_extern"
 
 [ $python != default ] \
     && cmake_opts="$cmake_opts -DBUILD_PYTHON_BINDINGS=ON"

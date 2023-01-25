@@ -55,8 +55,10 @@ find_library(LIBRT rt)
 message("-- FOUND FLEX EXECUTABLE: ${FLEX_EXECUTABLE}")
 message("-- FOUND FLEX INCLUDE DIRS: ${FLEX_INCLUDE_DIRS}")
 
+
 find_package(Boost REQUIRED COMPONENTS system filesystem)
 MESSAGE( STATUS "Boost_INCLUDE_DIRS = ${Boost_INCLUDE_DIRS}.")
+MESSAGE( STATUS "Boost_LIBRARY_DIRS = ${Boost_LIBRARY_DIRS}.")
 MESSAGE( STATUS "Boost_LIBRARIES = ${Boost_LIBRARIES}.")
 
 # TODO: Use find_package
@@ -122,13 +124,11 @@ set(SOURCES
     "${PROJECT_SOURCE_DIR}/framework/btor2_encoder.cpp"
     "${PROJECT_SOURCE_DIR}/framework/symsim.cpp"
     "${PROJECT_SOURCE_DIR}/framework/independence_check.cpp"
-    "${PROJECT_SOURCE_DIR}/framework/term_manip.cpp"
     "${PROJECT_SOURCE_DIR}/framework/tracemgr.cpp"
     "${PROJECT_SOURCE_DIR}/framework/symtraverse.cpp"
-    "${PROJECT_SOURCE_DIR}/framework/traverse_manip.cpp"
+    "${PROJECT_SOURCE_DIR}/framework/term_manip.cpp"
     "${PROJECT_SOURCE_DIR}/framework/sygus_simplify.cpp"
     "${PROJECT_SOURCE_DIR}/framework/state_simplify.cpp"
-    "${PROJECT_SOURCE_DIR}/framework/inv_group.cpp"
     "${PROJECT_SOURCE_DIR}/utils/logger.cpp"
 )
 
@@ -139,14 +139,6 @@ add_library(wasim-lib "${WASIM_LIB_TYPE}" ${SOURCES})
 set_target_properties(wasim-lib PROPERTIES OUTPUT_NAME wasim)
 
 target_include_directories(wasim-lib PUBLIC ${INCLUDE_DIRS})
-
-# Should we build python bindings
-option (BUILD_PYTHON_BINDINGS
-   "Build Python bindings")
-
-if (BUILD_PYTHON_BINDINGS)
-  add_subdirectory(python)
-endif()
 
 target_link_libraries(wasim-lib PUBLIC "${PROJECT_SOURCE_DIR}/deps/glog/install/lib/libglog.a")
 target_link_libraries(wasim-lib PUBLIC "${SMT_SWITCH_DIR}/local/lib/libsmt-switch-btor.a")
@@ -173,26 +165,60 @@ target_link_libraries(wasim-lib PUBLIC Boost::system)
 # and builds all the parametrized tests
 # add_subdirectory(tests)
 
-add_executable(wasim-bin "${PROJECT_SOURCE_DIR}/inv_check1.cpp")
-set_target_properties(wasim-bin PROPERTIES OUTPUT_NAME wasim)
+#add_executable(wasim-bin "${PROJECT_SOURCE_DIR}/inv_check1.cpp")
+#set_target_properties(wasim-bin PROPERTIES OUTPUT_NAME wasim)
 
 
-target_include_directories(wasim-bin PUBLIC
-  "${PROJECT_SOURCE_DIR}/utils/"
-  "${PROJECT_SOURCE_DIR}/contrib/"
-  "${PROJECT_SOURCE_DIR}/contrib/optionparser-1.7/src"
-  "${PROJECT_SOURCE_DIR}/deps/btor2tools/src"
-  "${SMT_SWITCH_DIR}/local/include")
+# target_include_directories(wasim-bin PUBLIC
+#   "${PROJECT_SOURCE_DIR}/utils/"
+#   "${PROJECT_SOURCE_DIR}/contrib/"
+#   "${PROJECT_SOURCE_DIR}/contrib/optionparser-1.7/src"
+#   "${PROJECT_SOURCE_DIR}/deps/btor2tools/src"
+#   "${SMT_SWITCH_DIR}/local/include")
 
-target_link_libraries(wasim-bin PUBLIC wasim-lib)
+# target_link_libraries(wasim-bin PUBLIC wasim-lib)
 
-if ("${WASIM_STATIC_EXEC}" STREQUAL "YES")
-  target_link_libraries(wasim-bin PUBLIC -static)
+# if ("${WASIM_STATIC_EXEC}" STREQUAL "YES")
+#   target_link_libraries(wasim-bin PUBLIC -static)
+# endif()
+
+# install(TARGETS wasim-bin DESTINATION bin)
+
+
+# Should we build python bindings
+option (BUILD_PYTHON_BINDINGS
+   "Build Python bindings")
+
+if (BUILD_PYTHON_BINDINGS)
+
+    find_package(Python REQUIRED COMPONENTS Interpreter Development)
+    find_package(Boost REQUIRED COMPONENTS python3 REQUIRED)
+
+    message( STATUS "Python_FOUND:${Python_FOUND}")
+    message( STATUS "Python_VERSION:${Python_VERSION}")
+    message( STATUS "Python_Development_FOUND:${Python_Development_FOUND}")
+    message( STATUS "Python_LIBRARIES:${Python_LIBRARIES}")
+    message( STATUS "Python_INCLUDE_DIRS:${Python_INCLUDE_DIRS}")
+    message( STATUS "Python_SITEARCH:${Python_SITEARCH}")
+    message( STATUS "Boost_LIBRARIES:${Boost_LIBRARIES}")
+
+    add_library(pywasim MODULE python/pywasim.cpp)
+    target_link_libraries(pywasim ${Boost_LIBRARIES} ${Python_LIBRARIES})
+    target_link_libraries(pywasim ${LIBRT})
+    target_link_libraries(pywasim wasim-lib)
+    target_include_directories(pywasim PRIVATE ${INCLUDE_DIRS})
+    target_include_directories(pywasim PRIVATE ${Python_INCLUDE_DIRS})
+    
+    configure_file(python/__init__.py ${CMAKE_CURRENT_BINARY_DIR}/__init__.py COPYONLY)
+    set_target_properties(pywasim PROPERTIES PREFIX "")
+
+    install(TARGETS pywasim DESTINATION "${Python_SITEARCH}")
+    install(FILES python/__init__.py DESTINATION "${Python_SITEARCH}")
+
 endif()
 
 # install smt-switch
 install(TARGETS wasim-lib DESTINATION lib)
-install(TARGETS wasim-bin DESTINATION bin)
 
 # install public headers
 install(DIRECTORY "${PROJECT_SOURCE_DIR}/framework/"

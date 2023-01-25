@@ -271,6 +271,13 @@ smt::Term run_sygus(const parsed_info & info,
   return new_expr;
 } // end of run_sygus
 
+
+static smt::Term structure_simplify(
+                             const smt::Term & v,
+                             const smt::TermVec & assumptions,
+                             const smt::UnorderedTermSet & set_of_xvar,
+                             smt::TermTranslator & translator);
+
 static smt::TermVec child_vec_simplify(
                                 const smt::TermVec & child_vec,
                                 const smt::TermVec & asmpt,

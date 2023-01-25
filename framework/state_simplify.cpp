@@ -134,23 +134,23 @@ void state_simplify_xvar(StateAsmpt & s,
                          const smt::SmtSolver & solver)
 {
   smt::UnorderedTermSet free_vars;
-  for (auto sv : s.sv_) {
-    auto expr = sv.second;
+  for (const auto & sv : s.get_sv()) {
+    const auto & expr = sv.second;
     smt::get_free_symbols(expr, free_vars);
   }
 
   smt::UnorderedTermMap xvar_sub;
-  get_xvar_sub(s.asmpt_, set_of_xvar, free_vars, solver, xvar_sub);
+  get_xvar_sub(s.get_assumptions(), set_of_xvar, free_vars, solver, xvar_sub);
   smt::UnorderedTermMap sv_to_replace; // try not to change s.sv_ while traversing
 
-  for (const auto & sv : s.sv_) {
-    auto var = sv.first;
-    auto expr = sv.second;
+  for (const auto & sv : s.get_sv()) {
+    const auto & var = sv.first;
+    const auto & expr = sv.second;
     auto expr_new = solver->substitute(expr, xvar_sub);
-    auto expr_final = expr_simplify_ite(expr_new, s.asmpt_, solver);
+    auto expr_final = expr_simplify_ite(expr_new, s.get_assumptions(), solver);
     sv_to_replace.emplace(var, expr_final);
   }
-  s.sv_.swap(sv_to_replace); // constant time operation
+  (s.update_sv()).swap(sv_to_replace); // constant time operation
 }
 
 }  // namespace wasim
