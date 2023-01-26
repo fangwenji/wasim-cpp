@@ -33,10 +33,11 @@ extern "C" {
 #include "smt-switch/smt.h"
 
 namespace wasim {
+  
 class BTOR2Encoder
 {
  public:
-  BTOR2Encoder(std::string filename, TransitionSystem & ts)
+  BTOR2Encoder(const std::string & filename, TransitionSystem & ts)
       : ts_(ts), solver_(ts.solver())
   {
     preprocess(filename);

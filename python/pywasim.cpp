@@ -1,7 +1,8 @@
 #include <boost/python.hpp>
 #include <boost/multiprecision/cpp_int.hpp>
 
-#include <framework/ts.h>
+#include "framework/ts.h"
+#include "framework/btor2_encoder.h"
 
 // CHECK url: 
 //   https://cs.brown.edu/~jwicks/boost/libs/python/doc/tutorial/doc/html/python/object.html
@@ -82,6 +83,31 @@ namespace wasim {
 // ----------------------------------------------------------------------
 
 
+  struct NodeType;
+  struct NodeRef;
+  struct SolverRef;
+  struct StateRef;
+  struct TransSys;
+
+
+  struct SolverRef {
+    SolverRef() { throw PyWASIMException(PyExc_RuntimeError, "Cannot create Solver directly. Use the context object."); }
+    SolverRef(const smt::SmtSolver& ptr) : solver(ptr) { }
+    SolverRef(const SolverRef & other) : solver(other.solver) {}
+
+    void push() { solver->push(); }
+    void pop() { solver->pop(); }
+    void assert_formula(NodeRef * a);
+    bool check_sat();
+    NodeRef * get_value(NodeRef * a) ;
+    NodeType * make_bool();
+    NodeType * make_bvsort(u_int64_t width);
+    NodeRef * make_constant(boost::python::object c, NodeType * ntype) ;
+
+    protected:
+      smt::SmtSolver solver;
+  }; // end of SolverRef
+
   struct NodeType {
 
     NodeType()  { throw PyWASIMException(PyExc_RuntimeError, "Cannot create NodeType directly. Use the context object."); }
@@ -100,18 +126,20 @@ namespace wasim {
     size_t hash() const {return sort->hash();}
 
   protected:
+    friend struct SolverRef;
+    friend struct StateRef;
+    friend struct TransSys;
     smt::Sort sort;
   };
-
 
   struct NodeRef {
 
     NodeRef() { throw PyWASIMException(PyExc_RuntimeError, "Cannot create Term directly. Use the context object."); }
 
     NodeRef(const smt::Term& ptr, const smt::SmtSolver & sptr) : 
-      node(ptr), solver(sptr) { }
+      solver(sptr) , node(ptr) { }
 
-    NodeRef(const NodeRef& nr) : node(nr.node), solver(nr.solver) { }
+    NodeRef(const NodeRef& nr) : solver(nr.solver), node(nr.node) { }
 
     ~NodeRef()  { }
 
@@ -124,19 +152,321 @@ namespace wasim {
         return *this;
     }
 
+    uint64_t to_int() const { return node->to_int(); }
     std::string to_string() const { return node->to_string(); }
     NodeType * getType() const { return new NodeType(node->get_sort()); }
     
-    /*TODO : operators */
+    NodeRef * substitute(const boost::python::dict & d) const { 
+      smt::UnorderedTermMap subst;
+      boost::python::list items = d.items();
+      for(ssize_t i = 0; i < len(items); ++i) {
+          boost::python::object key = items[i][0];
+          boost::python::object value = items[i][1];
+          boost::python::extract<NodeRef *> k(key);
+          boost::python::extract<NodeRef *> v(value);
 
-    NodeRef * substitute(boost::python::dict d) const { /*TODO*/ }
-    NodeRef * arg(size_t n) const { /*TODO*/ }
+          if(k.check() && v.check())
+            subst.emplace(k()->node, v()->node);
+          else
+            throw PyWASIMException(PyExc_RuntimeError, "Expecting Term->Term map in substitute");
+      }
+      return new NodeRef(solver->substitute(node, subst), solver);
+    }
+
+    boost::python::list args() const {
+      boost::python::list l;
+      for(const auto & t: *node) {
+        l.append(new NodeRef(t, solver));
+      }
+      return l;
+    }
+
     size_t hash() const { return node->hash();  }
+    SolverRef * get_solver() const { return new SolverRef(solver); }
+
+    NodeRef* complement() const
+    {
+        return _unOp(smt::PrimOp::Not, smt::PrimOp::BVNot, "complement bv/bool");
+    }
+
+    NodeRef* negate() const
+    {
+        return _unOp(smt::PrimOp::Negate, smt::PrimOp::BVNeg, "negate bv/bool");
+    }
+
+    NodeRef* logicalAnd(NodeRef* other) const
+    {
+        return _binOp(smt::PrimOp::And, smt::PrimOp::BVAnd, "and bv/bool", other);
+    }
+
+    NodeRef* logicalAndInt(int r) const 
+    {
+        return _binOpL(smt::PrimOp::BVAnd, "bvand", r);
+    }
+
+    NodeRef* logicalAndRInt(int l) const
+    {
+        return _binOpR(smt::PrimOp::BVAnd, "bvand", l);
+    }
+
+    NodeRef* logicalOr(NodeRef* other) const
+    {
+        return _binOp(smt::PrimOp::Or, smt::PrimOp::BVOr, "or bv/bool", other);
+    }
+
+    NodeRef* logicalOrInt(int r) const
+    {
+        return _binOpL(smt::PrimOp::BVOr, "bvor", r);
+    }
+
+    NodeRef* logicalOrRInt(int l) const
+    {
+        return _binOpR(smt::PrimOp::BVOr, "bvor", l);
+    }
+
+    NodeRef* logicalXor(NodeRef* other) const
+    {
+        return _binOp(smt::PrimOp::Xor, smt::PrimOp::BVXor, "xor bv/bool", other);
+    }
+
+    NodeRef* logicalXorInt(int r) const
+    {
+        return _binOpL(smt::PrimOp::BVXor, "bvxor", r);
+    }
+
+    NodeRef* logicalXorRInt(int l) const
+    {
+        return _binOpR(smt::PrimOp::BVXor, "bvxor", l);
+    }
+
+    // add //
+    NodeRef* add(NodeRef* other) const
+    {
+        return _binOp(smt::PrimOp::BVAdd, "bvadd", other);
+    }
+
+    NodeRef* addInt(int r) const
+    {
+        return _binOpL(smt::PrimOp::BVAdd, "bvadd", r);
+    }
+
+    NodeRef* raddInt(int r) const
+    {
+        return _binOpR(smt::PrimOp::BVAdd, "bvadd", r);
+    }
+
+    // sub //
+    NodeRef* sub(NodeRef* other) const
+    {
+        return _binOp(smt::PrimOp::BVSub, "bvsub", other);
+    }
+
+    NodeRef* subInt(int r) const
+    {
+        return _binOpL(smt::PrimOp::BVSub, "bvsub", r);
+    }
+
+    NodeRef* rsubInt(int r) const
+    {
+        return _binOpR(smt::PrimOp::BVSub, "bvsub", r);
+    }
+
+    // udiv //
+    NodeRef* udiv(NodeRef* other) const
+    {
+        return _binOp(smt::PrimOp::BVUdiv, "bvudiv", other);
+    }
+
+    NodeRef* udivInt(int r) const
+    {
+        return _binOpL(smt::PrimOp::BVUdiv, "bvudiv", r);
+    }
+
+    NodeRef* rudivInt(int r) const
+    {
+        return _binOpR(smt::PrimOp::BVUdiv, "bvudiv", r);
+    }
+
+    // urem //
+    NodeRef* urem(NodeRef* r)
+    {
+        return _binOp(smt::PrimOp::BVUrem, "bvurem", r);
+    }
+
+    NodeRef* uremInt(int r)
+    {
+        return _binOpL(smt::PrimOp::BVUrem, "bvurem", r);
+    }
+
+    NodeRef* ruremInt(int l)
+    {
+        return _binOpR(smt::PrimOp::BVUrem, "bvurem", l);
+    }
+
+    // shl
+    NodeRef* shl(NodeRef* other) const
+    {
+        return _binOp(smt::PrimOp::BVShl, "bvshl", other);
+    }
+
+    NodeRef* shlInt(int r) const
+    {
+        return _binOpL(smt::PrimOp::BVShl, "bvshl", r);
+    }
+
+    NodeRef* rshlInt(int r) const
+    {
+        return _binOpR(smt::PrimOp::BVShl, "bvshl", r);
+    }
+
+    // shr //
+    NodeRef* lshr(NodeRef* other) const
+    {
+        return _binOp(smt::PrimOp::BVLshr, "bvlshr", other);
+    }
+
+    NodeRef* lshrInt(int r) const
+    {
+        return _binOpL(smt::PrimOp::BVLshr, "bvlshr", r);
+    }
+
+    NodeRef* rlshrInt(int r) const
+    {
+        return _binOpR(smt::PrimOp::BVLshr, "bvlshr", r);
+    }
+
+    // mul //
+    NodeRef* mul(NodeRef* other) const
+    {
+        return _binOp(smt::PrimOp::BVMul, "bvmul", other);
+    }
+
+    NodeRef* mulInt(int r) const
+    {
+        return _binOpL(smt::PrimOp::BVMul, "bvmul", r);
+    }
+
+    NodeRef* rmulInt(int r) const
+    {
+        return _binOpR(smt::PrimOp::BVMul, "bvmul", r);
+    }
+
+    // eq/neq //
+    NodeRef* eq(NodeRef * other) const
+    {
+        return _binOp(smt::PrimOp::Equal, "equal", other);
+    }
+
+    NodeRef* eqInt(int r) const
+    {
+        return _binOpL(smt::PrimOp::Equal, "equal", r);
+    }
+
+    NodeRef* eqIntR(int l) const
+    {
+        return _binOpR(smt::PrimOp::Equal, "equal", l);
+    }
+
+    NodeRef* neq(NodeRef * other) const
+    {
+        return _binOp(smt::PrimOp::Distinct, "distinct", other);
+    }
+
+    NodeRef* neqInt(int r) const
+    {
+        return _binOpL(smt::PrimOp::Distinct, "distinct", r);
+    }
+
+    NodeRef* neqIntR(int l) const
+    {
+        return _binOpR(smt::PrimOp::Distinct, "distinct", l);
+    }
+
+
+    NodeRef* ult(NodeRef * other) const
+    {
+        return _binOp(smt::PrimOp::BVUlt, "bvult", other);
+    }
+
+    NodeRef* ultInt(int r) const
+    {
+        return _binOpL(smt::PrimOp::BVUlt, "bvult", r);
+    }
+
+    NodeRef* ultIntR(int l) const
+    {
+        return _binOpR(smt::PrimOp::BVUlt, "bvult", l);
+    }
+
+
+    NodeRef* ugt(NodeRef * other) const
+    {
+        return _binOp(smt::PrimOp::BVUgt, "bvugt", other);
+    }
+
+    NodeRef* ugtInt(int r) const
+    {
+        return _binOpL(smt::PrimOp::BVUgt, "bvugt", r);
+    }
+
+    NodeRef* ugtIntR(int l) const
+    {
+        return _binOpR(smt::PrimOp::BVUgt, "bvugt", l);
+    }
+
+
+    NodeRef* ule(NodeRef * other) const
+    {
+        return _binOp(smt::PrimOp::BVUle, "bvule", other);
+    }
+
+    NodeRef* uleInt(int r) const
+    {
+        return _binOpL(smt::PrimOp::BVUle, "bvule", r);
+    }
+
+    NodeRef* uleIntR(int l) const
+    {
+        return _binOpR(smt::PrimOp::BVUle, "bvule", l);
+    }
+
+
+    NodeRef* uge(NodeRef * other) const
+    {
+        return _binOp(smt::PrimOp::BVUge, "bvuge", other);
+    }
+
+    NodeRef* ugeInt(int r) const
+    {
+        return _binOpL(smt::PrimOp::BVUge, "bvuge", r);
+    }
+
+    NodeRef* ugeIntR(int l) const
+    {
+        return _binOpR(smt::PrimOp::BVUge, "bvuge", l);
+    }
+
+    NodeRef* getItemInt(int idx) const
+    {
+        return Extract_operator(this, idx, idx);
+    }
+    
+    NodeRef* slice(int hi, int lo) const 
+    {
+        return Extract_operator(this, hi, lo);
+    }
+    NodeRef* read(NodeRef * addr) const 
+    {
+        return _binOp(smt::PrimOp::Select, "LOAD", addr);
+    }
+
 
   protected:
-
-    smt::Term node;
+    friend struct SolverRef;
+    friend struct StateRef;
+    friend struct TransSys;
     smt::SmtSolver solver;
+    smt::Term node;
 
     unsigned bvwidth() const { 
       if ( node->get_sort()->get_sort_kind() != smt::SortKind::BV) return 0;
@@ -236,12 +566,13 @@ namespace wasim {
       return NULL;
     }
 
+    // static ones
     static NodeRef* triOp(smt::PrimOp Op, const char* opName,
-                   NodeRef * cond, NodeRef * trueExp, NodeRef * falseExp)
+                   NodeRef * t1, NodeRef * t2, NodeRef * t3)
     {   
       try{
-        return new NodeRef(cond->solver->make_term(Op, cond->node, 
-          trueExp->node, falseExp->node), cond->solver);
+        return new NodeRef(t1->solver->make_term(Op, t1->node, 
+          t2->node, t3->node), t1->solver);
       } catch (SmtException e) {
         throw PyWASIMException(PyExc_TypeError, e.what());
       }
@@ -250,7 +581,94 @@ namespace wasim {
       return NULL;
     }
 
-    static NodeRef* _extractOp(const NodeRef* obj, int beg, int end)
+    static NodeRef * _s_binOp(smt::PrimOp op, const char* opName, NodeRef* l, NodeRef* r) {
+        try{
+          return new NodeRef(l->solver->make_term(op, l->node, r->node), l->solver);
+        } catch (SmtException e) {
+          throw PyWASIMException(PyExc_TypeError, e.what());
+        }
+        throw PyWASIMException(PyExc_TypeError, std::string("Incorrect type for ") + 
+                              opName);
+        return NULL;
+    }
+
+    static NodeRef* _s_binOp(
+        smt::PrimOp boolOp, 
+        smt::PrimOp bvOp, 
+        const char* opName,
+        NodeRef* l, NodeRef* r) {
+        try{
+          if (l->isbool())
+            return new NodeRef(l->solver->make_term(boolOp, l->node, r->node), l->solver);
+          if (l->bvwidth())
+            return new NodeRef(l->solver->make_term(bvOp, l->node, r->node), l->solver);
+        } catch (SmtException e) {
+          throw PyWASIMException(PyExc_TypeError, e.what());
+        } 
+        throw PyWASIMException(PyExc_TypeError, std::string("Incorrect type for ") + 
+                              opName);
+        return NULL;
+    }
+
+    static NodeRef* _s_binOpL(smt::PrimOp op, const char* opName, NodeRef* l, int r) {
+      auto sz = l->bvwidth();
+      if(sz != 0) {
+        try{
+          auto cterm = l->solver->make_term(r, l->solver->make_sort(smt::SortKind::BV, sz));
+          return new NodeRef(l->solver->make_term(op, l->node, cterm), l->solver);
+        } catch (SmtException e) {
+          throw PyWASIMException(PyExc_TypeError, e.what());
+        }
+      } else if (l->isbool()) {
+        try{
+          auto cterm = l->solver->make_term((bool)(r));
+          return new NodeRef(l->solver->make_term(op, l->node, cterm), l->solver);
+        } catch (SmtException e) {
+          throw PyWASIMException(PyExc_TypeError, e.what());
+        }
+      }
+      throw PyWASIMException(PyExc_TypeError, std::string("Incorrect type for ") + 
+                            opName);
+      return NULL;
+    }
+
+    static NodeRef* _s_binOpR(smt::PrimOp op, const char* opName, int l, NodeRef* r) {
+      auto sz = r->bvwidth();
+      if(sz != 0) {
+        try{
+          auto cterm = r->solver->make_term(l, r->solver->make_sort(smt::SortKind::BV, sz));
+          return new NodeRef(r->solver->make_term(op, cterm, r->node), r->solver);
+        } catch (SmtException e) {
+          throw PyWASIMException(PyExc_TypeError, e.what());
+        }
+      } else if (r->isbool()) {
+        try{
+          auto cterm = r->solver->make_term((bool)(l));
+          return new NodeRef(r->solver->make_term(op, cterm, r->node), r->solver);
+        } catch (SmtException e) {
+          throw PyWASIMException(PyExc_TypeError, e.what());
+        }
+      }
+      throw PyWASIMException(PyExc_TypeError, std::string("Incorrect type for ") + 
+                            opName);
+      return NULL;
+    }
+
+  public:
+    static NodeRef * ITE_operator(NodeRef * cond, NodeRef * thenExpr, NodeRef * elseExpr) {
+      return triOp(smt::PrimOp::Ite, "ITE", cond, thenExpr, elseExpr);
+    }
+
+
+    static NodeRef * Store_operator(NodeRef * array, NodeRef * addrExpr, NodeRef * dataExpr) {
+      return triOp(smt::PrimOp::Store, "STORE", array, addrExpr, dataExpr);
+    }
+
+    static NodeRef * Load_operator(NodeRef * array, NodeRef * addrExpr) {
+      return _s_binOp(smt::PrimOp::Select, "LOAD", array, addrExpr);
+    }
+
+    static NodeRef* Extract_operator(const NodeRef* obj, int beg, int end)
     {
       if (obj->bvwidth() == 0)
         throw PyWASIMException(PyExc_TypeError, "Incorrect type for SLICE" );
@@ -264,44 +682,504 @@ namespace wasim {
       return NULL;
     }
 
+
+    static NodeRef* logicalXnor(NodeRef* l, NodeRef* r)
+    {
+        return _s_binOp(smt::PrimOp::BVXnor, "bvxnor", l, r);
+    }
+
+    static NodeRef* logicalNand(NodeRef* l, NodeRef* r)
+    {
+        return _s_binOp(smt::PrimOp::BVNand, "bvnand", l, r);
+    }
+
+    static NodeRef* logicalNor(NodeRef* l, NodeRef* r)
+    {
+        return _s_binOp(smt::PrimOp::BVNor, "bvnor", l, r);
+    }
+
+    // sdiv //
+    static NodeRef* sdiv(NodeRef* l, NodeRef* r)
+    {
+        return _s_binOp(smt::PrimOp::BVSdiv, "bvsdiv", l, r);
+    }
+
+    static NodeRef* sdivInt(NodeRef* l, int r)
+    {
+        return _s_binOpL(smt::PrimOp::BVSdiv, "bvsdiv", l, r);
+    }
+
+    static NodeRef* rsdivInt(int l, NodeRef* r)
+    {
+        return _s_binOpR(smt::PrimOp::BVSdiv, "bvsdiv", l, r);
+    }
+
+    // smod //
+    static NodeRef* smod(NodeRef* l, NodeRef* r)
+    {
+        return _s_binOp(smt::PrimOp::BVSmod, "bvsmod", l, r);
+    }
+
+    static NodeRef* smodInt(NodeRef* l, int r)
+    {
+        return _s_binOpL(smt::PrimOp::BVSmod, "bvsmod", l, r);
+    }
+
+    static NodeRef* rsmodInt(int l, NodeRef* r)
+    {
+        return _s_binOpR(smt::PrimOp::BVSmod, "bvsmod", l, r);
+    }
+
+    // srem //
+    static NodeRef* srem(NodeRef* l, NodeRef* r)
+    {
+        return _s_binOp(smt::PrimOp::BVSrem, "bvsrem", l, r);
+    }
+
+    static NodeRef* sremInt(NodeRef* l, int r)
+    {
+        return _s_binOpL(smt::PrimOp::BVSrem, "bvsrem", l, r);
+    }
+
+    static NodeRef* rsremInt(int l, NodeRef* r)
+    {
+        return _s_binOpR(smt::PrimOp::BVSrem, "bvsrem", l, r);
+    }
+
+    static NodeRef* ashr(NodeRef* l, NodeRef* r)
+    {
+        return _s_binOp(smt::PrimOp::BVAshr, "bvashr", l, r);
+    }
+
+    static NodeRef* ashrInt(NodeRef* l, int r)
+    {
+        return _s_binOpL(smt::PrimOp::BVAshr, "bvashr", l, r);
+    }
+
+    static NodeRef* rashrInt(int l, NodeRef* r)
+    {
+        return _s_binOpR(smt::PrimOp::BVAshr, "bvashr", l, r);
+    }
+
+    static NodeRef* concat(NodeRef* hi, NodeRef* lo)
+    {
+        return _s_binOp(smt::PrimOp::Concat, "concat", hi, lo);
+    }
+
+    static NodeRef* concatList(const boost::python::list& l)
+    {
+      // number of arguments.
+      if (boost::python::len(l) < 1) {
+          throw PyWASIMException(
+              PyExc_RuntimeError, "Cannot concat empty list");
+          return NULL;
+      }
+
+      smt::TermVec args;
+      smt::SmtSolver slv;
+      for (unsigned i=0; i != boost::python::len(l); i++ ) {
+        boost::python::extract<NodeRef *> ni(l[i]);
+        if(ni.check()) {
+          if (i==0)
+            slv = ni()->solver;
+          args.push_back(ni()->node);
+        } else {
+            throw PyWASIMException(
+                PyExc_TypeError, "Argument to concat must be terms.");
+            return NULL;
+        }
+      }
+      if (args.size() == 1)
+        return new NodeRef(args[0], slv);
+      try {
+        return new NodeRef(slv->make_term(smt::PrimOp::Concat, args), slv);
+      } catch(SmtException e) {
+        throw PyWASIMException(PyExc_TypeError, e.what());
+      }
+      return NULL;
+    } // end of concatList
+
+    static NodeRef* lrotate(NodeRef* obj, int par)
+    {
+      smt::Op op(smt::PrimOp::Rotate_Left, par);
+      try {
+        return new NodeRef(obj->solver->make_term(op, obj->node), obj->solver);
+      } catch(SmtException e) { throw PyWASIMException(PyExc_TypeError, e.what()); }
+      return NULL;
+    }
+
+    static NodeRef* rrotate(NodeRef* obj, int par)
+    {
+      smt::Op op(smt::PrimOp::Rotate_Right, par);
+      try {
+        return new NodeRef(obj->solver->make_term(op, obj->node), obj->solver);
+      } catch(SmtException e) { throw PyWASIMException(PyExc_TypeError, e.what()); }
+      return NULL;
+    }
+
+    static NodeRef* zero_extend(NodeRef* obj, int morewidth)
+    {
+      smt::Op op(smt::PrimOp::Zero_Extend, morewidth);
+      try {
+        return new NodeRef(obj->solver->make_term(op, obj->node), obj->solver);
+      } catch(SmtException e) { throw PyWASIMException(PyExc_TypeError, e.what()); }
+      return NULL;
+    }
+
+    static NodeRef* sign_extend(NodeRef* obj, int morewidth)
+    {
+      smt::Op op(smt::PrimOp::Sign_Extend, morewidth);
+      try {
+        return new NodeRef(obj->solver->make_term(op, obj->node), obj->solver);
+      } catch(SmtException e) { throw PyWASIMException(PyExc_TypeError, e.what()); }
+      return NULL;
+    }
+
+    static NodeRef* slt(NodeRef * l, NodeRef * r) 
+    {
+        return _s_binOp(smt::PrimOp::BVSlt, "bvslt", l, r);
+    }
+
+    static NodeRef* sgt(NodeRef * l, NodeRef * r)
+    {
+        return _s_binOp(smt::PrimOp::BVSgt, "bvsgt", l, r);
+    }
+
+    static NodeRef* sle(NodeRef * l, NodeRef * r)
+    {
+        return _s_binOp(smt::PrimOp::BVSle, "bvsle", l, r);
+    }
+
+    static NodeRef* sge(NodeRef * l, NodeRef * r)
+    {
+        return _s_binOp(smt::PrimOp::BVSge, "bvsge", l, r);
+    }
+
+    static NodeRef* sltInt(NodeRef* l, int r) 
+    {
+        return _s_binOpL(smt::PrimOp::BVSlt, "bvslt", l, r);
+    }
+
+    static NodeRef* sgtInt(NodeRef* l, int r) 
+    {
+        return _s_binOpL(smt::PrimOp::BVSgt, "bvsgt", l, r);
+    }
+
+    static NodeRef* sleInt(NodeRef* l, int r) 
+    {
+        return _s_binOpL(smt::PrimOp::BVSle, "bvsle", l, r);
+    }
+
+    static NodeRef* sgeInt(NodeRef* l, int r) 
+    {
+        return _s_binOpL(smt::PrimOp::BVSge, "bvsge", l, r);
+    }
+
+    static NodeRef* sltIntR(int l, NodeRef* r) 
+    {
+        return _s_binOpR(smt::PrimOp::BVSlt, "bvslt", l, r);
+    }
+
+    static NodeRef* sgtIntR(int l, NodeRef* r) 
+    {
+        return _s_binOpR(smt::PrimOp::BVSgt, "bvsgt", l, r);
+    }
+
+    static NodeRef* sleIntR(int l, NodeRef* r) 
+    {
+        return _s_binOpR(smt::PrimOp::BVSle, "bvsle", l, r);
+    }
+
+    static NodeRef* sgeIntR(int l, NodeRef* r) 
+    {
+        return _s_binOpR(smt::PrimOp::BVSge, "bvsge", l, r);
+    }
+
   }; // end of NodeRef
 
-  /* TODO : State */
+
+  /* class State */
   struct StateRef {
     StateRef() { throw PyWASIMException(PyExc_RuntimeError, "Cannot create State directly. Use the context object."); }
-    StateRef(const StateRef & other) : sptr(other.sptr) , solver(other.solver ){ }
-    StateRef(StateAsmpt * ptr, smt::SmtSolver osolver) : sptr(ptr), solver(osolver) { }
+    StateRef(const StateRef & other) : solver(other.solver ), sptr(other.sptr) { }
+    StateRef(StateAsmpt * ptr, smt::SmtSolver osolver) : solver(osolver), sptr(ptr) { }
 
     StateRef * clone() const {
       return new StateRef(new StateAsmpt(*sptr), solver);
     }
 
     // test the type of the return list and see how that works
-    boost::python::list get_assumptions() const { /*TODO*/ 
+    boost::python::list get_assumptions() const {
       boost::python::list ret;
       for (const auto & a : sptr->get_assumptions())
-        ret.append( new NodeRef(a, solver) );
+        ret.append( new NodeRef(a, solver) ); // how this is managed?
       return ret;
     }
 
     // NodeRef* get_assumption(size_t idx) const { /*TODO*/ } // can we return a list of NodeRef?
-    void set_assumptions(boost::python::list l) { /*TODO : use extract */ }
+    void set_assumptions(const boost::python::list & l) {
+      smt::TermVec newvec;
+      for (size_t idx = 0; idx < boost::python::len(l); ++idx) {
+        boost::python::extract<NodeRef *> ni(l[idx]);
+        if(!ni.check()) {
+          throw PyWASIMException(PyExc_RuntimeError, "set_assumptions requires a list of terms");
+          return;
+        }
+        newvec.push_back(ni()->node);
+      }
+      sptr->update_assumptions().swap(newvec);
+    }
 
-    boost::python::list get_assumption_interps() const { /*TODO*/ }
-    void set_assumption_interps(boost::python::list l) { /*TODO*/ }
+    boost::python::list get_assumption_interps() const {
+      boost::python::list ret;
+      for (const auto & a : sptr->get_assumption_interpretations())
+        ret.append( a ); // how this is managed?
+      return ret;
+    }
 
-    boost::python::list get_var() const {} // list of string
-    NodeRef* get_term(const std::string & name) const { /*TODO*/ }
-    void set_sv(boost::python::dict v) { /*TODO*/ }
+    void set_assumption_interps(const boost::python::list & l) {
+      std::vector<std::string> newvec;
+      for (size_t idx = 0; idx < boost::python::len(l); ++idx) {
+        boost::python::extract<std::string> ni(l[idx]);
+        if(!ni.check()) {
+          throw PyWASIMException(PyExc_RuntimeError, "set_assumptions requires a list of strings");
+          return;
+        }
+        newvec.push_back(ni());
+      }
+      sptr->update_assumption_interpretations().swap(newvec);
+    }
+
+    boost::python::list get_vars() const {
+      boost::python::list ret;
+      for (const auto & sv : sptr->get_sv()) {
+        ret.append(new NodeRef(sv.first, solver));
+      }
+      return ret;
+    }
+    boost::python::list get_varnames() const {
+      boost::python::list ret;
+      for (const auto & sv : sptr->get_sv()) {
+        ret.append(sv.first->to_string());
+      }
+      return ret;
+    }
+
+    boost::python::dict get_sv() const {
+      boost::python::dict ret;
+      for (const auto & sv : sptr->get_sv()) {
+        NodeRef * k = new NodeRef(sv.first, solver);
+        NodeRef * v = new NodeRef(sv.second, solver);
+        ret[k] = v;
+      }
+      return ret;
+    }
+
+    NodeRef* get_term(const std::string & name) const  {
+      for (const auto & sv : sptr->get_sv()) {
+        if (name == sv.first->to_string())
+          return new NodeRef(sv.second, solver);
+      }
+      throw PyWASIMException(PyExc_RuntimeError, "no statevar named" + name);
+      return NULL;
+    }
+
+    void set_sv(const boost::python::dict & sv) {
+      smt::UnorderedTermMap newmap;
+      boost::python::list items = sv.items();
+      for(ssize_t i = 0; i < len(items); ++i) {
+          boost::python::object key = items[i][0];
+          boost::python::object value = items[i][1];
+          boost::python::extract<NodeRef *> k(key);
+          boost::python::extract<NodeRef *> v(value);
+
+          if(k.check() && v.check())
+            newmap.emplace(k()->node, v()->node);
+      }
+      sptr->update_sv().swap(newmap);
+    }
 
     protected:
-      std::shared_ptr<StateAsmpt> sptr;
       smt::SmtSolver solver;
-  };
+      std::shared_ptr<StateAsmpt> sptr;
+  }; // end of state
 
-  /* TODO : ts */
-  // terms() return all named_terms boost::python::dict
-  // lookup() return a term by its name
+  void SolverRef::assert_formula(NodeRef * a) { solver->assert_formula(a->node); }
+  bool SolverRef::check_sat() { return solver->check_sat().is_sat(); }
+  NodeRef * SolverRef::get_value(NodeRef * a) { return new NodeRef(solver->get_value(a->node), solver ); }
+
+  NodeType * SolverRef::make_bool() { return new NodeType(solver->make_sort(smt::SortKind::BOOL)); }
+  NodeType * SolverRef::make_bvsort(u_int64_t width) { return new NodeType(solver->make_sort(smt::SortKind::BV, width)); }
+  NodeRef * SolverRef::make_constant(boost::python::object c, NodeType * ntype) {
+    auto s = pystr_to_string(c);
+    try{
+      return new NodeRef(solver->make_term(s, ntype->sort),  solver);
+    } catch(SmtException e) {
+      throw PyWASIMException(PyExc_TypeError, e.what());
+    }
+    return NULL;
+  }
+
+  /* TransSys : ts */
+  struct TransSys {
+
+    TransSys(const std::string & btorname) { 
+      smt::SmtSolver solver = smt::BoolectorSolverFactory::create(false);
+      solver->set_logic("QF_UFBV");
+      solver->set_opt("incremental", "true");
+      solver->set_opt("produce-models", "true");
+      solver->set_opt("produce-unsat-assumptions", "true");
+      sptr = std::make_shared<TransitionSystem> (solver);
+      BTOR2Encoder btor_parser(btorname, *sptr);
+    }
+
+    NodeRef * curr(NodeRef * term) const {
+      return new NodeRef(sptr->curr(term->node), sptr->get_solver());
+    }
+
+    NodeRef * next(NodeRef * term) const {
+      return new NodeRef(sptr->next(term->node), sptr->get_solver());
+    }
+
+    bool is_curr_var(NodeRef * sv) const {
+      return sptr->is_curr_var(sv->node);
+    }
+
+    bool is_next_var(NodeRef * sv) const {
+      return sptr->is_next_var(sv->node);
+    }
+
+    bool is_input_var(NodeRef * sv) const {
+      return sptr->is_input_var(sv->node);
+    }
+
+    std::string get_name(NodeRef * t) const {
+      return sptr->get_name(t->node);
+    }
+
+    NodeRef * lookup(const std::string & name) const {
+      return new NodeRef(sptr->lookup(name), sptr->get_solver());
+    }
+
+    /* Gets a reference to the solver */
+    SolverRef * get_solver() { 
+      return new SolverRef(sptr->get_solver());
+    }
+
+    boost::python::list statevars() const { 
+      boost::python::list ret;
+      for(const auto & sv : sptr->statevars()) {
+        ret.append(new NodeRef(sv, sptr->get_solver()));
+      }
+      return ret;
+    }
+
+    boost::python::list inputvars() const { 
+      boost::python::list ret;
+      for(const auto & sv : sptr->inputvars()) {
+        ret.append(new NodeRef(sv, sptr->get_solver()));
+      }
+      return ret;
+    }
+
+    /* Returns the initial state constraints
+    * @return a boolean term constraining the initial state
+    */
+    NodeRef * init() const { 
+      return new NodeRef(sptr->init(), sptr->get_solver());
+    }
+
+    /* Returns the transition relation
+    * @return a boolean term representing the transition relation
+    */
+    NodeRef * trans() const { 
+      return new NodeRef(sptr->trans(), sptr->get_solver());
+    }
+
+
+    /* Returns the next state updates
+    * @return a map of functional next state updates
+    */
+    boost::python::dict state_updates() const
+    {
+      boost::python::dict ret;
+      for (const auto & sv_update : sptr->state_updates()) {
+        NodeRef * k = new NodeRef(sv_update.first, sptr->get_solver());
+        NodeRef * v = new NodeRef(sv_update.second, sptr->get_solver());
+        ret[k] = v;
+      }
+      return ret;
+    }
+
+    /* @return the named terms mapping */
+    boost::python::dict named_terms() const
+    {
+      boost::python::dict ret;
+      for (const auto & sv_update : sptr->named_terms()) {
+        std::string k = sv_update.first;
+        NodeRef * v = new NodeRef(sv_update.second, sptr->get_solver());
+        ret[k] = v;
+      }
+      return ret;
+    }
+
+    /** @return the constraints of the system
+     */
+    boost::python::list constraints() const
+    {
+      boost::python::list ret;
+      for(const auto & c : sptr->constraints()) {
+        ret.append(new NodeRef(c.first, sptr->get_solver()));
+      }
+      return ret;
+    }
+
+    /** Whether the transition system is functional
+     *  NOTE: This does *not* actually analyze the transition relation
+     *  TODO possibly rename to be less confusing
+     *  currently means state updates are always
+     *    next_var := f(current_vars, inputs)
+     *  however, it allows (certain) constraints still
+     *  and does not require that every state has an update
+     */
+    bool is_functional() const { return sptr->is_functional(); }
+
+    /** Whether the system is deterministic
+     * this is a stronger condition than functional
+     * TODO possibly rename to be less confusing
+     *
+     * deterministic (currently) means
+     *   1) is_functional() is true
+     *   2) every state has a next state for any input
+     *      (i.e. no extra constraints)
+     *   3) every state variable has an update function
+     *       --> there exists exactly one next state
+     *           if current vars and inputs are fixed
+     */
+      bool is_deterministic() const { return sptr->is_deterministic(); }
+
+      /* Returns true iff all the symbols in the formula are current states */
+      bool only_curr(NodeRef * term) const {
+        return sptr->only_curr(term->node);
+      }
+
+      /* Returns true iff all the symbols in the formula are inputs and current
+      * states */
+      bool no_next(NodeRef * term) const {
+        return sptr->no_next(term->node);
+      }
+
+
+    TransSys * clone () const {
+      // make a copy of all lists etc
+      return new TransSys(new TransitionSystem(*sptr));
+    }
+
+    protected:
+      std::shared_ptr<TransitionSystem> sptr;
+
+      TransSys(TransitionSystem * ts) : sptr(ts) { }
+  }; // struct TransSys
 
   /* TODO : executor */
 
@@ -309,7 +1187,7 @@ namespace wasim {
 
   /* TODO : TraverseBranchingNode */
 
-  /* TODO : TraverseBranchingNode */
+  /* TODO : SymbolicTraverse */
 
 } // end namespace wasim
 
@@ -331,6 +1209,90 @@ BOOST_PYTHON_MODULE(pywasim)
     .def("__repr__", &NodeType::to_string)
     .def("__hash__", &NodeType::hash)
   ;
+
+  // memory write.
+  def("store", &NodeRef::Store_operator,
+          return_value_policy<manage_new_object>());
+  def("read", &NodeRef::Load_operator,
+          return_value_policy<manage_new_object>());
+  // logical operators.
+  def("nand", &NodeRef::logicalNand,
+          return_value_policy<manage_new_object>());
+  def("nor", &NodeRef::logicalNor,
+          return_value_policy<manage_new_object>());
+  def("xnor", &NodeRef::logicalXnor,
+          return_value_policy<manage_new_object>());
+
+  // arithmetic operators.
+  def("sdiv", &NodeRef::sdiv,
+          return_value_policy<manage_new_object>());
+  def("sdiv", &NodeRef::sdivInt,
+          return_value_policy<manage_new_object>());
+  def("sdiv", &NodeRef::rsdivInt,
+          return_value_policy<manage_new_object>()); 
+  def("smod", &NodeRef::smod,
+          return_value_policy<manage_new_object>()); 
+  def("smod", &NodeRef::smodInt,
+          return_value_policy<manage_new_object>()); 
+  def("smod", &NodeRef::rsmodInt,
+          return_value_policy<manage_new_object>()); 
+  def("srem", &NodeRef::srem,
+          return_value_policy<manage_new_object>()); 
+  def("srem", &NodeRef::sremInt,
+          return_value_policy<manage_new_object>()); 
+  def("srem", &NodeRef::rsremInt,
+          return_value_policy<manage_new_object>()); 
+  def("ashr", &NodeRef::ashr,
+          return_value_policy<manage_new_object>()); 
+  def("ashr", &NodeRef::ashrInt,
+          return_value_policy<manage_new_object>()); 
+  def("ashr", &NodeRef::rashrInt,
+          return_value_policy<manage_new_object>()); 
+  // manipulate operators.
+  def("concat", &NodeRef::concat,
+          return_value_policy<manage_new_object>());
+  def("concat", &NodeRef::concatList,
+          return_value_policy<manage_new_object>());
+  def("lrotate", &NodeRef::lrotate,
+          return_value_policy<manage_new_object>());
+  def("rrotate", &NodeRef::rrotate,
+          return_value_policy<manage_new_object>());
+  def("zero_extend", &NodeRef::zero_extend,
+          return_value_policy<manage_new_object>());
+  def("sign_extend", &NodeRef::sign_extend,
+          return_value_policy<manage_new_object>());
+  def("extract", &NodeRef::Extract_operator,
+          return_value_policy<manage_new_object>());
+
+  // comparison operators.
+  def("slt", &NodeRef::slt,
+          return_value_policy<manage_new_object>());
+  def("slt", &NodeRef::sltInt,
+          return_value_policy<manage_new_object>());
+  def("slt", &NodeRef::sltIntR,
+          return_value_policy<manage_new_object>());
+  def("sle", &NodeRef::sle,
+          return_value_policy<manage_new_object>());
+  def("sle", &NodeRef::sleInt,
+          return_value_policy<manage_new_object>());
+  def("sle", &NodeRef::sleIntR,
+          return_value_policy<manage_new_object>());
+  def("sgt", &NodeRef::sgt,
+          return_value_policy<manage_new_object>());
+  def("sgt", &NodeRef::sgtInt,
+          return_value_policy<manage_new_object>());
+  def("sgt", &NodeRef::sgtIntR,
+          return_value_policy<manage_new_object>());
+  def("sge", &NodeRef::sge,
+          return_value_policy<manage_new_object>());
+  def("sge", &NodeRef::sgeInt,
+          return_value_policy<manage_new_object>());
+  def("sge", &NodeRef::sgeIntR,
+          return_value_policy<manage_new_object>());
+  // ite.
+  def("ite", &NodeRef::ITE_operator,
+          return_value_policy<manage_new_object>());
+
 
   class_<StateRef>("StateRef")
     .def("get_assumptions",&StateRef::get_assumptions)
