@@ -1210,6 +1210,90 @@ BOOST_PYTHON_MODULE(pywasim)
     .def("__hash__", &NodeType::hash)
   ;
 
+  class_<NodeRef>("NodeRef")
+    .def("to_int", &NodeRef::to_int)
+    .def("to_string", &NodeRef::to_string)
+    .def("get_type", &NodeRef::getType, return_value_policy<manage_new_object>())
+    .def("substitute", &NodeRef::substitute, return_value_policy<manage_new_object>() )
+    .def("args", &NodeRef::args)
+    .def("__hash__", &NodeRef::hash)
+    .def("get_solver", &NodeRef::get_solver, return_value_policy<manage_new_object>() )
+    .def("__invert__", &NodeRef::complement, return_value_policy<manage_new_object>() )
+    .def("__neg__", &NodeRef::negate, return_value_policy<manage_new_object>() )
+    .def("__and__", &NodeRef::logicalAnd, return_value_policy<manage_new_object>() )
+    .def("__and__", &NodeRef::logicalAndInt, return_value_policy<manage_new_object>() )
+    .def("__rand__", &NodeRef::logicalAndRInt, return_value_policy<manage_new_object>() )
+    .def("__or__", &NodeRef::logicalOr, return_value_policy<manage_new_object>() )
+    .def("__or__", &NodeRef::logicalOrInt, return_value_policy<manage_new_object>() )
+    .def("__ror__", &NodeRef::logicalOrRInt, return_value_policy<manage_new_object>() )
+    
+    .def("__xor__", &NodeRef::logicalXor,
+          return_value_policy<manage_new_object>())
+    .def("__xor__", &NodeRef::logicalXorInt,
+          return_value_policy<manage_new_object>())
+    .def("__rxor__", &NodeRef::logicalXorRInt,
+          return_value_policy<manage_new_object>())
+
+      // arithmetic operators.
+      .def("__add__", &NodeRef::add, return_value_policy<manage_new_object>())
+      .def("__add__", &NodeRef::addInt,
+           return_value_policy<manage_new_object>())
+      .def("__radd__", &NodeRef::raddInt,
+           return_value_policy<manage_new_object>())
+      .def("__sub__", &NodeRef::sub, return_value_policy<manage_new_object>())
+      .def("__sub__", &NodeRef::subInt,
+           return_value_policy<manage_new_object>())
+      .def("__rsub__", &NodeRef::rsubInt,
+           return_value_policy<manage_new_object>())
+      .def("__mul__", &NodeRef::mul, return_value_policy<manage_new_object>())
+      .def("__mul__", &NodeRef::mulInt,
+           return_value_policy<manage_new_object>())
+      .def("__rmul__", &NodeRef::rmulInt,
+           return_value_policy<manage_new_object>())
+      .def("__div__", &NodeRef::udiv, return_value_policy<manage_new_object>())
+      .def("__div__", &NodeRef::udivInt,
+           return_value_policy<manage_new_object>())
+      .def("__rdiv__", &NodeRef::rudivInt,
+           return_value_policy<manage_new_object>())
+      .def("__mod__", &NodeRef::urem, return_value_policy<manage_new_object>())
+      .def("__mod__", &NodeRef::uremInt,
+           return_value_policy<manage_new_object>())
+      .def("__rmod__", &NodeRef::ruremInt,
+           return_value_policy<manage_new_object>())
+      .def("__lshift__", &NodeRef::shl,
+           return_value_policy<manage_new_object>())
+      .def("__lshift__", &NodeRef::shlInt,
+           return_value_policy<manage_new_object>())
+      .def("__rlshift__", &NodeRef::rshlInt,
+           return_value_policy<manage_new_object>())
+      .def("__rshift__", &NodeRef::lshr,
+           return_value_policy<manage_new_object>())
+      .def("__rshift__", &NodeRef::lshrInt,
+           return_value_policy<manage_new_object>())
+      .def("__rrshift__", &NodeRef::rlshrInt,
+           return_value_policy<manage_new_object>())
+
+      // comparison operators.
+      .def("__eq__", &NodeRef::eq, return_value_policy<manage_new_object>())
+      .def("__eq__", &NodeRef::eqInt, return_value_policy<manage_new_object>())
+      .def("__ne__", &NodeRef::neq, return_value_policy<manage_new_object>())
+      .def("__ne__", &NodeRef::neqInt, return_value_policy<manage_new_object>())
+      .def("__lt__", &NodeRef::ult, return_value_policy<manage_new_object>())
+      .def("__lt__", &NodeRef::ultInt, return_value_policy<manage_new_object>())
+      .def("__le__", &NodeRef::ule, return_value_policy<manage_new_object>())
+      .def("__le__", &NodeRef::uleInt, return_value_policy<manage_new_object>())
+      .def("__gt__", &NodeRef::ugt, return_value_policy<manage_new_object>())
+      .def("__gt__", &NodeRef::ugtInt, return_value_policy<manage_new_object>())
+      .def("__ge__", &NodeRef::uge, return_value_policy<manage_new_object>())
+      .def("__ge__", &NodeRef::ugeInt, return_value_policy<manage_new_object>())
+
+      // slice operator
+      .def("__getslice__", &NodeRef::slice,
+           return_value_policy<manage_new_object>())
+      // get bit operator
+      .def("__getitem__", &NodeRef::getItemInt,
+           return_value_policy<manage_new_object>())
+  ;
   // memory write.
   def("store", &NodeRef::Store_operator,
           return_value_policy<manage_new_object>());
@@ -1298,5 +1382,41 @@ BOOST_PYTHON_MODULE(pywasim)
     .def("get_assumptions",&StateRef::get_assumptions)
     .def("set_assumptions",&StateRef::set_assumptions)
   ;
+
+  class_<SolverRef>("SolverRef")
+    .def("push", &SolverRef::push)
+    .def("pop", &SolverRef::pop)
+    .def("assert_formula", &SolverRef::assert_formula)
+    .def("check_sat", &SolverRef::check_sat)
+    .def("get_value", &SolverRef::get_value, return_value_policy<manage_new_object>())
+    .def("make_bool", &SolverRef::make_bool, return_value_policy<manage_new_object>())
+    .def("make_bvsort", &SolverRef::make_bvsort, return_value_policy<manage_new_object>())
+    .def("make_constant", &SolverRef::make_constant, return_value_policy<manage_new_object>())
+  ;
+
+  class_<TransSys>("TransSys", init<const std::string &>())
+    .def("curr", &TransSys::curr, return_value_policy<manage_new_object>())
+    .def("next", &TransSys::next, return_value_policy<manage_new_object>())
+    .def("is_curr_var", &TransSys::is_curr_var)
+    .def("is_next_var", &TransSys::is_next_var)
+    .def("is_input_var", &TransSys::is_input_var)
+    .def("get_name", &TransSys::get_name)
+    .def("lookup", &TransSys::lookup, return_value_policy<manage_new_object>())
+    .def("get_solver", &TransSys::get_solver, return_value_policy<manage_new_object>())
+    .def("statevars", &TransSys::statevars)
+    .def("inputvars", &TransSys::inputvars)
+    .def("state_updates", &TransSys::state_updates)
+    .def("named_terms", &TransSys::named_terms)
+    .def("constraints", &TransSys::constraints)
+    .def("init", &TransSys::init, return_value_policy<manage_new_object>())
+    .def("trans", &TransSys::trans, return_value_policy<manage_new_object>())
+    .def("is_functional", &TransSys::is_functional)
+    .def("is_deterministic", &TransSys::is_deterministic)
+    .def("only_curr", &TransSys::only_curr)
+    .def("no_next", &TransSys::no_next)
+    .def("__copy__", &TransSys::clone, return_value_policy<manage_new_object>())
+  ;
+
+
 
 }
