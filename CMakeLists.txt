@@ -148,7 +148,6 @@ target_link_libraries(wasim-lib PUBLIC "${PROJECT_SOURCE_DIR}/deps/btor2tools/bu
 target_link_libraries(wasim-lib PUBLIC "${GMPXX_LIBRARIES}")
 target_link_libraries(wasim-lib PUBLIC "${GMP_LIBRARIES}")
 target_link_libraries(wasim-lib PUBLIC pthread)
-target_link_libraries(wasim-lib PUBLIC y)
 target_link_libraries(wasim-lib PUBLIC Boost::system)
 
 # if (LIBRT)
