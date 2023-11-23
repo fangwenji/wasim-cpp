@@ -38,6 +38,35 @@ void get_xvar_sub(const smt::TermVec & assumptions,
   } // end of for each xvar
 } // end of get_xvar_sub
 
+
+// check if expr is a constant under assumptions
+smt::Term check_if_constant(
+    const smt::Term & expr,
+    const smt::TermVec & assumptions, 
+    const smt::SmtSolver & solver) {
+  
+  solver->push();
+  for (const auto & a : assumptions)
+    solver->assert_formula(a);
+  auto r = solver->check_sat();
+  if (!r.is_sat()) {
+    solver->pop();
+    return nullptr;
+  }
+  auto retval = solver->get_value(expr);
+  solver->assert_formula(solver->make_term(
+    smt::Not, solver->make_term(smt::Equal, expr, retval) ) );
+  r = solver->check_sat();
+  if (r.is_unsat()) {
+    solver->pop();
+    return retval; // expr == retval is required
+  }
+  // not a constant
+  solver->pop();
+  return nullptr;
+}
+    
+
 int is_reducible_bool(const smt::Term & expr,
                       const smt::TermVec & assumptions,
                       const smt::SmtSolver & solver)

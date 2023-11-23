@@ -5,6 +5,7 @@ using namespace std;
 
 namespace wasim {
 
+
 // will update xvar_sub with each xvar in (set_of_xvar AND free_var)
 // such that it is fixed to 0/1
 void get_xvar_sub(const smt::TermVec & assumptions,
@@ -12,6 +13,12 @@ void get_xvar_sub(const smt::TermVec & assumptions,
                   const smt::UnorderedTermSet & free_var,
                   const smt::SmtSolver & solver,
                   smt::UnorderedTermMap & xvar_sub);
+
+// check if expr is a constant under assumptions
+smt::Term check_if_constant(
+    const smt::Term & expr,
+    const smt::TermVec & assumptions, 
+    const smt::SmtSolver & solver);
 
 // decide if expr (bool) == 0 or 1 under the assumptions
 // return 0/1/2 (unknown)
