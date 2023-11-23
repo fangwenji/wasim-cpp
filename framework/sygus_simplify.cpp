@@ -259,7 +259,7 @@ smt::Term run_sygus(const parsed_info & info,
     }
   } else {
     auto solver_copy = solver; // TODO: in the future, change SmtLibReader to use const ref.
-    PropertyInterface pi(result_file, solver_copy);
+    WasimSmtLib2Parser pi(result_file, solver_copy);
     new_expr = pi.return_defs();
   }
   int rm;

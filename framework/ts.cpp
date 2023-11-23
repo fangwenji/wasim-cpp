@@ -22,6 +22,7 @@
 #include "assert.h"
 #include "smt-switch/substitution_walker.h"
 #include "smt-switch/utils.h"
+#include "framework/state_simplify.h"
 
 using namespace smt;
 using namespace std;
@@ -823,6 +824,13 @@ bool TransitionSystem::known_symbols(const Term & term) const
   return contains(
       term,
       UnorderedTermSetPtrVec{ &statevars_, &inputvars_, &next_statevars_ });
+}
+
+
+void TransitionSystem::extract_initial_statevar_constant() {
+  // TODO: check the sv under assumptions. (using `check_if_constant`)
+  //       do this after parsing
+  #error TODO
 }
 
 }  // namespace wasim

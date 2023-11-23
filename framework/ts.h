@@ -533,6 +533,9 @@ class TransitionSystem
   // initial state constraint
   smt::Term init_;
 
+  // store those state variables that have constant initial state
+  smt::UnorderedTermMap init_constants_;
+
   // transition relation (functional in this class)
   smt::Term trans_;
 
@@ -604,6 +607,9 @@ class TransitionSystem
 
   /* Returns true iff all the symbols in the formula are known */
   virtual bool known_symbols(const smt::Term & term) const;
+
+  /* Extract the initial constants */
+  void extract_initial_statevar_constant();
 };
 
 }  // namespace wasim

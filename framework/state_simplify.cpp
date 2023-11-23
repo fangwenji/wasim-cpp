@@ -1,6 +1,7 @@
 #include "state_simplify.h"
 
 #include "smt-switch/utils.h"
+#include <queue>
 
 namespace wasim {
 
