@@ -757,9 +757,11 @@ void BTOR2Encoder::parse(const std::string filename)
 
     // sort tag should be the only one that doesn't populate terms_
     assert(l_->tag == BTOR2_TAG_sort || terms_.find(l_->id) != terms_.end());
-  }
+  } // end of iteration for each line in BTOR2
 
   fclose(input_file);
   btor2parser_delete(reader_);
+
+  ts_.extract_initial_statevar_constant();
 }
 }  // namespace wasim

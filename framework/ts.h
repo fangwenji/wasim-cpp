@@ -526,6 +526,10 @@ class TransitionSystem
       const smt::UnorderedTermSet & state_vars_in_coi,
       const smt::UnorderedTermSet & input_vars_in_coi);
 
+  /* Populate the map from state variables to its initial value,
+     will factor the initial predicate and constraints into consideration */
+  void extract_initial_statevar_constant();
+
  protected:
   // solver
   smt::SmtSolver solver_;
@@ -608,8 +612,6 @@ class TransitionSystem
   /* Returns true iff all the symbols in the formula are known */
   virtual bool known_symbols(const smt::Term & term) const;
 
-  /* Extract the initial constants */
-  void extract_initial_statevar_constant();
 };
 
 }  // namespace wasim

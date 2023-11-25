@@ -1,6 +1,7 @@
 #pragma once
 #include <framework/ts.h>
 #include <framework/symsim.h>
+#include <framework/smt_in.h>
 
 namespace wasim {
 
@@ -9,11 +10,11 @@ class StateRW
  public:
   StateRW(const smt::SmtSolver & s) : solver_(s) { }
 
+  // return true if succeed
+  bool StateWrite(const wasim::StateAsmpt & state,
+                  const std::string & outfile_sv);
   // Read/Write a single state
-  void StateWrite(const wasim::StateAsmpt & state,
-                  const std::string & outfile_sv,
-                  const std::string & outfile_asmpt);
-  StateAsmpt StateRead(const std::string & infile_sv, const std::string & infile_asmpt);
+  StateAsmpt StateRead(const std::string & infile_sv);
 
   // Read/Write a tree of states
   void StateWriteTree(const std::vector<std::vector<StateAsmpt>> & branch_list,
@@ -22,12 +23,10 @@ class StateRW
                                                      int i,
                                                      int j);
  protected:
-  // functions only used internally
-  void write_single_term(const std::string & outfile, const smt::Term & expr);
-  void write_term(const std::string & outfile, const smt::Term & expr);
-  void write_string(const std::string & outfile, const std::string & asmpt_interp);
-  bool is_bv_const(const smt::Term & expr);
-  smt::Term str2bvnum(const std::string & int_num);
+  void write_sv_val_pair(std::ofstream & fout, const smt::Term & sv, const smt::Term & val);
+  void write_expr(std::ofstream & fout, const smt::Term & sv, const smt::Sort & svtype);
+  smt::Term read_expr(std::ifstream & fin);
+
 
  private:
   smt::SmtSolver solver_;

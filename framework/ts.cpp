@@ -830,7 +830,16 @@ bool TransitionSystem::known_symbols(const Term & term) const
 void TransitionSystem::extract_initial_statevar_constant() {
   // TODO: check the sv under assumptions. (using `check_if_constant`)
   //       do this after parsing
-  #error TODO
+  TermVec assumptions;
+  for (const auto & c_b_pair : constraints_)
+    assumptions.push_back(c_b_pair.first);
+  assumptions.push_back(init_);
+
+  for (const auto & sv : statevars_ ) {
+    auto val = check_if_constant(sv, assumptions, solver_ );
+    if(val != nullptr)
+      init_constants_.emplace(sv, val);
+  }
 }
 
 }  // namespace wasim
