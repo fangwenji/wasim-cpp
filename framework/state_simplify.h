@@ -6,6 +6,9 @@ using namespace std;
 namespace wasim {
 
 
+// check if there is an insection between free vars in expr and set_of_xvar
+bool expr_contains_X(const smt::Term & expr, const smt::UnorderedTermSet & set_of_xvar);
+
 // will update xvar_sub with each xvar in (set_of_xvar AND free_var)
 // such that it is fixed to 0/1
 void get_xvar_sub(const smt::TermVec & assumptions,
@@ -13,6 +16,12 @@ void get_xvar_sub(const smt::TermVec & assumptions,
                   const smt::UnorderedTermSet & free_var,
                   const smt::SmtSolver & solver,
                   smt::UnorderedTermMap & xvar_sub);
+
+void get_xvar_independent(const smt::TermVec & assumptions,
+                  const smt::UnorderedTermSet & set_of_xvar,
+                  const smt::Term & expr,
+                  const smt::SmtSolver & solver,
+                  smt::UnorderedTermSet & xvar_that_can_be_removed);
 
 // check if expr is a constant under assumptions
 smt::Term check_if_constant(

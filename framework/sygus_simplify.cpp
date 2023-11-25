@@ -1,7 +1,7 @@
 
 
 #include "term_manip.h"
-#include "symsim.h"
+#include "state_simplify.h"
 #include "sygus_simplify.h"
 #include "config/testpath.h"
 #include "utils/exceptions.h"
@@ -121,15 +121,6 @@ void run_cmd(const std::string & cmd_string, int timeout)
   p.run();
 }
 
-bool expr_contains_X(const smt::Term & expr, const smt::UnorderedTermSet & set_of_xvar)
-{
-  smt::UnorderedTermSet vars_in_expr;
-  smt::get_free_symbols(expr, vars_in_expr);
-  for (const auto & var : vars_in_expr)
-    if (set_of_xvar.find(var) != set_of_xvar.end())
-      return true;
-  return false;
-}
 
 static std::string GetTimeStamp()
 {
@@ -240,7 +231,7 @@ smt::Term run_sygus(const parsed_info & info,
   std::ifstream infile(result_temp_file.c_str());
   std::string linedata = "";
 
-  getline(infile, linedata);  // get first line
+  getline(infile, linedata);  // get first line, and do nothing
   getline(infile, linedata);  // get second line
   infile.close();
 

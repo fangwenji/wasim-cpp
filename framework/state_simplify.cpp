@@ -1,5 +1,6 @@
 #include "state_simplify.h"
 #include "term_manip.h"
+#include "independence_check.h"
 
 #include "smt-switch/utils.h"
 #include <queue>
@@ -40,6 +41,33 @@ void get_xvar_sub(const smt::TermVec & assumptions,
   } // end of for each xvar
 } // end of get_xvar_sub
 
+
+void get_xvar_independent(const smt::TermVec & assumptions,
+                  const smt::UnorderedTermSet & set_of_xvar,
+                  const smt::Term & expr,
+                  const smt::SmtSolver & solver,
+                  smt::UnorderedTermSet & xvar_that_can_be_removed) {
+
+  smt::UnorderedTermSet free_var;
+  smt::get_free_symbols(expr, free_var);
+  for (const auto & v : free_var) {
+    if (set_of_xvar.find(v) == set_of_xvar.end()) continue;
+    // keep only the intersection of free_var and set_of_xvar
+    if (e_is_independent_of_v(expr, v, assumptions))
+      xvar_that_can_be_removed.emplace(v);
+  }
+} // get_xvar_independent
+
+
+bool expr_contains_X(const smt::Term & expr, const smt::UnorderedTermSet & set_of_xvar)
+{
+  smt::UnorderedTermSet vars_in_expr;
+  smt::get_free_symbols(expr, vars_in_expr);
+  for (const auto & var : vars_in_expr)
+    if (set_of_xvar.find(var) != set_of_xvar.end())
+      return true;
+  return false;
+}
 
 // check if expr is a constant under assumptions
 smt::Term check_if_constant(

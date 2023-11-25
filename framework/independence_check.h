@@ -42,11 +42,12 @@ bool e_is_always_invalid(const smt::Term & e,
 // the assumptions
 bool e_is_independent_of_v(const smt::Term & e,
                            const smt::Term & v,
-                           const smt::TermVec & assumptions);  // pass
+                           const smt::TermVec & assumptions); 
 
-// It seems we are currently not using these two functions at all
-// smt::Term substitute_simplify(smt::Term e, smt::Term v, smt::TermVec
-// assumptions /*={}*/, smt::SmtSolver& s); // not sure
+  // HZ: the reason for making a new solver is because I want to make the
+  // context of the original solver clear from the new variables we created
+  // locally in this function I was hoping push/pop can be used to create
+  // temporary SMT variables however, it is not the case.
 
 // bool is_valid(smt::Term e, smt::SmtSolver& s); // no test
 
