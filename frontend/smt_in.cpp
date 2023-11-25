@@ -1,4 +1,4 @@
-#include <framework/smt_in.h>
+#include <frontend/smt_in.h>
 #include <utils/exceptions.h>
 
 namespace wasim

@@ -2,7 +2,7 @@
 #include <boost/multiprecision/cpp_int.hpp>
 
 #include "framework/ts.h"
-#include "framework/btor2_encoder.h"
+#include "frontend/btor2_encoder.h"
 
 // CHECK url: 
 //   https://cs.brown.edu/~jwicks/boost/libs/python/doc/tutorial/doc/html/python/object.html

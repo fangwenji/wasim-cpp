@@ -120,8 +120,10 @@ set(INCLUDE_DIRS
   )
 
 set(SOURCES
+    "${PROJECT_SOURCE_DIR}/frontend/btor2_encoder.cpp"
+    "${PROJECT_SOURCE_DIR}/frontend/smt_in.cpp"
+    "${PROJECT_SOURCE_DIR}/frontend/state_read_write.cpp"
     "${PROJECT_SOURCE_DIR}/framework/ts.cpp"
-    "${PROJECT_SOURCE_DIR}/framework/btor2_encoder.cpp"
     "${PROJECT_SOURCE_DIR}/framework/symsim.cpp"
     "${PROJECT_SOURCE_DIR}/framework/independence_check.cpp"
     "${PROJECT_SOURCE_DIR}/framework/tracemgr.cpp"

@@ -28,7 +28,7 @@ extern "C" {
 #include "assert.h"
 
 #include "smt-switch/exceptions.h"
-#include "ts.h"
+#include "framework/ts.h"
 
 #include "smt-switch/smt.h"
 

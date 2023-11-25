@@ -35,4 +35,8 @@ bool is_sat_bool(const smt::TermVec & expr_vec, const smt::SmtSolver & solver);
 bool is_valid_bool(const smt::Term & expr, const smt::SmtSolver & solver);
 
 std::vector<std::string> sort_model(const smt::UnorderedTermMap & cex);
+
+
+smt::TermVec args(const smt::Term & term);
+
 }  // namespace wasim

@@ -1,4 +1,5 @@
 #include "state_simplify.h"
+#include "term_manip.h"
 
 #include "smt-switch/utils.h"
 #include <queue>

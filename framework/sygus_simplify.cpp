@@ -5,6 +5,7 @@
 #include "sygus_simplify.h"
 #include "config/testpath.h"
 #include "utils/exceptions.h"
+#include "frontend/smt_in.h"
 
 #include "smt-switch/smt.h"
 #include "smt-switch/utils.h"

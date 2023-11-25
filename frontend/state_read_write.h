@@ -1,7 +1,7 @@
 #pragma once
 #include <framework/ts.h>
 #include <framework/symsim.h>
-#include <framework/smt_in.h>
+#include <frontend/smt_in.h>
 
 namespace wasim {
 

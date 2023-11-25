@@ -32,8 +32,6 @@
 
 namespace wasim {
 
-smt::TermVec args(const smt::Term & term);
-
 class StateAsmpt
 {
 protected:

@@ -28,15 +28,6 @@ using namespace smt;
 using namespace std;
 
 namespace wasim {
-smt::TermVec args(const smt::Term & term)
-{
-  smt::TermVec arg_vec;
-  for (auto pos = term->begin(); pos != term->end(); ++pos)
-    arg_vec.push_back(*pos);
-
-  return arg_vec;
-}
-
 
 string StateAsmpt::print() const
 {

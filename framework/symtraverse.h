@@ -8,6 +8,8 @@
 #include "smt-switch/boolector_factory.h"
 
 #include "smt-switch/smt.h"
+
+#include "ts.h"
 #include "term_manip.h"
 
 #include "utils/exceptions.h"
@@ -16,7 +18,6 @@
 #include "sygus_simplify.h"
 #include "symsim.h"
 #include "tracemgr.h"
-#include "ts.h"
 
 #include <optional>
 

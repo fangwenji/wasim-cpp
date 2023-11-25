@@ -1,7 +1,7 @@
 #include <chrono>
 #include "assert.h"
 #include "config/testpath.h"
-#include "framework/btor2_encoder.h"
+#include "frontend/btor2_encoder.h"
 #include "framework/inv_group.h"
 #include "framework/symsim.h"
 #include "framework/symtraverse.h"
