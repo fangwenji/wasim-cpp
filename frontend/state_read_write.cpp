@@ -76,6 +76,7 @@ bool StateRW::StateWrite(const wasim::StateAsmpt & state,
     write_expr(fout, state.get_assumptions().at(idx), bool_sort);
     fout << state.get_assumption_interpretations().at(idx) << std::endl;
   }
+  return true;
 }
 
 StateAsmpt StateRW::StateRead(const std::string & infile_sv)

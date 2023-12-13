@@ -3,6 +3,7 @@
 
 #include "framework/ts.h"
 #include "frontend/btor2_encoder.h"
+#include "framework/symsim.h"
 
 // CHECK url: 
 //   https://cs.brown.edu/~jwicks/boost/libs/python/doc/tutorial/doc/html/python/object.html
@@ -88,6 +89,7 @@ namespace wasim {
   struct SolverRef;
   struct StateRef;
   struct TransSys;
+  struct SimExecutor;
 
 
   struct SolverRef {
@@ -155,6 +157,8 @@ namespace wasim {
     uint64_t to_int() const { return node->to_int(); }
     std::string to_string() const { return node->to_string(); }
     NodeType * getType() const { return new NodeType(node->get_sort()); }
+
+    smt::Op get_op() const { return node->get_op(); }
     
     NodeRef * substitute(const boost::python::dict & d) const { 
       smt::UnorderedTermMap subst;
@@ -182,6 +186,14 @@ namespace wasim {
     }
 
     size_t hash() const { return node->hash();  }
+    std::string short_str() const {
+      if(node->is_symbol() || node->is_value()) {
+        return node->to_string();
+      }
+      auto op = node->get_op();
+      return "("+op.to_string()+" ..."+")";
+    }
+
     SolverRef * get_solver() const { return new SolverRef(solver); }
 
     NodeRef* complement() const
@@ -465,6 +477,7 @@ namespace wasim {
     friend struct SolverRef;
     friend struct StateRef;
     friend struct TransSys;
+    friend struct SimExecutor;
     smt::SmtSolver solver;
     smt::Term node;
 
@@ -903,6 +916,10 @@ namespace wasim {
     StateRef() { throw PyWASIMException(PyExc_RuntimeError, "Cannot create State directly. Use the context object."); }
     StateRef(const StateRef & other) : solver(other.solver ), sptr(other.sptr) { }
     StateRef(StateAsmpt * ptr, smt::SmtSolver osolver) : solver(osolver), sptr(ptr) { }
+    StateRef(const smt::UnorderedTermMap & sv,
+             const smt::TermVec & asmpt,
+             const std::vector<std::string> & assumption_interp, smt::SmtSolver osolver) :
+        solver(osolver), sptr(std::make_shared<StateAsmpt>( sv,asmpt, assumption_interp )) {}
 
     StateRef * clone() const {
       return new StateRef(new StateAsmpt(*sptr), solver);
@@ -998,6 +1015,8 @@ namespace wasim {
       }
       sptr->update_sv().swap(newmap);
     }
+    
+    friend struct SimExecutor;
 
     protected:
       smt::SmtSolver solver;
@@ -1082,6 +1101,16 @@ namespace wasim {
       return ret;
     }
 
+    boost::python::dict init_constants() const {
+      boost::python::dict ret;
+      for (const auto & sv_update : sptr->init_constants()) {
+        NodeRef * k = new NodeRef(sv_update.first, sptr->get_solver());
+        NodeRef * v = new NodeRef(sv_update.second, sptr->get_solver());
+        ret[k] = v;
+      }
+      return ret;
+    }
+
     /* Returns the initial state constraints
     * @return a boolean term constraining the initial state
     */
@@ -1134,6 +1163,15 @@ namespace wasim {
       return ret;
     }
 
+    boost::python::list prop() const
+    {
+      boost::python::list ret;
+      for(const auto & c : sptr->prop()) {
+        ret.append(new NodeRef(c, sptr->get_solver()));
+      }
+      return ret;
+    }
+
     /** Whether the transition system is functional
      *  NOTE: This does *not* actually analyze the transition relation
      *  TODO possibly rename to be less confusing
@@ -1175,6 +1213,7 @@ namespace wasim {
       return new TransSys(new TransitionSystem(*sptr));
     }
 
+      friend struct SimExecutor;
     protected:
       std::shared_ptr<TransitionSystem> sptr;
 
@@ -1182,6 +1221,169 @@ namespace wasim {
   }; // struct TransSys
 
   /* TODO : executor */
+  struct SimExecutor {
+
+    SimExecutor(TransSys * ts) {
+      sptr = std::make_shared<SymbolicExecutor>(*(ts->sptr), ts->sptr->get_solver());
+    }
+
+    /// get the length of the trace
+    unsigned tracelen() const { return sptr->tracelen(); }
+    /// collect all assumptions on each frame
+    boost::python::list all_assumptions() const {
+      boost::python::list ret;
+      for (const auto & a : sptr->all_assumptions())
+        ret.append(new NodeRef(a, sptr->get_solver()));
+      return ret;
+    }
+    /// collect all interpretations of assumptions on each frame
+    boost::python::list all_assumption_interp() const {
+      boost::python::list ret;
+      for (const auto & s : sptr->all_assumption_interp())
+        ret.append(s);
+      return ret;
+    }
+    /// get the term for a variable
+    NodeRef *var(const std::string & n) const {
+      return new NodeRef(sptr->var(n), sptr->get_solver());
+    }
+    /// get the term for name n, then use the current symbolic
+    /// variable assignment to substitute all variables in it
+    /// if it contains input variable, use the most recent input
+    /// variable assignment as well
+    NodeRef * cur(const std::string & n) const {
+      return new NodeRef(sptr->cur(n), sptr->get_solver());
+    }
+    /// print the current state variable assignment
+    void print_current_step() const { sptr->print_current_step(); }
+    /// get the assumptions (collected from all previous steps)
+    void print_current_step_assumptions() const {sptr->print_current_step_assumptions();}
+
+    /// a shortcut to create symbolic variables/concrete values in a map
+    boost::python::dict convert(const boost::python::dict & d) const {
+      assignment_type vdict;
+      boost::python::list items = d.items();
+      for(ssize_t i = 0; i < len(items); ++i) {
+          boost::python::object key = items[i][0];
+          boost::python::object value = items[i][1];
+          boost::python::extract<std::string> k(key);
+          boost::python::extract<int> v(value);
+          if (!k.check())
+            throw PyWASIMException(PyExc_RuntimeError, "Expecting str->int/str map in convert");
+
+          if (v.check())
+            vdict.emplace(k(), v());
+          else {
+            boost::python::extract<std::string> v_str(value);
+            if (!v_str.check())
+              throw PyWASIMException(PyExc_RuntimeError, "Expecting str->int/str map in convert");
+            vdict.emplace(k(), v_str());
+          }
+      }
+      auto ret_smt = sptr->convert(vdict);
+      boost::python::dict ret;
+      for (const auto & sv_update : ret_smt) {
+        NodeRef * k = new NodeRef(sv_update.first, sptr->get_solver());
+        NodeRef * v = new NodeRef(sv_update.second, sptr->get_solver());
+        ret[k] = v;
+      }
+      return ret;
+    }
+
+    /// goto the previous simulation step
+    void backtrack() { sptr->backtrack(); }
+
+    /// use the given variable assignment to initialize
+    void init(const boost::python::dict & d) {
+      smt::UnorderedTermMap var_assignment;
+      boost::python::list items = d.items();
+      for(ssize_t i = 0; i < len(items); ++i) {
+          boost::python::object key = items[i][0];
+          boost::python::object value = items[i][1];
+          boost::python::extract<NodeRef *> k(key);
+          boost::python::extract<NodeRef *> v(value);
+          if(k.check() && v.check())
+            var_assignment.emplace(k()->node, v()->node);
+          else
+            throw PyWASIMException(PyExc_RuntimeError, "Expecting Term->Term map in init");
+      }
+      sptr->init(var_assignment);
+    }
+    /// re-assign the current state
+    void set_current_state(const StateRef * s) { sptr->set_current_state(*(s->sptr.get())); }
+    /// set the input variable values before simulating next step
+    ///  (and also set some assumptions before the next step)
+    void set_input(const boost::python::dict & iv, const boost::python::list & asmpts) {
+      smt::UnorderedTermMap invar_assign;
+      smt::TermVec pre_assumptions;
+
+      boost::python::list items = iv.items();
+      for(ssize_t i = 0; i < len(items); ++i) {
+          boost::python::object key = items[i][0];
+          boost::python::object value = items[i][1];
+          boost::python::extract<NodeRef *> k(key);
+          boost::python::extract<NodeRef *> v(value);
+
+          if(k.check() && v.check())
+            invar_assign.emplace(k()->node, v()->node);
+          else
+            throw PyWASIMException(PyExc_RuntimeError, "Expecting Term->Term map in set_input");
+      }
+      for (ssize_t i = 0; i < len(asmpts); ++i) {
+        boost::python::extract<NodeRef *> key(asmpts[i]);
+        if (key.check())
+          pre_assumptions.push_back(key()->node);
+        else
+          throw PyWASIMException(PyExc_RuntimeError, "Expecting list of NodeRef in set_input");
+      }
+      sptr->set_input(invar_assign, pre_assumptions);
+    }
+    /// undo the input setting
+    /// usage: set_input -> sim_one_step --> (a new state) -> backtrack ->
+    /// undo_set_input
+    void undo_set_input() { sptr->undo_set_input(); }
+
+    /// similar to cur(), but will check no reference to the input variables
+    NodeRef * interpret_state_expr_on_curr_frame(NodeRef * expr) const {
+      return new NodeRef(sptr->interpret_state_expr_on_curr_frame(expr->node), sptr->get_solver());
+    }
+
+    /// do simulation
+    void sim_one_step() { sptr->sim_one_step(); }
+
+    /// get the set of all X variables
+    boost::python::list  get_Xs() const { 
+      boost::python::list ret;
+      for (const auto & x : sptr->get_Xs())
+        ret.append(new NodeRef(x, sptr->get_solver()));
+      return ret; 
+    }
+
+    /// get (a copy of) the current state
+    StateRef * get_curr_state(const boost::python::list & assumptions)  {
+      smt::TermVec assumpts;
+      for(ssize_t i = 0; i < len(assumptions); ++i)  {
+        boost::python::extract<NodeRef *>  aspt(assumptions[i]);
+        if(aspt.check())
+          assumpts.push_back(aspt()->node);
+        else
+          throw PyWASIMException(PyExc_RuntimeError, "Expecting list of NodeRef in get_curr_state");
+      }
+      StateAsmpt ret_state = sptr->get_curr_state(assumpts);
+      return new StateRef( ret_state.get_sv(), ret_state.get_assumptions(), ret_state.get_assumption_interpretations(), sptr->get_solver() );
+    }
+
+    /// a shortcut to create a variable
+    NodeRef * set_var(int bitwdth, const std::string & vname) {
+      return new NodeRef(sptr->set_var(bitwdth, vname), sptr->get_solver());
+    }
+
+    /// get solver
+    SolverRef * get_solver() const { return new SolverRef(sptr->get_solver()); }
+
+    protected:
+      std::shared_ptr<SymbolicExecutor> sptr;
+  };
 
   /* TODO : tracemgr */
 
@@ -1210,13 +1412,19 @@ BOOST_PYTHON_MODULE(pywasim)
     .def("__hash__", &NodeType::hash)
   ;
 
+  class_<smt::Op>("SmtOp")
+    .def("__repr__", &smt::Op::to_string )
+  ;
+
   class_<NodeRef>("NodeRef")
     .def("to_int", &NodeRef::to_int)
     .def("to_string", &NodeRef::to_string)
     .def("get_type", &NodeRef::getType, return_value_policy<manage_new_object>())
+    .def("get_op", &NodeRef::get_op)
     .def("substitute", &NodeRef::substitute, return_value_policy<manage_new_object>() )
     .def("args", &NodeRef::args)
     .def("__hash__", &NodeRef::hash)
+    .def("__repr__", &NodeRef::short_str)
     .def("get_solver", &NodeRef::get_solver, return_value_policy<manage_new_object>() )
     .def("__invert__", &NodeRef::complement, return_value_policy<manage_new_object>() )
     .def("__neg__", &NodeRef::negate, return_value_policy<manage_new_object>() )
@@ -1381,6 +1589,14 @@ BOOST_PYTHON_MODULE(pywasim)
   class_<StateRef>("StateRef")
     .def("get_assumptions",&StateRef::get_assumptions)
     .def("set_assumptions",&StateRef::set_assumptions)
+    .def("clone", &StateRef::clone, return_value_policy<manage_new_object>())
+    .def("__copy__", &StateRef::clone, return_value_policy<manage_new_object>())
+    .def("get_assumption_interps", &StateRef::get_assumption_interps)
+    .def("set_assumption_interps", &StateRef::set_assumption_interps)
+    .def("get_vars", &StateRef::get_vars)
+    .def("get_varnames", &StateRef::get_varnames)
+    .def("get_sv", &StateRef::get_sv)
+    .def("set_sv", &StateRef::set_sv)
   ;
 
   class_<SolverRef>("SolverRef")
@@ -1408,6 +1624,8 @@ BOOST_PYTHON_MODULE(pywasim)
     .def("state_updates", &TransSys::state_updates)
     .def("named_terms", &TransSys::named_terms)
     .def("constraints", &TransSys::constraints)
+    .def("prop", &TransSys::prop)
+    .def("init_constants", &TransSys::init_constants)
     .def("init", &TransSys::init, return_value_policy<manage_new_object>())
     .def("trans", &TransSys::trans, return_value_policy<manage_new_object>())
     .def("is_functional", &TransSys::is_functional)
@@ -1417,6 +1635,29 @@ BOOST_PYTHON_MODULE(pywasim)
     .def("__copy__", &TransSys::clone, return_value_policy<manage_new_object>())
   ;
 
+  class_<SimExecutor>("SimExecutor", init<TransSys *>())
+    .def("tracelen", &SimExecutor::tracelen)
+    .def("all_assumptions", &SimExecutor::all_assumptions)
+    .def("all_assumption_interp", &SimExecutor::all_assumption_interp)
+
+    .def("var", &SimExecutor::var, return_value_policy<manage_new_object>())
+    .def("cur", &SimExecutor::cur, return_value_policy<manage_new_object>())
+    .def("print_current_step", &SimExecutor::print_current_step)
+    .def("print_current_step_assumptions", &SimExecutor::print_current_step_assumptions)
+    .def("convert", &SimExecutor::convert)
+    .def("backtrack", &SimExecutor::backtrack)
+    .def("init", &SimExecutor::init)
+    .def("set_current_state", &SimExecutor::set_current_state)
+    .def("set_input", &SimExecutor::set_input)
+    .def("undo_set_input", &SimExecutor::undo_set_input)
+
+    .def("interpret_state_expr_on_curr_frame", &SimExecutor::interpret_state_expr_on_curr_frame, return_value_policy<manage_new_object>() )
+    .def("sim_one_step", &SimExecutor::sim_one_step)
+    .def("get_Xs", &SimExecutor::get_Xs)
+    .def("get_curr_state", &SimExecutor::get_curr_state, return_value_policy<manage_new_object>())
+    .def("set_var", &SimExecutor::set_var, return_value_policy<manage_new_object>())
+    .def("get_solver", &SimExecutor::get_solver, return_value_policy<manage_new_object>())
+  ;
 
 
 }

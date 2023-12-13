@@ -181,6 +181,8 @@ class TransitionSystem
   void add_constraint(const smt::Term & constraint,
                       bool to_init_and_next = true);
 
+  void add_prop(const smt::Term & p) { propvec_.push_back(p); }
+
   /* Gives a term a name
    *   This can be used to track particular values in a witness
    * @param name the (unique) name to give the term
@@ -528,6 +530,10 @@ class TransitionSystem
      will factor the initial predicate and constraints into consideration */
   void extract_initial_statevar_constant();
 
+  const smt::UnorderedTermMap & init_constants() { return init_constants_; }
+
+  const smt::TermVec & prop() { return propvec_; }
+
  protected:
   // solver
   smt::SmtSolver solver_;
@@ -609,6 +615,8 @@ class TransitionSystem
 
   /* Returns true iff all the symbols in the formula are known */
   virtual bool known_symbols(const smt::Term & term) const;
+
+  smt::TermVec propvec_;
 
 };
 
