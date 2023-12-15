@@ -12,9 +12,12 @@ updates = ts.state_updates()
 for s,e in updates.items():
   print(s,e.to_string())
   print (e.get_op())
+  
 
-prop = ts.prop()
+prop = ts.prop()[0]
+prop_prev = prop.substitute(updates)
 print (prop)
+print (prop_prev)
 
 init_constant = ts.init_constants()
 print (init_constant)

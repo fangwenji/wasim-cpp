@@ -217,10 +217,10 @@ bool TransitionSystem::operator!=(const TransitionSystem & other) const
 void TransitionSystem::set_init(const Term & init)
 {
   // TODO: only do this check in debug mode
-  if (!only_curr(init)) {
-    throw SimulatorException(
-        "Initial state constraints should only use current state variables");
-  }
+  // if (!only_curr(init)) {
+  //  throw SimulatorException(
+  //      "Initial state constraints should only use current state variables");
+  // }
 
   init_ = init;
 }
@@ -228,10 +228,10 @@ void TransitionSystem::set_init(const Term & init)
 void TransitionSystem::constrain_init(const Term & constraint)
 {
   // TODO: Only do this check in debug mode
-  if (!only_curr(constraint)) {
-    throw SimulatorException(
-        "Initial state constraints should only use current state variables");
-  }
+  // if (!only_curr(constraint)) {
+  //  throw SimulatorException(
+  //      "Initial state constraints should only use current state variables");
+  // }
   init_ = solver_->make_term(And, init_, constraint);
 }
 
@@ -830,6 +830,11 @@ void TransitionSystem::extract_initial_statevar_constant() {
     auto val = check_if_constant(sv, assumptions, solver_ );
     if(val != nullptr)
       init_constants_.emplace(sv, val);
+  }
+  for (const auto & inpv : inputvars_) {
+    auto val = check_if_constant(inpv, assumptions, solver_ );
+    if(val != nullptr)
+      init_constants_.emplace(inpv, val);
   }
 }
 

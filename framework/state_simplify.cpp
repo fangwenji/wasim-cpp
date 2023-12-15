@@ -75,24 +75,19 @@ smt::Term check_if_constant(
     const smt::TermVec & assumptions, 
     const smt::SmtSolver & solver) {
   
-  solver->push();
-  for (const auto & a : assumptions)
-    solver->assert_formula(a);
-  auto r = solver->check_sat();
+  auto r = solver->check_sat_assuming(assumptions);
   if (!r.is_sat()) {
-    solver->pop();
     return nullptr;
   }
+  TermVec assumptions_all(assumptions);
   auto retval = solver->get_value(expr);
-  solver->assert_formula(solver->make_term(
-    smt::Not, solver->make_term(smt::Equal, expr, retval) ) );
-  r = solver->check_sat();
+  assumptions_all.push_back(solver->make_term(
+    smt::Not, solver->make_term(smt::Equal, expr, retval) ));
+  r = solver->check_sat_assuming(assumptions_all);
   if (r.is_unsat()) {
-    solver->pop();
     return retval; // expr == retval is required
   }
   // not a constant
-  solver->pop();
   return nullptr;
 }
     

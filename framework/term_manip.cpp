@@ -50,10 +50,8 @@ smt::TermVec one_hot0(const smt::TermVec & one_hot_vec, smt::SmtSolver & solver)
 
 smt::Result is_sat_res(const smt::TermVec & expr_vec, const smt::SmtSolver & solver, smt::UnorderedTermMap * out)
 {
-  solver->push();
-  for (const auto & a : expr_vec)
-    solver->assert_formula(a);
-  auto r = solver->check_sat();
+  // solver->push();
+  auto r = solver->check_sat_assuming(expr_vec);
 
   if (r.is_sat() && out != NULL) {
     smt::UnorderedTermSet free_var_set;
@@ -64,7 +62,7 @@ smt::Result is_sat_res(const smt::TermVec & expr_vec, const smt::SmtSolver & sol
     }
   } // end of is_sat and requires model
 
-  solver->pop();
+  // solver->pop();
   return r;
 }
 

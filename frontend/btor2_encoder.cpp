@@ -212,6 +212,7 @@ void BTOR2Encoder::preprocess(const std::string & filename)
       if (!l_->symbol) {  // if we see state has no name, record it
         unamed_state_ids.insert(l_->id);
       }
+      state_wo_next.emplace(l_->id);
     } else if (l_->tag == BTOR2_TAG_output && l_->symbol) {
       // if we see an output with name
       if (l_->nargs == 0)
@@ -225,8 +226,16 @@ void BTOR2Encoder::preprocess(const std::string & filename)
           state_renaming_table.insert(std::make_pair(*pos, l_->symbol));
         }  // otherwise we already have a name for it, then just ignore this one
       }
-    }  // end of if input
-  }    // end of while
+    } else if (l_->tag == BTOR2_TAG_next) {
+      state_wo_next.erase(l_->args[0]);
+    } // end of if input
+  } // end of while
+  if (!state_wo_next.empty()) {
+    std::cout << "Found " << state_wo_next.size() << " states without next." << std::endl;
+    for (const auto & n : state_wo_next)
+      std::cout << n << ", ";
+    std::cout << std::endl;
+  }
 
   fclose(input_file);
   btor2parser_delete(reader_);
@@ -286,24 +295,35 @@ void BTOR2Encoder::parse(const std::string filename)
     /******************************** Handle special cases
      * ********************************/
     if (l_->tag == BTOR2_TAG_state) {
-      if (l_->symbol) {
-        symbol_ = l_->symbol;
-        std::cout << "GET SV: " << l_->symbol << std::endl;
-      } else {
-        auto renaming_lookup_pos = state_renaming_table.find(l_->id);
-        if (renaming_lookup_pos != state_renaming_table.end())
-          symbol_ = renaming_lookup_pos->second;
-        else
-          symbol_ = "state" + to_string(l_->id);
-      }
+      if( state_wo_next.find( l_->id ) == state_wo_next.end() ) { // it is a state var
+        if (l_->symbol) {
+          symbol_ = l_->symbol;
+          std::cout << "GET SV: " << l_->symbol << std::endl;
+        } else {
+          auto renaming_lookup_pos = state_renaming_table.find(l_->id);
+          if (renaming_lookup_pos != state_renaming_table.end())
+            symbol_ = renaming_lookup_pos->second;
+          else
+            symbol_ = "state" + to_string(l_->id);
+        }
 
-      Term state = ts_.make_statevar(symbol_, linesort_);
-      terms_[l_->id] = state;
-      statesvec_.push_back(state);
-      // will be removed from this map if there's a next function for this state
-      no_next_states_[num_states] = state;
-      id2statenum[l_->id] = num_states;
-      num_states++;
+        Term state = ts_.make_statevar(symbol_, linesort_);
+        terms_[l_->id] = state;
+        statesvec_.push_back(state);
+        id2statenum[l_->id] = num_states;
+        num_states++;
+      } else { // it is actually an input
+        if (l_->symbol) std::cout << "STATE --> INVAR: " << l_->symbol << std::endl;
+        if (l_->symbol) {
+          symbol_ = l_->symbol;
+        } else {
+          symbol_ = "input" + to_string(l_->id);
+          std::cout << "STATE --> INVAR: " << l_->id << std::endl;
+        }
+        Term input = ts_.make_inputvar(symbol_, linesort_);
+        terms_[l_->id] = input;
+        inputsvec_.push_back(input);
+      }
     } else if (l_->tag == BTOR2_TAG_input) {
       if (l_->symbol) std::cout << "GET INVAR: " << l_->symbol << std::endl;
       if (l_->symbol) {
@@ -387,7 +407,6 @@ void BTOR2Encoder::parse(const std::string filename)
         throw SimulatorException("Unhandled sort: "
                             + termargs_[0]->get_sort()->to_string());
       }
-
       ts_.constrain_init(init_eq);
       terms_[l_->id] = init_eq;
 
@@ -414,7 +433,6 @@ void BTOR2Encoder::parse(const std::string filename)
       } else {
         throw SimulatorException("Got two different sorts in next update.");
       }
-      no_next_states_.erase(id2statenum.at(l_->args[0]));
     } else if (l_->tag == BTOR2_TAG_bad) {
       Term bad = bv_to_bool(termargs_[0]);
       Term prop = solver_->make_term(Not, bad);

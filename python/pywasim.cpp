@@ -1,6 +1,8 @@
 #include <boost/python.hpp>
 #include <boost/multiprecision/cpp_int.hpp>
 
+#include "smt-switch/utils.h"
+
 #include "framework/ts.h"
 #include "frontend/btor2_encoder.h"
 #include "framework/symsim.h"
@@ -101,6 +103,7 @@ namespace wasim {
     void pop() { solver->pop(); }
     void assert_formula(NodeRef * a);
     bool check_sat();
+    bool check_sat_assuming(const boost::python::list & noderef_list);
     NodeRef * get_value(NodeRef * a) ;
     NodeType * make_bool();
     NodeType * make_bvsort(u_int64_t width);
@@ -157,6 +160,23 @@ namespace wasim {
     uint64_t to_int() const { return node->to_int(); }
     std::string to_string() const { return node->to_string(); }
     NodeType * getType() const { return new NodeType(node->get_sort()); }
+    std::string to_smt2_fun(const std::string & n) const {
+      smt::UnorderedTermSet free_vars;
+      smt::get_free_symbols(node, free_vars);
+
+      std::string args;
+      bool first = true;
+      for (const auto & v : free_vars) {
+        if (!first)
+          args += " ";
+        args += ( "(" + v->to_string() + " " + v->get_sort()->to_string() + ")" );
+        first = false;
+      }
+      args += ( ") " +  node->get_sort()->to_string() + " ");
+
+      std::string ret = "(define-fun " + n + args + node->to_string() +")";
+      return ret;
+    } // end of to_smt2_fun
 
     smt::Op get_op() const { return node->get_op(); }
     
@@ -192,6 +212,16 @@ namespace wasim {
       }
       auto op = node->get_op();
       return "("+op.to_string()+" ..."+")";
+    }
+
+    boost::python::list get_vars() const {
+      boost::python::list ret;
+      smt::UnorderedTermSet free_var_set;
+      smt::get_free_symbols(node, free_var_set);
+      for (const auto & n : free_var_set) {
+        ret.append(new NodeRef(n, solver));
+      }
+      return ret;
     }
 
     SolverRef * get_solver() const { return new SolverRef(solver); }
@@ -1025,6 +1055,18 @@ namespace wasim {
 
   void SolverRef::assert_formula(NodeRef * a) { solver->assert_formula(a->node); }
   bool SolverRef::check_sat() { return solver->check_sat().is_sat(); }
+  bool SolverRef::check_sat_assuming(const boost::python::list & noderef_list) {
+    smt::TermVec asmpts;
+    for (ssize_t i = 0; i < len(noderef_list); ++ i) {
+      boost::python::extract<NodeRef *> k(noderef_list[i]);
+      if(k.check())
+        asmpts.push_back(k()->node);
+      else
+        throw PyWASIMException(PyExc_RuntimeError, "Expecting NodeRef List in check_sat_assuming");
+    }
+    return solver->check_sat_assuming(asmpts).is_sat();
+  }
+
   NodeRef * SolverRef::get_value(NodeRef * a) { return new NodeRef(solver->get_value(a->node), solver ); }
 
   NodeType * SolverRef::make_bool() { return new NodeType(solver->make_sort(smt::SortKind::BOOL)); }
@@ -1425,7 +1467,10 @@ BOOST_PYTHON_MODULE(pywasim)
     .def("args", &NodeRef::args)
     .def("__hash__", &NodeRef::hash)
     .def("__repr__", &NodeRef::short_str)
+    .def("__str__", &NodeRef::to_string)
     .def("get_solver", &NodeRef::get_solver, return_value_policy<manage_new_object>() )
+    .def("get_vars", &NodeRef::get_vars)
+    .def("to_smt2_fun", &NodeRef::to_smt2_fun)
     .def("__invert__", &NodeRef::complement, return_value_policy<manage_new_object>() )
     .def("__neg__", &NodeRef::negate, return_value_policy<manage_new_object>() )
     .def("__and__", &NodeRef::logicalAnd, return_value_policy<manage_new_object>() )
@@ -1604,6 +1649,7 @@ BOOST_PYTHON_MODULE(pywasim)
     .def("pop", &SolverRef::pop)
     .def("assert_formula", &SolverRef::assert_formula)
     .def("check_sat", &SolverRef::check_sat)
+    .def("check_sat_assuming", &SolverRef::check_sat_assuming)
     .def("get_value", &SolverRef::get_value, return_value_policy<manage_new_object>())
     .def("make_bool", &SolverRef::make_bool, return_value_policy<manage_new_object>())
     .def("make_bvsort", &SolverRef::make_bvsort, return_value_policy<manage_new_object>())
