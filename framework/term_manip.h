@@ -12,8 +12,6 @@
 #include <vector>
 #include "math.h"
 
-using namespace std;
-
 namespace wasim {
 
 // will try to create a variable starting with name n and will add number suffix

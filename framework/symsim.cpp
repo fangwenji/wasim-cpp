@@ -2,6 +2,8 @@
 
 #include "smt-switch/utils.h"
 
+using namespace std;
+
 namespace wasim {
 
 unsigned SymbolicExecutor::tracelen() const { return trace_.size(); }

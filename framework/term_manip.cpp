@@ -2,6 +2,8 @@
 
 #include "smt-switch/utils.h"
 
+using namespace std;
+
 namespace wasim {
 
 smt::Term free_make_symbol(const std::string & n,

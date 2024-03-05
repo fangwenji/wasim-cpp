@@ -1,7 +1,8 @@
+#pragma once 
+
 #include "term_manip.h"
 #include "ts.h"
 
-using namespace std;
 
 namespace wasim {
 

@@ -3,6 +3,8 @@
 
 #include "smt-switch/utils.h"
 
+using namespace std;
+
 namespace wasim {
 
 void StateRW::write_sv_val_pair(std::ofstream & fout, const smt::Term & sv, const smt::Term & val) {  

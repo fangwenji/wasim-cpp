@@ -157,6 +157,8 @@ namespace wasim {
         return *this;
     }
 
+    bool is_symbol() const { return node->is_symbol(); }
+    bool is_value() const { return node->is_value(); }
     uint64_t to_int() const { return node->to_int(); }
     std::string to_string() const { return node->to_string(); }
     NodeType * getType() const { return new NodeType(node->get_sort()); }
@@ -698,6 +700,55 @@ namespace wasim {
     }
 
   public:
+    static bool is_sat(const boost::python::list & l) {
+      if (len(l) == 0)
+        throw PyWASIMException(PyExc_TypeError, std::string("expect non-empty list for is_sat "));
+      smt::TermVec args;
+      smt::SmtSolver slv;
+      for (unsigned i=0; i != boost::python::len(l); i++ ) {
+        boost::python::extract<NodeRef *> ni(l[i]);
+        if(ni.check()) {
+          if (i==0)
+            slv = ni()->solver;
+          args.push_back(ni()->node);
+        } else {
+            throw PyWASIMException(
+                PyExc_TypeError, "Argument to is_sat must be terms.");
+            return NULL;
+        }
+      }
+      return slv->check_sat_assuming(args).is_sat();
+    }
+
+    static bool same_expr(NodeRef * a, NodeRef * b) {
+      return a->node == b->node;
+    }
+
+    static NodeRef * make_term(smt::Op op, const boost::python::list & l) {
+      if (len(l) == 0)
+        throw PyWASIMException(PyExc_TypeError, std::string("expect non-empty args for make_term "));
+
+      smt::TermVec args;
+      smt::SmtSolver slv;
+      for (unsigned i=0; i != boost::python::len(l); i++ ) {
+        boost::python::extract<NodeRef *> ni(l[i]);
+        if(ni.check()) {
+          if (i==0)
+            slv = ni()->solver;
+          args.push_back(ni()->node);
+        } else {
+            throw PyWASIMException(
+                PyExc_TypeError, "Argument to make_term must be terms.");
+            return NULL;
+        }
+      }
+      try {
+        return new NodeRef(slv->make_term(op, args), slv);
+      } catch(SmtException e) {
+        throw PyWASIMException(PyExc_TypeError, e.what());
+      }
+    }
+
     static NodeRef * ITE_operator(NodeRef * cond, NodeRef * thenExpr, NodeRef * elseExpr) {
       return triOp(smt::PrimOp::Ite, "ITE", cond, thenExpr, elseExpr);
     }
@@ -1459,6 +1510,8 @@ BOOST_PYTHON_MODULE(pywasim)
   ;
 
   class_<NodeRef>("NodeRef")
+    .def("is_symbol", &NodeRef::is_symbol)
+    .def("is_value", &NodeRef::is_value)
     .def("to_int", &NodeRef::to_int)
     .def("to_string", &NodeRef::to_string)
     .def("get_type", &NodeRef::getType, return_value_policy<manage_new_object>())
@@ -1547,6 +1600,11 @@ BOOST_PYTHON_MODULE(pywasim)
       .def("__getitem__", &NodeRef::getItemInt,
            return_value_policy<manage_new_object>())
   ;
+
+  def("is_sat", &NodeRef::is_sat);
+  def("same_expr", &NodeRef::same_expr);
+  def("make_term", &NodeRef::make_term,
+          return_value_policy<manage_new_object>());
   // memory write.
   def("store", &NodeRef::Store_operator,
           return_value_policy<manage_new_object>());
