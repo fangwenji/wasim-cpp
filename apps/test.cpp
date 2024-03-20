@@ -12,7 +12,6 @@ using namespace smt;
 
 int main() {
 
-
   SmtSolver solver = BoolectorSolverFactory::create(false);
 
   solver->set_logic("QF_UFBV");
@@ -26,53 +25,64 @@ int main() {
   BTOR2Encoder btor_parser("../design/idpv-test/t1v.btor2", sts);
   std::cout << sts.trans()->to_string() << std::endl;
   
-  // we want to see
-  // sts.trans():  (= ret.next (bvadd a b))
-  // ret_next_update_function: (bvadd a b)
+  auto a = sts.lookup("a");
+  auto b = sts.lookup("b");
+  auto ret_next = sts.lookup("ret");
+  auto ret_next_update_function = sts.state_updates().at(ret_next);
+  std::cout << ret_next_update_function->to_string() << std::endl;
 
   std::cout << "---------------------------C++ smtlib2---------------------------" << std::endl;
-  
-  auto a = sts.lookup("a");
-  auto ret_next = sts.lookup("ret.next");
 
-  // auto ret_1 = sts.named_terms();
-  // std::cout<<"--------1: "<<ret_next<<std::endl;
-
-  // auto ret_next_update_function = sts.state_updates().find(ret_next);
-  // if (ret_next_update_function != sts.state_updates().end()) {
-  //   auto ret_next_update_function1 = ret_next_update_function->second;
-  //     // 使用 ret_next_update_function
-  //   } else {
-  //     // 处理 ret_next 不存在的情况
-  //     std::cout<<"no exist"<<std::endl;
-  // }
-  
   smt::SmtLibReader smtlib_reader(solver);
   smtlib_reader.parse("../design/idpv-test/t1c.smt2");
 
   auto smt_a = smtlib_reader.lookup_symbol("f::a!0@1#1");
   auto smt_b = smtlib_reader.lookup_symbol("f::b!0@1#1");
+  auto smt_ret = smtlib_reader.lookup_symbol("goto_symex::return_value::f!0#1");
   std::cout << smt_a -> to_string() << std::endl;
   std::cout << smt_b -> to_string() << std::endl;
-  // if (f != nullptr) {
-  //   std::cout << f->to_string() << std::endl;
-  // }
+  std::cout << smt_ret -> to_string() << std::endl;
 
-  // //  a == |f::a!0@1#1|
-  // //  b == |f::b!0@1#1|
-  // //  ret_next_update_function != f
+  auto check_a = solver->make_term(smt::Equal, a, smt_a);
+  solver->assert_formula(check_a);
+  auto res_a = solver->check_sat();
+  if (res_a.is_sat()) {
+    std::cout << "The formula regarding 'a' is satisfiable." << std::endl;
+  } else if (res_a.is_unsat()) {
+    std::cout << "The formula regarding 'a' is unsatisfiable. Explanation: " << res_a.get_explanation() << std::endl;
+  } else if (res_a.is_unknown()) {
+    std::cout << "The satisfiability of the formula regarding 'a' is unknown. Explanation: " << res_a.get_explanation() << std::endl;
+  }
 
-  // // 1. construct these SMT formulas
-  // auto c1 = solver->make_term(smt::Equal, a, smt_a);
-  // ...;
+  auto check_b = solver->make_term(smt::Equal, b, smt_b);
+  solver->assert_formula(check_b);
+  auto res_b = solver->check_sat();
+  if (res_b.is_sat()) {
+    std::cout << "The formula regarding 'b' is satisfiable." << std::endl;
+  } else if (res_b.is_unsat()) {
+    std::cout << "The formula regarding 'b' is unsatisfiable. Explanation: " << res_b.get_explanation() << std::endl;
+  } else if (res_b.is_unknown()) {
+    std::cout << "The satisfiability of the formula regarding 'b' is unknown. Explanation: " << res_b.get_explanation() << std::endl;
+  }
 
-  // // 2. 
-  // solver->assert_formula(c1);
-  // ...;
-
-  // auto res = solver->check_sat();
-  // res.is_sat();
+  auto check_ret = solver->make_term(smt::Equal, ret_next_update_function, smt_ret);
+  solver->assert_formula(check_ret);
+  auto res_ret = solver->check_sat();
+  if (res_ret.is_sat()) {
+    std::cout << "The formula regarding 'ret' is satisfiable." << std::endl;
+  } else if (res_ret.is_unsat()) {
+    std::cout << "The formula regarding 'ret' is unsatisfiable. Explanation: " << res_ret.get_explanation() << std::endl;
+  } else if (res_ret.is_unknown()) {
+    std::cout << "The satisfiability of the formula regarding 'ret' is unknown. Explanation: " << res_ret.get_explanation() << std::endl;
+  }
 
 
   return 0;
 }
+
+  // we want to see
+  // sts.trans():  (= ret.next (bvadd a b))    yes
+  // ret_next_update_function: (bvadd a b)     yes
+  //  a == |f::a!0@1#1|                        yes
+  //  b == |f::b!0@1#1|                        yes
+  //  ret_next_update_function == f            yes
