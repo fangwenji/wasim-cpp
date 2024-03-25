@@ -247,8 +247,11 @@ if(NOT TARGET uninstall)
 endif()
 
 
-add_executable(test1 "apps/test.cpp")
-target_link_libraries(test1 wasim-lib)
+# add_executable(test1 "apps/test.cpp")
+# target_link_libraries(test1 wasim-lib)
+
+add_executable(test2 "apps/unroll-test.cpp")
+target_link_libraries(test2 wasim-lib)
 
 # add_executable(independence_check_test "independence_check_test.cpp")
 # target_link_libraries(independence_check_test wasim)
