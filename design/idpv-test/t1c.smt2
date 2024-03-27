@@ -73,53 +73,10 @@
 ; Converting var_no 7 with expr ID of =
 (define-fun B7 () Bool (= |main::$tmp::return_value_f!0@1#1| |main::$tmp::return_value_f!0@1#1|))
 
-; find_symbols
-(declare-fun |symex::args::0| () (_ BitVec 32))
-; set_to true
-(assert (= |main::1::a!0@1#1| |symex::args::0|))
 
-; find_symbols
-(declare-fun |symex::args::1| () (_ BitVec 32))
-; set_to true
-(assert (= |main::1::b!0@1#1| |symex::args::1|))
 
-; set_to false
-(assert (not (= |main::1::r!0@1#2| (_ bv1 32))))
 
-; convert
-; Converting var_no 8 with expr ID of not
-(define-fun B8 () Bool (not false))
 
-; set_to true
-(assert B8)
-
-(check-sat)
-
-(get-value (B0))
-(get-value (B1))
-(get-value (B2))
-(get-value (B3))
-(get-value (B4))
-(get-value (B5))
-(get-value (B6))
-(get-value (B7))
-(get-value (B8))
-(get-value (|__CPROVER_dead_object#1|))
-(get-value (|__CPROVER_deallocated#1|))
-(get-value (|__CPROVER_max_malloc_size#1|))
-(get-value (|__CPROVER_memory_leak#1|))
-(get-value (|__CPROVER_rounding_mode!0#1|))
-(get-value (|f::a!0@1#1|))
-(get-value (|f::b!0@1#1|))
-(get-value (|goto_symex::return_value::f!0#1|))
-(get-value (|main::$tmp::return_value_f!0@1#1|))
-(get-value (|main::$tmp::return_value_f!0@1#2|))
-(get-value (|main::1::a!0@1#1|))
-(get-value (|main::1::b!0@1#1|))
-(get-value (|main::1::r!0@1#1|))
-(get-value (|main::1::r!0@1#2|))
-(get-value (|symex::args::0|))
-(get-value (|symex::args::1|))
 
 (exit)
 ; end of SMT2 file

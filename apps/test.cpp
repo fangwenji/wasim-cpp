@@ -43,27 +43,12 @@ int main() {
   std::cout << smt_b -> to_string() << std::endl;
   std::cout << smt_ret -> to_string() << std::endl;
 
-  // auto check_a = solver->make_term(smt::Equal, a, smt_a);
-  // solver->assert_formula(check_a);
-  // auto res_a = solver->check_sat();
-  // if (res_a.is_sat()) {
-  //   std::cout << "The formula regarding 'a' is satisfiable." << std::endl;
-  // } else if (res_a.is_unsat()) {
-  //   std::cout << "The formula regarding 'a' is unsatisfiable. Explanation: " << res_a.get_explanation() << std::endl;
-  // } else if (res_a.is_unknown()) {
-  //   std::cout << "The satisfiability of the formula regarding 'a' is unknown. Explanation: " << res_a.get_explanation() << std::endl;
-  // }
+  //在前面限制input一致
+  auto check_a = solver->make_term(smt::Equal, a, smt_a);
+  solver->assert_formula(check_a);
 
-  // auto check_b = solver->make_term(smt::Equal, b, smt_b);
-  // solver->assert_formula(check_b);
-  // auto res_b = solver->check_sat();
-  // if (res_b.is_sat()) {
-  //   std::cout << "The formula regarding 'b' is satisfiable." << std::endl;
-  // } else if (res_b.is_unsat()) {
-  //   std::cout << "The formula regarding 'b' is unsatisfiable. Explanation: " << res_b.get_explanation() << std::endl;
-  // } else if (res_b.is_unknown()) {
-  //   std::cout << "The satisfiability of the formula regarding 'b' is unknown. Explanation: " << res_b.get_explanation() << std::endl;
-  // }
+  auto check_b = solver->make_term(smt::Equal, b, smt_b);
+  solver->assert_formula(check_b);
 
   auto check_ret = solver->make_term(smt::Equal, ret_next_update_function, smt_ret);
   Term not_equal = solver -> make_term(Not, check_ret);
@@ -71,10 +56,10 @@ int main() {
   auto res_ret = solver->check_sat_assuming(assumptions);
 
   if(res_ret.is_unsat()){
-    std::cout << "always sat" << std::endl;
+    std::cout << "always equal" << std::endl;
     
   } else if(res_ret.is_sat()){
-    std::cout << "exist unsat" << std::endl;
+    std::cout << "exist unequal" << std::endl;
   }
 
   return 0;

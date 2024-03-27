@@ -6,6 +6,7 @@ set(WASIM_MAJOR 0)   # Major component of WASIM version
 set(WASIM_MINOR 1)   # Minor component of WASIM version
 set(WASIM_RELEASE 1) # Release component of WASIM version
 
+
 # handle different versions of CMake
 if (NOT CMAKE_CXX_COMPILER_VERSION VERSION_LESS 8.0 AND NOT APPLE)
   set(CMAKE_CXX17_STANDARD_COMPILE_OPTION "-std=c++17")
@@ -252,6 +253,7 @@ endif()
 
 add_executable(test2 "apps/unroll-test.cpp")
 target_link_libraries(test2 wasim-lib)
+set(CMAKE_BUILD_TYPE "debug")
 
 # add_executable(independence_check_test "independence_check_test.cpp")
 # target_link_libraries(independence_check_test wasim)
