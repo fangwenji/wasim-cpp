@@ -1,0 +1,400 @@
+2024.03.27 17:29:13 INFO  Started: Metals version 1.2.2 in folders '/home/yzy/Desktop/MICS6000A-Project, /home/yzy/Desktop/wasim-cpp' for client Visual Studio Code 1.85.2.
+17:29:13.618 [pool-1-thread-1] INFO org.flywaydb.core.internal.license.VersionPrinter -- Flyway Community Edition 9.22.3 by Redgate
+17:29:13.620 [pool-1-thread-1] INFO org.flywaydb.core.internal.license.VersionPrinter -- See release notes here: https://rd.gt/416ObMi
+17:29:13.620 [pool-1-thread-1] INFO org.flywaydb.core.internal.license.VersionPrinter -- 
+17:29:13.621 [pool-1-thread-1] DEBUG org.flywaydb.core.internal.scanner.classpath.ClassPathScanner -- Scanning for classpath resources at 'classpath:db/callback' ...
+17:29:13.621 [pool-1-thread-1] DEBUG org.flywaydb.core.internal.scanner.classpath.ClassPathScanner -- Determining location urls for classpath:db/callback using ClassLoader jdk.internal.loader.ClassLoaders$AppClassLoader@55054057 ...
+17:29:13.621 [pool-1-thread-1] DEBUG org.flywaydb.core.internal.scanner.classpath.ClassPathScanner -- Unable to resolve location classpath:db/callback.
+17:29:13.621 [pool-1-thread-1] DEBUG org.flywaydb.core.internal.scanner.classpath.ClassPathScanner -- Scanning for classpath resources at 'classpath:db/migration' ...
+17:29:13.621 [pool-1-thread-1] DEBUG org.flywaydb.core.internal.scanner.classpath.ClassPathScanner -- Determining location urls for classpath:db/migration using ClassLoader jdk.internal.loader.ClassLoaders$AppClassLoader@55054057 ...
+17:29:13.622 [pool-1-thread-1] DEBUG org.flywaydb.core.internal.scanner.classpath.ClassPathScanner -- Scanning URL: jar:file:/home/yzy/.cache/coursier/v1/https/repo1.maven.org/maven2/org/scalameta/metals_2.13/1.2.2/metals_2.13-1.2.2.jar!/db/migration
+17:29:13.623 [pool-1-thread-1] DEBUG org.flywaydb.core.internal.scanner.classpath.ClassPathScanner -- Found resource: db/migration/
+17:29:13.623 [pool-1-thread-1] DEBUG org.flywaydb.core.internal.scanner.classpath.ClassPathScanner -- Found resource: db/migration/V1__Create_tables.sql
+17:29:13.623 [pool-1-thread-1] DEBUG org.flywaydb.core.internal.scanner.classpath.ClassPathScanner -- Found resource: db/migration/V2__Server_discovery.sql
+17:29:13.623 [pool-1-thread-1] DEBUG org.flywaydb.core.internal.scanner.classpath.ClassPathScanner -- Found resource: db/migration/V3__Jar_symbols.sql
+17:29:13.623 [pool-1-thread-1] DEBUG org.flywaydb.core.internal.scanner.classpath.ClassPathScanner -- Found resource: db/migration/V4__Fingerprints.sql
+17:29:13.623 [pool-1-thread-1] DEBUG org.flywaydb.core.internal.scanner.classpath.ClassPathScanner -- Scanning for classes at classpath:db/migration
+17:29:13.625 [pool-1-thread-1] DEBUG org.flywaydb.core.internal.scanner.Scanner -- Filtering out resource: db/migration/ (filename: )
+17:29:13.625 [pool-1-thread-1] DEBUG org.flywaydb.core.internal.resource.ResourceNameValidator -- Validating V4__Fingerprints.sql
+17:29:13.626 [pool-1-thread-1] DEBUG org.flywaydb.core.internal.resource.ResourceNameValidator -- Validating V2__Server_discovery.sql
+17:29:13.626 [pool-1-thread-1] DEBUG org.flywaydb.core.internal.resource.ResourceNameValidator -- Validating V3__Jar_symbols.sql
+17:29:13.626 [pool-1-thread-1] DEBUG org.flywaydb.core.internal.resource.ResourceNameValidator -- Validating V1__Create_tables.sql
+17:29:13.673 [pool-1-thread-1] INFO org.flywaydb.core.FlywayExecutor -- Database: jdbc:h2:file:/home/yzy/Desktop/wasim-cpp/.metals/metals (H2 2.2)
+17:29:13.673 [pool-1-thread-1] DEBUG org.flywaydb.core.FlywayExecutor -- Driver: H2 JDBC Driver 2.2.224 (2023-09-17)
+17:29:13.674 [pool-1-thread-1] DEBUG org.flywaydb.core.FlywayExecutor -- DDL Transactions Supported: false
+17:29:13.674 [pool-1-thread-1] DEBUG org.flywaydb.core.internal.schemahistory.SchemaHistoryFactory -- Schemas: 
+17:29:13.674 [pool-1-thread-1] DEBUG org.flywaydb.core.internal.schemahistory.SchemaHistoryFactory -- Default schema: null
+17:29:13.676 [pool-1-thread-1] WARN org.flywaydb.core.internal.database.base.Database -- Flyway upgrade recommended: H2 2.2.224 is newer than this version of Flyway and support has not been tested. The latest supported version of H2 is 2.2.220.
+17:29:13.677 [pool-1-thread-1] DEBUG org.flywaydb.core.internal.callback.SqlScriptCallbackFactory -- Scanning for SQL callbacks ...
+17:29:13.677 [pool-1-thread-1] DEBUG org.flywaydb.core.internal.scanner.Scanner -- Filtering out resource: db/migration/ (filename: )
+17:29:13.680 [pool-1-thread-1] DEBUG org.flywaydb.core.internal.command.DbValidate -- Validating migrations ...
+17:29:13.682 [pool-1-thread-1] DEBUG org.flywaydb.core.internal.scanner.Scanner -- Filtering out resource: db/migration/ (filename: )
+17:29:13.686 [pool-1-thread-1] DEBUG org.flywaydb.core.internal.scanner.Scanner -- Filtering out resource: db/migration/V4__Fingerprints.sql (filename: V4__Fingerprints.sql)
+17:29:13.686 [pool-1-thread-1] DEBUG org.flywaydb.core.internal.scanner.Scanner -- Filtering out resource: db/migration/V2__Server_discovery.sql (filename: V2__Server_discovery.sql)
+17:29:13.686 [pool-1-thread-1] DEBUG org.flywaydb.core.internal.scanner.Scanner -- Filtering out resource: db/migration/ (filename: )
+17:29:13.686 [pool-1-thread-1] DEBUG org.flywaydb.core.internal.scanner.Scanner -- Filtering out resource: db/migration/V3__Jar_symbols.sql (filename: V3__Jar_symbols.sql)
+17:29:13.686 [pool-1-thread-1] DEBUG org.flywaydb.core.internal.scanner.Scanner -- Filtering out resource: db/migration/V1__Create_tables.sql (filename: V1__Create_tables.sql)
+17:29:13.686 [pool-1-thread-1] DEBUG org.flywaydb.core.internal.scanner.Scanner -- Filtering out resource: db/migration/V4__Fingerprints.sql (filename: V4__Fingerprints.sql)
+17:29:13.686 [pool-1-thread-1] DEBUG org.flywaydb.core.internal.scanner.Scanner -- Filtering out resource: db/migration/V2__Server_discovery.sql (filename: V2__Server_discovery.sql)
+17:29:13.686 [pool-1-thread-1] DEBUG org.flywaydb.core.internal.scanner.Scanner -- Filtering out resource: db/migration/ (filename: )
+17:29:13.686 [pool-1-thread-1] DEBUG org.flywaydb.core.internal.scanner.Scanner -- Filtering out resource: db/migration/V3__Jar_symbols.sql (filename: V3__Jar_symbols.sql)
+17:29:13.686 [pool-1-thread-1] DEBUG org.flywaydb.core.internal.scanner.Scanner -- Filtering out resource: db/migration/V1__Create_tables.sql (filename: V1__Create_tables.sql)
+17:29:13.687 [pool-1-thread-1] INFO org.flywaydb.core.internal.schemahistory.JdbcTableSchemaHistory -- Schema history table "PUBLIC"."flyway_schema_history" does not exist yet
+17:29:13.689 [pool-1-thread-1] INFO org.flywaydb.core.internal.command.DbValidate -- Successfully validated 4 migrations (execution time 00:00.008s)
+17:29:13.690 [pool-1-thread-1] DEBUG org.flywaydb.core.internal.command.DbSchemas -- Skipping creation of existing schema: "PUBLIC"
+17:29:13.691 [pool-1-thread-1] INFO org.flywaydb.core.internal.schemahistory.JdbcTableSchemaHistory -- Creating Schema History table "PUBLIC"."flyway_schema_history" ...
+17:29:13.692 [pool-1-thread-1] DEBUG org.flywaydb.core.internal.parser.Parser -- Parsing  ...
+17:29:13.695 [pool-1-thread-1] DEBUG org.flywaydb.core.internal.sqlscript.ParserSqlScript -- Found statement at line 1: CREATE TABLE IF NOT EXISTS "PUBLIC"."flyway_schema_history" (
+    "installed_rank" INT NOT NULL,
+    "version" VARCHAR(50),
+    "description" VARCHAR(200) NOT NULL,
+    "type" VARCHAR(20) NOT NULL,
+    "script" VARCHAR(1000) NOT NULL,
+    "checksum" INT,
+    "installed_by" VARCHAR(100) NOT NULL,
+    "installed_on" TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "execution_time" INT NOT NULL,
+    "success" BOOLEAN NOT NULL,
+    CONSTRAINT "flyway_schema_history_pk" PRIMARY KEY ("installed_rank")
+) AS SELECT -1, NULL, '<< Flyway Schema History table created >>', 'TABLE', '', NULL, 'SA', CURRENT_TIMESTAMP, 0, TRUE
+17:29:13.695 [pool-1-thread-1] DEBUG org.flywaydb.core.internal.sqlscript.ParserSqlScript -- Found statement at line 14: CREATE INDEX "PUBLIC"."flyway_schema_history_s_idx" ON "PUBLIC"."flyway_schema_history" ("success")
+17:29:13.695 [pool-1-thread-1] DEBUG org.flywaydb.core.internal.sqlscript.DefaultSqlScriptExecutor -- Executing SQL: CREATE TABLE IF NOT EXISTS "PUBLIC"."flyway_schema_history" (
+    "installed_rank" INT NOT NULL,
+    "version" VARCHAR(50),
+    "description" VARCHAR(200) NOT NULL,
+    "type" VARCHAR(20) NOT NULL,
+    "script" VARCHAR(1000) NOT NULL,
+    "checksum" INT,
+    "installed_by" VARCHAR(100) NOT NULL,
+    "installed_on" TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "execution_time" INT NOT NULL,
+    "success" BOOLEAN NOT NULL,
+    CONSTRAINT "flyway_schema_history_pk" PRIMARY KEY ("installed_rank")
+) AS SELECT -1, NULL, '<< Flyway Schema History table created >>', 'TABLE', '', NULL, 'SA', CURRENT_TIMESTAMP, 0, TRUE
+17:29:13.697 [pool-1-thread-1] DEBUG org.flywaydb.core.internal.sqlscript.DefaultSqlScriptExecutor -- 0 rows affected
+17:29:13.697 [pool-1-thread-1] DEBUG org.flywaydb.core.internal.sqlscript.DefaultSqlScriptExecutor -- Executing SQL: CREATE INDEX "PUBLIC"."flyway_schema_history_s_idx" ON "PUBLIC"."flyway_schema_history" ("success")
+17:29:13.698 [pool-1-thread-1] DEBUG org.flywaydb.core.internal.sqlscript.DefaultSqlScriptExecutor -- 0 rows affected
+17:29:13.698 [pool-1-thread-1] DEBUG org.flywaydb.core.internal.schemahistory.JdbcTableSchemaHistory -- Created Schema History table "PUBLIC"."flyway_schema_history"
+17:29:13.701 [pool-1-thread-1] INFO org.flywaydb.core.internal.command.DbMigrate -- Current version of schema "PUBLIC": << Empty Schema >>
+17:29:13.702 [pool-1-thread-1] DEBUG org.flywaydb.core.internal.parser.Parser -- Parsing V1__Create_tables.sql ...
+17:29:13.702 [pool-1-thread-1] DEBUG org.flywaydb.core.internal.sqlscript.ParserSqlScript -- Found statement at line 4: -- The relationship between library dependency sources under .metals/readonly/**
+-- and build targets they belong to. Required to know what classpath to use
+-- for compiling dependency sources.
+create table dependency_source(
+  text_document_uri varchar primary key,
+  build_target_uri varchar not null
+)
+17:29:13.703 [pool-1-thread-1] DEBUG org.flywaydb.core.internal.sqlscript.ParserSqlScript -- Found statement at line 12: -- The relationship between library dependency sources under .metals/readonly/**
+-- and worksheets they belong to. Required to know what classpath to use
+-- for compiling dependency sources.
+create table worksheet_dependency_source(
+  text_document_uri varchar primary key,
+  worksheet_uri varchar not null
+)
+17:29:13.703 [pool-1-thread-1] DEBUG org.flywaydb.core.internal.sqlscript.ParserSqlScript -- Found statement at line 19: -- The relationship between what library dependency sources under .metals/readonly/**
+-- map to which build targets.
+create table sbt_digest(
+  md5 varchar,
+  status tinyint not null,
+  when_recorded timestamp
+)
+17:29:13.703 [pool-1-thread-1] DEBUG org.flywaydb.core.internal.sqlscript.ParserSqlScript -- Found statement at line 27: -- Which window/showMessage and window/showMessageRequest dialogues have been dismissed
+-- by the user via "Don't show again" or closed by clicking on "x".
+create table dismissed_notification(
+  id int,
+  when_dismissed timestamp,
+  when_expires timestamp
+)
+17:29:13.703 [pool-1-thread-1] DEBUG org.flywaydb.core.internal.sqlscript.ParserSqlScript -- Found statement at line 34: -- The choice of build tool when multiple build tool files are found in a workspace
+create table chosen_build_tool(
+  build_tool varchar primary key
+)
+17:29:13.704 [pool-1-thread-1] DEBUG org.flywaydb.core.internal.command.DbMigrate -- Starting migration of schema "PUBLIC" to version "1 - Create tables" ...
+17:29:13.704 [pool-1-thread-1] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "PUBLIC" to version "1 - Create tables"
+17:29:13.704 [pool-1-thread-1] DEBUG org.flywaydb.core.internal.sqlscript.DefaultSqlScriptExecutor -- Executing SQL: -- The relationship between library dependency sources under .metals/readonly/**
+-- and build targets they belong to. Required to know what classpath to use
+-- for compiling dependency sources.
+create table dependency_source(
+  text_document_uri varchar primary key,
+  build_target_uri varchar not null
+)
+17:29:13.705 [pool-1-thread-1] DEBUG org.flywaydb.core.internal.sqlscript.DefaultSqlScriptExecutor -- 0 rows affected
+17:29:13.705 [pool-1-thread-1] DEBUG org.flywaydb.core.internal.sqlscript.DefaultSqlScriptExecutor -- Executing SQL: -- The relationship between library dependency sources under .metals/readonly/**
+-- and worksheets they belong to. Required to know what classpath to use
+-- for compiling dependency sources.
+create table worksheet_dependency_source(
+  text_document_uri varchar primary key,
+  worksheet_uri varchar not null
+)
+17:29:13.706 [pool-1-thread-1] DEBUG org.flywaydb.core.internal.sqlscript.DefaultSqlScriptExecutor -- 0 rows affected
+17:29:13.706 [pool-1-thread-1] DEBUG org.flywaydb.core.internal.sqlscript.DefaultSqlScriptExecutor -- Executing SQL: -- The relationship between what library dependency sources under .metals/readonly/**
+-- map to which build targets.
+create table sbt_digest(
+  md5 varchar,
+  status tinyint not null,
+  when_recorded timestamp
+)
+17:29:13.706 [pool-1-thread-1] DEBUG org.flywaydb.core.internal.sqlscript.DefaultSqlScriptExecutor -- 0 rows affected
+17:29:13.706 [pool-1-thread-1] DEBUG org.flywaydb.core.internal.sqlscript.DefaultSqlScriptExecutor -- Executing SQL: -- Which window/showMessage and window/showMessageRequest dialogues have been dismissed
+-- by the user via "Don't show again" or closed by clicking on "x".
+create table dismissed_notification(
+  id int,
+  when_dismissed timestamp,
+  when_expires timestamp
+)
+17:29:13.706 [pool-1-thread-1] DEBUG org.flywaydb.core.internal.sqlscript.DefaultSqlScriptExecutor -- 0 rows affected
+17:29:13.706 [pool-1-thread-1] DEBUG org.flywaydb.core.internal.sqlscript.DefaultSqlScriptExecutor -- Executing SQL: -- The choice of build tool when multiple build tool files are found in a workspace
+create table chosen_build_tool(
+  build_tool varchar primary key
+)
+17:29:13.707 [pool-1-thread-1] DEBUG org.flywaydb.core.internal.sqlscript.DefaultSqlScriptExecutor -- 0 rows affected
+17:29:13.707 [pool-1-thread-1] DEBUG org.flywaydb.core.internal.command.DbMigrate -- Successfully completed migration of schema "PUBLIC" to version "1 - Create tables"
+17:29:13.708 [pool-1-thread-1] DEBUG org.flywaydb.core.internal.schemahistory.JdbcTableSchemaHistory -- Schema History table "PUBLIC"."flyway_schema_history" successfully updated to reflect changes
+17:29:13.710 [pool-1-thread-1] DEBUG org.flywaydb.core.internal.parser.Parser -- Parsing V2__Server_discovery.sql ...
+17:29:13.711 [pool-1-thread-1] DEBUG org.flywaydb.core.internal.sqlscript.ParserSqlScript -- Found statement at line 4: -- For each unique combination of installed build servers we select one server.
+-- The md5 checksum is computed from the names of the installed build servers, and
+-- the selected server is the server which the user chose for this workspace.
+create table chosen_build_server(
+  md5 varchar primary key,
+  selected_server varchar,
+  when_recorded timestamp
+)
+17:29:13.711 [pool-1-thread-1] DEBUG org.flywaydb.core.internal.command.DbMigrate -- Starting migration of schema "PUBLIC" to version "2 - Server discovery" ...
+17:29:13.711 [pool-1-thread-1] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "PUBLIC" to version "2 - Server discovery"
+17:29:13.712 [pool-1-thread-1] DEBUG org.flywaydb.core.internal.sqlscript.DefaultSqlScriptExecutor -- Executing SQL: -- For each unique combination of installed build servers we select one server.
+-- The md5 checksum is computed from the names of the installed build servers, and
+-- the selected server is the server which the user chose for this workspace.
+create table chosen_build_server(
+  md5 varchar primary key,
+  selected_server varchar,
+  when_recorded timestamp
+)
+17:29:13.712 [pool-1-thread-1] DEBUG org.flywaydb.core.internal.sqlscript.DefaultSqlScriptExecutor -- 0 rows affected
+17:29:13.712 [pool-1-thread-1] DEBUG org.flywaydb.core.internal.command.DbMigrate -- Successfully completed migration of schema "PUBLIC" to version "2 - Server discovery"
+17:29:13.713 [pool-1-thread-1] DEBUG org.flywaydb.core.internal.schemahistory.JdbcTableSchemaHistory -- Schema History table "PUBLIC"."flyway_schema_history" successfully updated to reflect changes
+17:29:13.714 [pool-1-thread-1] DEBUG org.flywaydb.core.internal.parser.Parser -- Parsing V3__Jar_symbols.sql ...
+17:29:13.714 [pool-1-thread-1] DEBUG org.flywaydb.core.internal.sqlscript.ParserSqlScript -- Found statement at line 2: -- Indexed jars, the MD5 digest of path, modified time and size as key
+create table indexed_jar(
+  id int auto_increment unique,
+  md5 varchar primary key
+)
+17:29:13.714 [pool-1-thread-1] DEBUG org.flywaydb.core.internal.sqlscript.ParserSqlScript -- Found statement at line 7: -- Top Level Symbols per jar, allow for multiple jars with same symbols and paths
+create table toplevel_symbol(
+  symbol varchar not null,
+  path varchar not null,
+  jar int,
+  foreign key (jar) references indexed_jar (id) on delete cascade,
+  primary key (jar, path, symbol)
+)
+17:29:13.715 [pool-1-thread-1] DEBUG org.flywaydb.core.internal.sqlscript.ParserSqlScript -- Found statement at line 15: -- Create index to speedup lookup of jar symbols
+create index toplevel_symbol_jar on toplevel_symbol(jar)
+17:29:13.715 [pool-1-thread-1] DEBUG org.flywaydb.core.internal.command.DbMigrate -- Starting migration of schema "PUBLIC" to version "3 - Jar symbols" ...
+17:29:13.715 [pool-1-thread-1] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "PUBLIC" to version "3 - Jar symbols"
+17:29:13.715 [pool-1-thread-1] DEBUG org.flywaydb.core.internal.sqlscript.DefaultSqlScriptExecutor -- Executing SQL: -- Indexed jars, the MD5 digest of path, modified time and size as key
+create table indexed_jar(
+  id int auto_increment unique,
+  md5 varchar primary key
+)
+17:29:13.718 [pool-1-thread-1] DEBUG org.flywaydb.core.internal.sqlscript.DefaultSqlScriptExecutor -- 0 rows affected
+17:29:13.718 [pool-1-thread-1] DEBUG org.flywaydb.core.internal.sqlscript.DefaultSqlScriptExecutor -- Executing SQL: -- Top Level Symbols per jar, allow for multiple jars with same symbols and paths
+create table toplevel_symbol(
+  symbol varchar not null,
+  path varchar not null,
+  jar int,
+  foreign key (jar) references indexed_jar (id) on delete cascade,
+  primary key (jar, path, symbol)
+)
+17:29:13.722 [pool-1-thread-1] DEBUG org.flywaydb.core.internal.sqlscript.DefaultSqlScriptExecutor -- 0 rows affected
+17:29:13.722 [pool-1-thread-1] DEBUG org.flywaydb.core.internal.sqlscript.DefaultSqlScriptExecutor -- Executing SQL: -- Create index to speedup lookup of jar symbols
+create index toplevel_symbol_jar on toplevel_symbol(jar)
+17:29:13.722 [pool-1-thread-1] DEBUG org.flywaydb.core.internal.sqlscript.DefaultSqlScriptExecutor -- 0 rows affected
+17:29:13.723 [pool-1-thread-1] DEBUG org.flywaydb.core.internal.command.DbMigrate -- Successfully completed migration of schema "PUBLIC" to version "3 - Jar symbols"
+17:29:13.724 [pool-1-thread-1] DEBUG org.flywaydb.core.internal.schemahistory.JdbcTableSchemaHistory -- Schema History table "PUBLIC"."flyway_schema_history" successfully updated to reflect changes
+17:29:13.725 [pool-1-thread-1] DEBUG org.flywaydb.core.internal.parser.Parser -- Parsing V4__Fingerprints.sql ...
+17:29:13.725 [pool-1-thread-1] DEBUG org.flywaydb.core.internal.sqlscript.ParserSqlScript -- Found statement at line 2: -- Fingerprints saved between invocations
+create table fingerprints(
+  path varchar not null,
+  text varchar not null,
+  md5 varchar not null,
+  id int auto_increment unique
+)
+17:29:13.726 [pool-1-thread-1] DEBUG org.flywaydb.core.internal.command.DbMigrate -- Starting migration of schema "PUBLIC" to version "4 - Fingerprints" ...
+17:29:13.726 [pool-1-thread-1] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "PUBLIC" to version "4 - Fingerprints"
+17:29:13.726 [pool-1-thread-1] DEBUG org.flywaydb.core.internal.sqlscript.DefaultSqlScriptExecutor -- Executing SQL: -- Fingerprints saved between invocations
+create table fingerprints(
+  path varchar not null,
+  text varchar not null,
+  md5 varchar not null,
+  id int auto_increment unique
+)
+17:29:13.727 [pool-1-thread-1] DEBUG org.flywaydb.core.internal.sqlscript.DefaultSqlScriptExecutor -- 0 rows affected
+17:29:13.727 [pool-1-thread-1] DEBUG org.flywaydb.core.internal.command.DbMigrate -- Successfully completed migration of schema "PUBLIC" to version "4 - Fingerprints"
+17:29:13.727 [pool-1-thread-1] DEBUG org.flywaydb.core.internal.schemahistory.JdbcTableSchemaHistory -- Schema History table "PUBLIC"."flyway_schema_history" successfully updated to reflect changes
+17:29:13.730 [pool-1-thread-1] INFO org.flywaydb.core.internal.command.DbMigrate -- Successfully applied 4 migrations to schema "PUBLIC", now at version v4 (execution time 00:00.011s)
+17:29:13.734 [pool-1-thread-1] DEBUG org.flywaydb.core.FlywayExecutor -- Memory usage: 30 of 102M
+2024.03.27 17:29:15 INFO  Running List(/home/yzy/.cache/scalacli/local-repo/bin/scala-cli/scala-cli, setup-ide, /home/yzy/Desktop/wasim-cpp)
+2024.03.27 17:29:15 WARN  No build session currently active to reload.
+2024.03.27 17:29:15 INFO  Attempting to connect to the build server...
+2024.03.27 17:29:15 INFO  Running BSP server List(/home/yzy/.cache/scalacli/local-repo/bin/scala-cli/scala-cli, bsp, --json-options, /home/yzy/Desktop/wasim-cpp/.scala-build/ide-options-v2.json, /home/yzy/Desktop/wasim-cpp)
+2024.03.27 17:29:15 INFO  tracing is disabled for protocol BSP, to enable tracing of incoming and outgoing JSON messages create an empty file at /home/yzy/Desktop/wasim-cpp/.metals/bsp.trace.json or /home/yzy/.cache/metals/bsp.trace.json
+2024.03.27 17:29:15 INFO  BSP server: Downloading https://github.com/coursier/jvm-index/raw/master/index.json
+2024.03.27 17:29:15 WARN  No build session currently active to reload.
+2024.03.27 17:29:56 INFO  no build target found for /home/yzy/Desktop/wasim-cpp/design/idpv-test/mul.scala. Using presentation compiler with project's scala-library version: 3.3.1
+Mar 27, 2024 5:29:57 PM org.eclipse.lsp4j.jsonrpc.RemoteEndpoint handleCancellation
+WARNING: Unmatched cancel notification for request id 10
+Mar 27, 2024 5:29:57 PM org.eclipse.lsp4j.jsonrpc.RemoteEndpoint handleCancellation
+WARNING: Unmatched cancel notification for request id 11
+2024.03.27 17:30:15 ERROR Timeout waiting for 'build/initialize' response
+2024.03.27 17:30:15 WARN  Retrying connection to the build server scala-cli
+2024.03.27 17:30:15 INFO  Running BSP server List(/home/yzy/.cache/scalacli/local-repo/bin/scala-cli/scala-cli, bsp, --json-options, /home/yzy/Desktop/wasim-cpp/.scala-build/ide-options-v2.json, /home/yzy/Desktop/wasim-cpp)
+2024.03.27 17:30:15 INFO  tracing is disabled for protocol BSP, to enable tracing of incoming and outgoing JSON messages create an empty file at /home/yzy/Desktop/wasim-cpp/.metals/bsp.trace.json or /home/yzy/.cache/metals/bsp.trace.json
+2024.03.27 17:30:15 INFO  BSP server: Downloading https://github.com/coursier/jvm-index/raw/master/index.json
+2024.03.27 17:31:15 ERROR Timeout waiting for 'build/initialize' response
+2024.03.27 17:31:15 WARN  Retrying connection to the build server scala-cli
+2024.03.27 17:31:15 INFO  Running BSP server List(/home/yzy/.cache/scalacli/local-repo/bin/scala-cli/scala-cli, bsp, --json-options, /home/yzy/Desktop/wasim-cpp/.scala-build/ide-options-v2.json, /home/yzy/Desktop/wasim-cpp)
+2024.03.27 17:31:15 INFO  tracing is disabled for protocol BSP, to enable tracing of incoming and outgoing JSON messages create an empty file at /home/yzy/Desktop/wasim-cpp/.metals/bsp.trace.json or /home/yzy/.cache/metals/bsp.trace.json
+2024.03.27 17:31:15 INFO  BSP server: Downloading https://github.com/coursier/jvm-index/raw/master/index.json
+2024.03.27 17:32:15 ERROR Timeout waiting for 'build/initialize' response
+2024.03.27 17:32:15 WARN  Retrying connection to the build server scala-cli
+2024.03.27 17:32:15 INFO  Running BSP server List(/home/yzy/.cache/scalacli/local-repo/bin/scala-cli/scala-cli, bsp, --json-options, /home/yzy/Desktop/wasim-cpp/.scala-build/ide-options-v2.json, /home/yzy/Desktop/wasim-cpp)
+2024.03.27 17:32:15 INFO  tracing is disabled for protocol BSP, to enable tracing of incoming and outgoing JSON messages create an empty file at /home/yzy/Desktop/wasim-cpp/.metals/bsp.trace.json or /home/yzy/.cache/metals/bsp.trace.json
+2024.03.27 17:32:15 INFO  BSP server: Downloading https://github.com/coursier/jvm-index/raw/master/index.json
+2024.03.27 17:33:15 ERROR Timeout waiting for 'build/initialize' response
+2024.03.27 17:33:15 WARN  Retrying connection to the build server scala-cli
+2024.03.27 17:33:15 INFO  Running BSP server List(/home/yzy/.cache/scalacli/local-repo/bin/scala-cli/scala-cli, bsp, --json-options, /home/yzy/Desktop/wasim-cpp/.scala-build/ide-options-v2.json, /home/yzy/Desktop/wasim-cpp)
+2024.03.27 17:33:15 INFO  tracing is disabled for protocol BSP, to enable tracing of incoming and outgoing JSON messages create an empty file at /home/yzy/Desktop/wasim-cpp/.metals/bsp.trace.json or /home/yzy/.cache/metals/bsp.trace.json
+2024.03.27 17:33:15 INFO  BSP server: Downloading https://github.com/coursier/jvm-index/raw/master/index.json
+2024.03.27 17:33:38 INFO  BSP server: Still downloading:
+2024.03.27 17:33:38 INFO  BSP server: https://github.com/coursier/jvm-index/raw/master/index.json (2.97 %, 49152 / 1652515)
+2024.03.27 17:33:38 INFO  BSP server: 
+2024.03.27 17:33:38 INFO  BSP server: Downloaded https://github.com/coursier/jvm-index/raw/master/index.json
+2024.03.27 17:33:38 INFO  BSP server: Downloading https://github.com/adoptium/temurin17-binaries/releases/download/jdk-17%2B35/OpenJDK17-jdk_x64_linux_hotspot_17_35.tar.gz
+2024.03.27 17:33:45 INFO  BSP server: Still downloading:
+2024.03.27 17:33:45 INFO  BSP server: https://github.com/adoptium/temurin17-binaries/releases/download/jdk-17%2B35/OpenJDK17-jdk_x64_linux_hotspot_17_35.tar.gz (17.68 %, 33946944 / 192014376)
+2024.03.27 17:33:45 INFO  BSP server: 
+2024.03.27 17:33:51 INFO  BSP server: Still downloading:
+2024.03.27 17:33:51 INFO  BSP server: https://github.com/adoptium/temurin17-binaries/releases/download/jdk-17%2B35/OpenJDK17-jdk_x64_linux_hotspot_17_35.tar.gz (33.59 %, 64504128 / 192014376)
+2024.03.27 17:33:51 INFO  BSP server: 
+2024.03.27 17:33:57 INFO  BSP server: Still downloading:
+2024.03.27 17:33:57 INFO  BSP server: https://github.com/adoptium/temurin17-binaries/releases/download/jdk-17%2B35/OpenJDK17-jdk_x64_linux_hotspot_17_35.tar.gz (51.06 %, 98036352 / 192014376)
+2024.03.27 17:33:57 INFO  BSP server: 
+2024.03.27 17:34:03 INFO  BSP server: Still downloading:
+2024.03.27 17:34:03 INFO  BSP server: https://github.com/adoptium/temurin17-binaries/releases/download/jdk-17%2B35/OpenJDK17-jdk_x64_linux_hotspot_17_35.tar.gz (71.60 %, 137483840 / 192014376)
+2024.03.27 17:34:03 INFO  BSP server: 
+2024.03.27 17:34:09 INFO  BSP server: Still downloading:
+2024.03.27 17:34:09 INFO  BSP server: https://github.com/adoptium/temurin17-binaries/releases/download/jdk-17%2B35/OpenJDK17-jdk_x64_linux_hotspot_17_35.tar.gz (92.75 %, 178087872 / 192014376)
+2024.03.27 17:34:09 INFO  BSP server: 
+2024.03.27 17:34:12 INFO  BSP server: Downloaded https://github.com/adoptium/temurin17-binaries/releases/download/jdk-17%2B35/OpenJDK17-jdk_x64_linux_hotspot_17_35.tar.gz
+2024.03.27 17:34:14 INFO  BSP server: Downloading https://repo1.maven.org/maven2/io/github/alexarchambault/bleep/bloop-frontend_2.12/1.5.11-sc-3/bloop-frontend_2.12-1.5.11-sc-3.pom
+2024.03.27 17:34:15 ERROR Timeout waiting for 'build/initialize' response
+2024.03.27 17:34:15 WARN  Retrying connection to the build server scala-cli
+2024.03.27 17:34:15 INFO  Running BSP server List(/home/yzy/.cache/scalacli/local-repo/bin/scala-cli/scala-cli, bsp, --json-options, /home/yzy/Desktop/wasim-cpp/.scala-build/ide-options-v2.json, /home/yzy/Desktop/wasim-cpp)
+2024.03.27 17:34:15 INFO  tracing is disabled for protocol BSP, to enable tracing of incoming and outgoing JSON messages create an empty file at /home/yzy/Desktop/wasim-cpp/.metals/bsp.trace.json or /home/yzy/.cache/metals/bsp.trace.json
+2024.03.27 17:34:15 INFO  BSP server: Downloading https://repo1.maven.org/maven2/io/github/alexarchambault/bleep/bloop-frontend_2.12/1.5.11-sc-3/bloop-frontend_2.12-1.5.11-sc-3.pom
+2024.03.27 17:34:26 INFO  BSP server: Downloaded https://repo1.maven.org/maven2/io/github/alexarchambault/bleep/bloop-frontend_2.12/1.5.11-sc-3/bloop-frontend_2.12-1.5.11-sc-3.pom
+2024.03.27 17:34:26 INFO  BSP server: Downloading https://repo1.maven.org/maven2/ch/qos/logback/logback-classic/1.4.6/logback-classic-1.4.6.pom
+2024.03.27 17:34:26 INFO  BSP server: Downloading https://repo1.maven.org/maven2/io/github/alexarchambault/libdaemon/libdaemon_2.12/0.0.11/libdaemon_2.12-0.0.11.pom
+2024.03.27 17:34:26 INFO  BSP server: Downloading https://repo1.maven.org/maven2/io/github/alexarchambault/bleep/bloop-backend_2.12/1.5.11-sc-3/bloop-backend_2.12-1.5.11-sc-3.pom
+2024.03.27 17:34:26 INFO  BSP server: Downloading https://repo1.maven.org/maven2/ch/epfl/scala/scala-debug-adapter_2.12/3.1.4/scala-debug-adapter_2.12-3.1.4.pom
+2024.03.27 17:34:26 INFO  BSP server: Downloaded https://repo1.maven.org/maven2/ch/qos/logback/logback-classic/1.4.6/logback-classic-1.4.6.pom
+2024.03.27 17:34:26 INFO  BSP server: Downloaded https://repo1.maven.org/maven2/io/github/alexarchambault/bleep/bloop-backend_2.12/1.5.11-sc-3/bloop-backend_2.12-1.5.11-sc-3.pom
+2024.03.27 17:34:26 INFO  BSP server: Downloaded https://repo1.maven.org/maven2/io/github/alexarchambault/libdaemon/libdaemon_2.12/0.0.11/libdaemon_2.12-0.0.11.pom
+2024.03.27 17:34:26 INFO  BSP server: Downloaded https://repo1.maven.org/maven2/ch/epfl/scala/scala-debug-adapter_2.12/3.1.4/scala-debug-adapter_2.12-3.1.4.pom
+2024.03.27 17:34:26 INFO  BSP server: Downloading https://repo1.maven.org/maven2/ch/qos/logback/logback-parent/1.4.6/logback-parent-1.4.6.pom
+2024.03.27 17:34:27 INFO  BSP server: Downloaded https://repo1.maven.org/maven2/ch/qos/logback/logback-parent/1.4.6/logback-parent-1.4.6.pom
+2024.03.27 17:34:27 INFO  BSP server: Downloading https://repo1.maven.org/maven2/io/github/alexarchambault/bleep/nailgun-server/1.0.7/nailgun-server-1.0.7.pom
+2024.03.27 17:34:27 INFO  BSP server: Downloading https://repo1.maven.org/maven2/io/github/alexarchambault/bleep/bloop-shared_2.12/1.5.11-sc-3/bloop-shared_2.12-1.5.11-sc-3.pom
+2024.03.27 17:34:27 INFO  BSP server: Downloading https://repo1.maven.org/maven2/ch/qos/logback/logback-core/1.4.6/logback-core-1.4.6.pom
+2024.03.27 17:34:27 INFO  BSP server: Downloading https://repo1.maven.org/maven2/org/scala-sbt/test-agent/1.8.3/test-agent-1.8.3.pom
+2024.03.27 17:34:27 INFO  BSP server: Downloading https://repo1.maven.org/maven2/org/slf4j/slf4j-api/2.0.4/slf4j-api-2.0.4.pom
+2024.03.27 17:34:27 INFO  BSP server: Downloading https://repo1.maven.org/maven2/org/scalaz/scalaz-core_2.12/7.3.7/scalaz-core_2.12-7.3.7.pom
+2024.03.27 17:34:27 INFO  BSP server: Downloaded https://repo1.maven.org/maven2/io/github/alexarchambault/bleep/bloop-shared_2.12/1.5.11-sc-3/bloop-shared_2.12-1.5.11-sc-3.pom
+2024.03.27 17:34:27 INFO  BSP server: Downloaded https://repo1.maven.org/maven2/ch/qos/logback/logback-core/1.4.6/logback-core-1.4.6.pom
+2024.03.27 17:34:27 INFO  BSP server: Downloading https://repo1.maven.org/maven2/ch/epfl/scala/com-microsoft-java-debug-core/0.34.0+20/com-microsoft-java-debug-core-0.34.0+20.pom
+2024.03.27 17:34:27 INFO  BSP server: Downloaded https://repo1.maven.org/maven2/org/scala-sbt/test-agent/1.8.3/test-agent-1.8.3.pom
+2024.03.27 17:34:27 INFO  BSP server: Downloaded https://repo1.maven.org/maven2/io/github/alexarchambault/bleep/nailgun-server/1.0.7/nailgun-server-1.0.7.pom
+2024.03.27 17:34:27 INFO  BSP server: Downloaded https://repo1.maven.org/maven2/ch/epfl/scala/com-microsoft-java-debug-core/0.34.0+20/com-microsoft-java-debug-core-0.34.0+20.pom
+2024.03.27 17:34:27 INFO  BSP server: Downloaded https://repo1.maven.org/maven2/org/scalaz/scalaz-core_2.12/7.3.7/scalaz-core_2.12-7.3.7.pom
+2024.03.27 17:34:27 INFO  BSP server: Downloaded https://repo1.maven.org/maven2/org/slf4j/slf4j-api/2.0.4/slf4j-api-2.0.4.pom
+2024.03.27 17:34:27 INFO  BSP server: Downloading https://repo1.maven.org/maven2/org/slf4j/slf4j-parent/2.0.4/slf4j-parent-2.0.4.pom
+2024.03.27 17:34:29 INFO  BSP server: Downloaded https://repo1.maven.org/maven2/org/slf4j/slf4j-parent/2.0.4/slf4j-parent-2.0.4.pom
+2024.03.27 17:34:29 INFO  BSP server: Downloading https://repo1.maven.org/maven2/io/get-coursier/interface/1.0.13/interface-1.0.13.pom
+2024.03.27 17:34:29 INFO  BSP server: Downloading https://repo1.maven.org/maven2/net/java/dev/jna/jna-platform/4.4.0/jna-platform-4.4.0.pom
+2024.03.27 17:34:29 INFO  BSP server: Downloading https://repo1.maven.org/maven2/net/java/dev/jna/jna/4.5.2/jna-4.5.2.pom
+2024.03.27 17:34:29 INFO  BSP server: Downloaded https://repo1.maven.org/maven2/net/java/dev/jna/jna-platform/4.4.0/jna-platform-4.4.0.pom
+2024.03.27 17:34:29 INFO  BSP server: Downloaded https://repo1.maven.org/maven2/io/get-coursier/interface/1.0.13/interface-1.0.13.pom
+2024.03.27 17:34:29 INFO  BSP server: Downloaded https://repo1.maven.org/maven2/net/java/dev/jna/jna/4.5.2/jna-4.5.2.pom
+2024.03.27 17:34:29 INFO  BSP server: Downloading https://repo1.maven.org/maven2/org/scala-sbt/util-logging_2.12/1.9.1/util-logging_2.12-1.9.1.pom
+2024.03.27 17:34:29 INFO  BSP server: Downloading https://repo1.maven.org/maven2/org/slf4j/slf4j-api/2.0.6/slf4j-api-2.0.6.pom
+2024.03.27 17:34:29 INFO  BSP server: Downloading https://repo1.maven.org/maven2/org/scala-sbt/launcher-interface/1.0.0/launcher-interface-1.0.0.pom
+2024.03.27 17:34:29 INFO  BSP server: Downloaded https://repo1.maven.org/maven2/org/slf4j/slf4j-api/2.0.6/slf4j-api-2.0.6.pom
+2024.03.27 17:34:29 INFO  BSP server: Downloaded https://repo1.maven.org/maven2/org/scala-sbt/launcher-interface/1.0.0/launcher-interface-1.0.0.pom
+2024.03.27 17:34:29 INFO  BSP server: Downloaded https://repo1.maven.org/maven2/org/scala-sbt/util-logging_2.12/1.9.1/util-logging_2.12-1.9.1.pom
+2024.03.27 17:34:29 INFO  BSP server: Downloading https://repo1.maven.org/maven2/org/slf4j/slf4j-parent/2.0.6/slf4j-parent-2.0.6.pom
+2024.03.27 17:34:30 INFO  BSP server: Downloaded https://repo1.maven.org/maven2/org/slf4j/slf4j-parent/2.0.6/slf4j-parent-2.0.6.pom
+2024.03.27 17:34:30 INFO  BSP server: Downloading https://repo1.maven.org/maven2/org/scala-sbt/core-macros_2.12/1.9.1/core-macros_2.12-1.9.1.pom
+2024.03.27 17:34:30 INFO  BSP server: Downloading https://repo1.maven.org/maven2/org/scala-sbt/collections_2.12/1.9.1/collections_2.12-1.9.1.pom
+2024.03.27 17:34:30 INFO  BSP server: Downloading https://repo1.maven.org/maven2/org/scala-sbt/util-interface/1.9.1/util-interface-1.9.1.pom
+2024.03.27 17:34:30 INFO  BSP server: Downloaded https://repo1.maven.org/maven2/org/scala-sbt/util-interface/1.9.1/util-interface-1.9.1.pom
+2024.03.27 17:34:30 INFO  BSP server: Downloaded https://repo1.maven.org/maven2/org/scala-sbt/collections_2.12/1.9.1/collections_2.12-1.9.1.pom
+2024.03.27 17:34:30 INFO  BSP server: Downloaded https://repo1.maven.org/maven2/org/scala-sbt/core-macros_2.12/1.9.1/core-macros_2.12-1.9.1.pom
+2024.03.27 17:34:30 INFO  BSP server: Downloading https://repo1.maven.org/maven2/io/github/alexarchambault/bleep/bloop-shared_2.12/1.5.11-sc-3/bloop-shared_2.12-1.5.11-sc-3.jar
+2024.03.27 17:34:30 INFO  BSP server: Downloading https://repo1.maven.org/maven2/io/get-coursier/interface/1.0.13/interface-1.0.13.jar
+2024.03.27 17:34:30 INFO  BSP server: Downloading https://repo1.maven.org/maven2/ch/qos/logback/logback-classic/1.4.6/logback-classic-1.4.6.jar
+2024.03.27 17:34:30 INFO  BSP server: Downloading https://repo1.maven.org/maven2/io/github/alexarchambault/bleep/nailgun-server/1.0.7/nailgun-server-1.0.7.jar
+2024.03.27 17:34:30 INFO  BSP server: Downloading https://repo1.maven.org/maven2/io/github/alexarchambault/bleep/bloop-frontend_2.12/1.5.11-sc-3/bloop-frontend_2.12-1.5.11-sc-3.jar
+2024.03.27 17:34:30 INFO  BSP server: Downloading https://repo1.maven.org/maven2/org/slf4j/slf4j-api/2.0.6/slf4j-api-2.0.6.jar
+2024.03.27 17:34:30 INFO  BSP server: Downloaded https://repo1.maven.org/maven2/io/github/alexarchambault/bleep/nailgun-server/1.0.7/nailgun-server-1.0.7.jar
+2024.03.27 17:34:30 INFO  BSP server: Downloading https://repo1.maven.org/maven2/ch/qos/logback/logback-core/1.4.6/logback-core-1.4.6.jar
+2024.03.27 17:34:30 INFO  BSP server: Downloaded https://repo1.maven.org/maven2/org/slf4j/slf4j-api/2.0.6/slf4j-api-2.0.6.jar
+2024.03.27 17:34:30 INFO  BSP server: Downloading https://repo1.maven.org/maven2/ch/epfl/scala/scala-debug-adapter_2.12/3.1.4/scala-debug-adapter_2.12-3.1.4.jar
+2024.03.27 17:34:31 INFO  BSP server: Downloaded https://repo1.maven.org/maven2/io/github/alexarchambault/bleep/bloop-shared_2.12/1.5.11-sc-3/bloop-shared_2.12-1.5.11-sc-3.jar
+2024.03.27 17:34:31 INFO  BSP server: Downloading https://repo1.maven.org/maven2/ch/epfl/scala/com-microsoft-java-debug-core/0.34.0+20/com-microsoft-java-debug-core-0.34.0+20.jar
+2024.03.27 17:34:31 INFO  BSP server: Downloaded https://repo1.maven.org/maven2/ch/qos/logback/logback-classic/1.4.6/logback-classic-1.4.6.jar
+2024.03.27 17:34:31 INFO  BSP server: Downloading https://repo1.maven.org/maven2/io/github/alexarchambault/libdaemon/libdaemon_2.12/0.0.11/libdaemon_2.12-0.0.11.jar
+2024.03.27 17:34:31 INFO  BSP server: Downloaded https://repo1.maven.org/maven2/io/github/alexarchambault/libdaemon/libdaemon_2.12/0.0.11/libdaemon_2.12-0.0.11.jar
+2024.03.27 17:34:31 INFO  BSP server: Downloading https://repo1.maven.org/maven2/io/github/alexarchambault/bleep/bloop-backend_2.12/1.5.11-sc-3/bloop-backend_2.12-1.5.11-sc-3.jar
+2024.03.27 17:34:34 INFO  BSP server: Downloaded https://repo1.maven.org/maven2/ch/qos/logback/logback-core/1.4.6/logback-core-1.4.6.jar
+2024.03.27 17:34:34 INFO  BSP server: Downloading https://repo1.maven.org/maven2/org/scalaz/scalaz-core_2.12/7.3.7/scalaz-core_2.12-7.3.7.jar
+2024.03.27 17:34:34 INFO  BSP server: Downloaded https://repo1.maven.org/maven2/ch/epfl/scala/scala-debug-adapter_2.12/3.1.4/scala-debug-adapter_2.12-3.1.4.jar
+2024.03.27 17:34:38 INFO  BSP server: Downloaded https://repo1.maven.org/maven2/ch/epfl/scala/com-microsoft-java-debug-core/0.34.0+20/com-microsoft-java-debug-core-0.34.0+20.jar
+2024.03.27 17:34:39 INFO  BSP server: Downloaded https://repo1.maven.org/maven2/io/github/alexarchambault/bleep/bloop-backend_2.12/1.5.11-sc-3/bloop-backend_2.12-1.5.11-sc-3.jar
+2024.03.27 17:34:44 INFO  BSP server: Still downloading:
+2024.03.27 17:34:44 INFO  BSP server: https://repo1.maven.org/maven2/io/github/alexarchambault/bleep/bloop-frontend_2.12/1.5.11-sc-3/bloop-frontend_2.12-1.5.11-sc-3.jar (97.01 %, 1457984 / 1502997)
+2024.03.27 17:34:44 INFO  BSP server: https://repo1.maven.org/maven2/io/get-coursier/interface/1.0.13/interface-1.0.13.jar (15.06 %, 1540096 / 10225728)
+2024.03.27 17:34:44 INFO  BSP server: https://repo1.maven.org/maven2/org/scalaz/scalaz-core_2.12/7.3.7/scalaz-core_2.12-7.3.7.jar (5.99 %, 589359 / 9831992)
+2024.03.27 17:34:44 INFO  BSP server: 
+2024.03.27 17:34:44 INFO  BSP server: Downloaded https://repo1.maven.org/maven2/io/github/alexarchambault/bleep/bloop-frontend_2.12/1.5.11-sc-3/bloop-frontend_2.12-1.5.11-sc-3.jar
+2024.03.27 17:34:50 INFO  BSP server: Still downloading:
+2024.03.27 17:34:50 INFO  BSP server: https://repo1.maven.org/maven2/io/get-coursier/interface/1.0.13/interface-1.0.13.jar (17.95 %, 1835008 / 10225728)
+2024.03.27 17:34:50 INFO  BSP server: https://repo1.maven.org/maven2/org/scalaz/scalaz-core_2.12/7.3.7/scalaz-core_2.12-7.3.7.jar (9.16 %, 900655 / 9831992)
+2024.03.27 17:34:50 INFO  BSP server: 
+2024.03.27 17:34:56 INFO  BSP server: Still downloading:
+2024.03.27 17:34:56 INFO  BSP server: https://repo1.maven.org/maven2/io/get-coursier/interface/1.0.13/interface-1.0.13.jar (21.95 %, 2244608 / 10225728)
+2024.03.27 17:34:56 INFO  BSP server: https://repo1.maven.org/maven2/org/scalaz/scalaz-core_2.12/7.3.7/scalaz-core_2.12-7.3.7.jar (12.49 %, 1228335 / 9831992)
+2024.03.27 17:34:56 INFO  BSP server: 
+2024.03.27 17:35:02 INFO  BSP server: Still downloading:
+2024.03.27 17:35:02 INFO  BSP server: https://repo1.maven.org/maven2/io/get-coursier/interface/1.0.13/interface-1.0.13.jar (25.96 %, 2654208 / 10225728)
+2024.03.27 17:35:02 INFO  BSP server: https://repo1.maven.org/maven2/org/scalaz/scalaz-core_2.12/7.3.7/scalaz-core_2.12-7.3.7.jar (16.66 %, 1637935 / 9831992)
+2024.03.27 17:35:02 INFO  BSP server: 
+2024.03.27 17:35:08 INFO  BSP server: Still downloading:
+2024.03.27 17:35:08 INFO  BSP server: https://repo1.maven.org/maven2/io/get-coursier/interface/1.0.13/interface-1.0.13.jar (29.32 %, 2998272 / 10225728)
+2024.03.27 17:35:08 INFO  BSP server: https://repo1.maven.org/maven2/org/scalaz/scalaz-core_2.12/7.3.7/scalaz-core_2.12-7.3.7.jar (19.66 %, 1932847 / 9831992)
+2024.03.27 17:35:08 INFO  BSP server: 
+2024.03.27 17:35:14 INFO  BSP server: Still downloading:
+2024.03.27 17:35:14 INFO  BSP server: https://repo1.maven.org/maven2/io/get-coursier/interface/1.0.13/interface-1.0.13.jar (34.13 %, 3489792 / 10225728)
+2024.03.27 17:35:14 INFO  BSP server: https://repo1.maven.org/maven2/org/scalaz/scalaz-core_2.12/7.3.7/scalaz-core_2.12-7.3.7.jar (24.82 %, 2440751 / 9831992)
+2024.03.27 17:35:14 INFO  BSP server: 
+2024.03.27 17:35:15 ERROR Timeout waiting for 'build/initialize' response
+2024.03.27 17:35:15 ERROR Failed to connect with build server, no functionality will work.
+java.util.concurrent.TimeoutException
+	at java.util.concurrent.CompletableFuture.timedGet(CompletableFuture.java:1892)
+	at java.util.concurrent.CompletableFuture.get(CompletableFuture.java:2027)
+	at scala.meta.internal.metals.BuildServerConnection$.initialize(BuildServerConnection.scala:677)
+	at scala.meta.internal.metals.BuildServerConnection$.$anonfun$fromSockets$1(BuildServerConnection.scala:560)
+	at scala.concurrent.impl.Promise$Transformation.run(Promise.scala:467)
+	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1128)
+	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:628)
+	at java.lang.Thread.run(Thread.java:829)
+
+2024.03.28 14:40:43 WARN  no build target for: /home/yzy/Desktop/wasim-cpp/design/idpv-test/mul.scala

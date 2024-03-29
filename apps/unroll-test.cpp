@@ -40,6 +40,7 @@ int main() {
   std::cout<< s1.print();
 
   auto expr = s1.get_sv().at(sts.lookup("ret"));
+  std::cout << expr ->to_string() << std::endl; 
 
 
   return 0;

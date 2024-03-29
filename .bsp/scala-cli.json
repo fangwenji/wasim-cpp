@@ -1,0 +1,16 @@
+{
+  "name": "scala-cli",
+  "argv": [
+    "/home/yzy/.cache/scalacli/local-repo/bin/scala-cli/scala-cli",
+    "bsp",
+    "--json-options",
+    "/home/yzy/Desktop/wasim-cpp/.scala-build/ide-options-v2.json",
+    "/home/yzy/Desktop/wasim-cpp"
+  ],
+  "version": "1.1.2",
+  "bspVersion": "2.1.0-M7",
+  "languages": [
+    "scala",
+    "java"
+  ]
+}
