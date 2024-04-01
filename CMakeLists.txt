@@ -248,14 +248,14 @@ if(NOT TARGET uninstall)
 endif()
 
 
-# add_executable(test1 "apps/test.cpp")
-# target_link_libraries(test1 wasim-lib)
+add_executable(test1 "apps/idpv/test.cpp")
+target_link_libraries(test1 wasim-lib)
 
-add_executable(test2 "apps/unroll-test.cpp")
+add_executable(test2 "apps/idpv/unroll-test.cpp")
 target_link_libraries(test2 wasim-lib)
 set(CMAKE_BUILD_TYPE "debug")
 
-add_executable(testmul "apps/fp_mul_test.cpp")
+add_executable(testmul "apps/idpv/vfptest.cpp")
 target_link_libraries(testmul wasim-lib)
 
 # add_executable(independence_check_test "independence_check_test.cpp")

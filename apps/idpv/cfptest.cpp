@@ -17,15 +17,15 @@ int main() {
     solver->set_opt("produce-models", "true");
     solver->set_opt("produce-unsat-assumptions", "true");
 
-    std::cout << "---------------------------Verilog btor---------------------------" << std::endl;
+    // std::cout << "---------------------------Verilog btor---------------------------" << std::endl;
   
     TransitionSystem sts(solver);
-    BTOR2Encoder btor_parser("../design/idpv-test/mul64.btor2", sts);
-    std::cout << sts.trans()->to_string() << std::endl;
+    BTOR2Encoder btor_parser("../design/idpv-test/vmul16.btor2", sts);
+    // std::cout << sts.trans()->to_string() << std::endl;
 
-    // auto src1 = sts.lookup("src1");
-    // auto src2 = sts.lookup("src2");
-    // auto res = sts.lookup("state");
+    // auto src1 = sts.lookup("floatA");
+    // auto src2 = sts.lookup("floatB");
+    // auto res = sts.lookup("product");
     // auto res_next = sts.state_updates().at(res);
     // std::cout << res_next->to_string() << std::endl;
 
@@ -49,7 +49,7 @@ int main() {
     executor.set_input(executor.convert({{"io_multiplicand",32},{"io_multiplier",32}}),{});
     executor.sim_one_step();
     auto s1 = executor.get_curr_state();
-    // std::cout << s1.print();
+    std::cout << s1.print();
     auto expr = s1.get_sv().at(sts.lookup("res"));
     std::cout << expr ->to_string() << std::endl;
 
