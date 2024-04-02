@@ -49,6 +49,7 @@ int main() {
 
   auto check_b = solver->make_term(smt::Equal, b, smt_b);
   solver->assert_formula(check_b);
+  auto r = solver->check_sat();
 
   auto check_ret = solver->make_term(smt::Equal, ret_next_update_function, smt_ret);
   Term not_equal = solver -> make_term(Not, check_ret);

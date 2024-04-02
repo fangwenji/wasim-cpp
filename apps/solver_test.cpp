@@ -1,6 +1,6 @@
 #include <iostream>
-#include "smt-switch/boolector_factory.h"
-#include "smt-switch/smt.h"
+#include "../deps/smt-switch/include/boolector_factory.h"
+#include "../deps/smt-switch/include/smt.h"
 using namespace smt;
 using namespace std;
 int main()

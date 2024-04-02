@@ -21,7 +21,7 @@ int main() {
 
 
   TransitionSystem sts(solver);
-  BTOR2Encoder btor_parser("../design/idpv-test/t1v.btor2", sts);
+  BTOR2Encoder btor_parser("../design/idpv-test/simple_case/t1v.btor2", sts);
 
   std::cout << sts.trans()->to_string() << std::endl;
 
