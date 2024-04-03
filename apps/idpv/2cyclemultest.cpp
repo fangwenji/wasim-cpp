@@ -10,8 +10,6 @@ using namespace wasim;
 using namespace smt;
 
 int main() {
-
-
   SmtSolver solver = BoolectorSolverFactory::create(false);
 
   solver->set_logic("QF_UFBV");
@@ -21,7 +19,7 @@ int main() {
 
 
   TransitionSystem sts(solver);
-  BTOR2Encoder btor_parser("../design/idpv-test/simple_case/t1v.btor2", sts); 
+  BTOR2Encoder btor_parser("../design/idpv-test/2cyclemul.btor2", sts); 
   std::cout << sts.trans()->to_string() << std::endl;
 
   SymbolicExecutor executor(sts, solver);
@@ -32,25 +30,18 @@ int main() {
   auto initial_state = executor.convert(initial_state1);
     
   executor.init(initial_state);
-  executor.set_input(executor.convert({{"a",2},{"b",2}}),{}); 
-  executor.sim_one_step();  
+  executor.set_input(executor.convert({{"A",1},{"B",1}}),{}); 
+  executor.sim_one_step();
+
   auto s1 = executor.get_curr_state();
   std::cout<< s1.print();
+  std::cout << "---------------------------------" << std::endl;
 
-  // set_input 这里符号值，enable给1，
-  // 1.v是两个周期
-  // 需要再仿真一步
-  // 第二步set input----- enable给1  
-  // 再看current State
-  // 应该有一个表达式
-
-
-
-  auto expr = s1.get_sv().at(sts.lookup("ret"));
-  std::cout << expr ->to_string() << std::endl; 
-
+  executor.set_input(executor.convert({{"enable",1}}),{});
+  executor.sim_one_step();
+  
+  auto s2 = executor.get_curr_state();
+  std::cout << s2.print();
 
   return 0;
 }
-
-
