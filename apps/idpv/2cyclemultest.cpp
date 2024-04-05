@@ -23,19 +23,17 @@ int main() {
   std::cout << sts.trans()->to_string() << std::endl;
 
   SymbolicExecutor executor(sts, solver);
-  std::cout << "---------------------------------" << std::endl;
 
   /* initial state assignment */
   assignment_type initial_state1={};
   auto initial_state = executor.convert(initial_state1);
     
   executor.init(initial_state);
-  executor.set_input(executor.convert({{"A",1},{"B",1}}),{}); 
+  executor.set_input(executor.convert({{"A",1},{"B",1}}),{});
   executor.sim_one_step();
 
   auto s1 = executor.get_curr_state();
   std::cout<< s1.print();
-  std::cout << "---------------------------------" << std::endl;
 
   executor.set_input(executor.convert({{"enable",1}}),{});
   executor.sim_one_step();

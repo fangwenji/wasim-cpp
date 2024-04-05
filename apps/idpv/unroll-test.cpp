@@ -37,15 +37,6 @@ int main() {
   auto s1 = executor.get_curr_state();
   std::cout<< s1.print();
 
-  // set_input 这里符号值，enable给1，
-  // 1.v是两个周期
-  // 需要再仿真一步
-  // 第二步set input----- enable给1  
-  // 再看current State
-  // 应该有一个表达式
-
-
-
   auto expr = s1.get_sv().at(sts.lookup("ret"));
   std::cout << expr ->to_string() << std::endl; 
 
