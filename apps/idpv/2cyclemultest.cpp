@@ -25,8 +25,8 @@ int main() {
   SymbolicExecutor executor(sts, solver);
 
   /* initial state assignment */
-  assignment_type initial_state1={};
-  auto initial_state = executor.convert(initial_state1);
+  assignment_type in={};
+  auto initial_state = executor.convert(in);
     
   executor.init(initial_state);
   executor.set_input(executor.convert({{"A",1},{"B",1}}),{});
