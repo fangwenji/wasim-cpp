@@ -54,7 +54,7 @@ int main() {
   auto check_ret = solver->make_term(smt::Equal, ret_next_update_function, smt_ret);
   Term not_equal = solver -> make_term(Not, check_ret);
   TermVec assumptions{ not_equal};
-  auto res_ret = solver->check_sat_assuming(assumptions);
+  auto res_ret = solver->check_sat_assuming(assumptions);//maybe egraph
 
   if(res_ret.is_unsat()){
     std::cout << "always equal" << std::endl;

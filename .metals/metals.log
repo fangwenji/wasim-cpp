@@ -2356,3 +2356,95 @@ INFO: Unsupported notification method: $/setTrace
 2024.04.05 16:34:57 INFO  time: compiled wasim-cpp_bd2c96d2de in 0.52s
 Apr 05, 2024 4:58:20 PM org.eclipse.lsp4j.jsonrpc.services.GenericEndpoint notify
 INFO: Unsupported notification method: $/setTrace
+2024.04.06 16:25:43 INFO  logging to files /home/yzy/Desktop/wasim-cpp/.metals/metals.log
+2024.04.06 17:11:10 INFO  Shutting down server
+2024.04.06 17:11:10 INFO  shutting down Metals
+2024.04.06 17:11:10 INFO  Shut down connection with build server.
+2024.04.06 17:11:10 INFO  BSP server: Apr 06, 2024 5:11:10 PM org.eclipse.lsp4j.jsonrpc.RemoteEndpoint handleNotification
+2024.04.06 17:11:10 INFO  BSP server: WARNING: Notification threw an exception: {
+2024.04.06 17:11:10 INFO  BSP server:   "jsonrpc": "2.0",
+2024.04.06 17:11:10 INFO  BSP server:   "method": "build/exit",
+2024.04.06 17:11:10 INFO  BSP server:   "params": null
+2024.04.06 17:11:10 INFO  BSP server: }
+2024.04.06 17:11:10 INFO  BSP server: java.lang.RuntimeException: java.lang.reflect.InvocationTargetException
+2024.04.06 17:11:10 INFO  Exiting server
+2024.04.07 14:21:15 INFO  Started: Metals version 1.2.2 in folders '/home/yzy/Desktop/wasim-cpp, /home/yzy/personal_website, /home/yzy/Desktop/fp-soft' for client Visual Studio Code 1.85.2.
+14:21:15.713 [pool-1-thread-2] INFO org.flywaydb.core.internal.license.VersionPrinter -- Flyway Community Edition 9.22.3 by Redgate
+14:21:15.714 [pool-1-thread-2] INFO org.flywaydb.core.internal.license.VersionPrinter -- See release notes here: https://rd.gt/416ObMi
+14:21:15.714 [pool-1-thread-2] INFO org.flywaydb.core.internal.license.VersionPrinter -- 
+14:21:15.716 [pool-1-thread-2] DEBUG org.flywaydb.core.internal.scanner.classpath.ClassPathScanner -- Scanning for classpath resources at 'classpath:db/callback' ...
+14:21:15.716 [pool-1-thread-2] DEBUG org.flywaydb.core.internal.scanner.classpath.ClassPathScanner -- Determining location urls for classpath:db/callback using ClassLoader jdk.internal.loader.ClassLoaders$AppClassLoader@55054057 ...
+14:21:15.716 [pool-1-thread-2] DEBUG org.flywaydb.core.internal.scanner.classpath.ClassPathScanner -- Unable to resolve location classpath:db/callback.
+14:21:15.716 [pool-1-thread-2] DEBUG org.flywaydb.core.internal.scanner.classpath.ClassPathScanner -- Scanning for classpath resources at 'classpath:db/migration' ...
+14:21:15.716 [pool-1-thread-2] DEBUG org.flywaydb.core.internal.scanner.classpath.ClassPathScanner -- Determining location urls for classpath:db/migration using ClassLoader jdk.internal.loader.ClassLoaders$AppClassLoader@55054057 ...
+14:21:15.716 [pool-1-thread-2] DEBUG org.flywaydb.core.internal.scanner.classpath.ClassPathScanner -- Scanning URL: jar:file:/home/yzy/.cache/coursier/v1/https/repo1.maven.org/maven2/org/scalameta/metals_2.13/1.2.2/metals_2.13-1.2.2.jar!/db/migration
+14:21:15.717 [pool-1-thread-2] DEBUG org.flywaydb.core.internal.scanner.classpath.ClassPathScanner -- Found resource: db/migration/
+14:21:15.718 [pool-1-thread-2] DEBUG org.flywaydb.core.internal.scanner.classpath.ClassPathScanner -- Found resource: db/migration/V1__Create_tables.sql
+14:21:15.718 [pool-1-thread-2] DEBUG org.flywaydb.core.internal.scanner.classpath.ClassPathScanner -- Found resource: db/migration/V2__Server_discovery.sql
+14:21:15.718 [pool-1-thread-2] DEBUG org.flywaydb.core.internal.scanner.classpath.ClassPathScanner -- Found resource: db/migration/V3__Jar_symbols.sql
+14:21:15.718 [pool-1-thread-2] DEBUG org.flywaydb.core.internal.scanner.classpath.ClassPathScanner -- Found resource: db/migration/V4__Fingerprints.sql
+14:21:15.718 [pool-1-thread-2] DEBUG org.flywaydb.core.internal.scanner.classpath.ClassPathScanner -- Scanning for classes at classpath:db/migration
+14:21:15.720 [pool-1-thread-2] DEBUG org.flywaydb.core.internal.scanner.Scanner -- Filtering out resource: db/migration/ (filename: )
+14:21:15.720 [pool-1-thread-2] DEBUG org.flywaydb.core.internal.resource.ResourceNameValidator -- Validating V4__Fingerprints.sql
+14:21:15.720 [pool-1-thread-2] DEBUG org.flywaydb.core.internal.resource.ResourceNameValidator -- Validating V2__Server_discovery.sql
+14:21:15.720 [pool-1-thread-2] DEBUG org.flywaydb.core.internal.resource.ResourceNameValidator -- Validating V3__Jar_symbols.sql
+14:21:15.720 [pool-1-thread-2] DEBUG org.flywaydb.core.internal.resource.ResourceNameValidator -- Validating V1__Create_tables.sql
+14:21:15.771 [pool-1-thread-2] INFO org.flywaydb.core.FlywayExecutor -- Database: jdbc:h2:file:/home/yzy/Desktop/wasim-cpp/.metals/metals (H2 2.2)
+14:21:15.771 [pool-1-thread-2] DEBUG org.flywaydb.core.FlywayExecutor -- Driver: H2 JDBC Driver 2.2.224 (2023-09-17)
+14:21:15.771 [pool-1-thread-2] DEBUG org.flywaydb.core.FlywayExecutor -- DDL Transactions Supported: false
+14:21:15.772 [pool-1-thread-2] DEBUG org.flywaydb.core.internal.schemahistory.SchemaHistoryFactory -- Schemas: 
+14:21:15.772 [pool-1-thread-2] DEBUG org.flywaydb.core.internal.schemahistory.SchemaHistoryFactory -- Default schema: null
+14:21:15.774 [pool-1-thread-2] WARN org.flywaydb.core.internal.database.base.Database -- Flyway upgrade recommended: H2 2.2.224 is newer than this version of Flyway and support has not been tested. The latest supported version of H2 is 2.2.220.
+14:21:15.775 [pool-1-thread-2] DEBUG org.flywaydb.core.internal.callback.SqlScriptCallbackFactory -- Scanning for SQL callbacks ...
+14:21:15.775 [pool-1-thread-2] DEBUG org.flywaydb.core.internal.scanner.Scanner -- Filtering out resource: db/migration/ (filename: )
+14:21:15.782 [pool-1-thread-2] DEBUG org.flywaydb.core.internal.command.DbValidate -- Validating migrations ...
+14:21:15.785 [pool-1-thread-2] DEBUG org.flywaydb.core.internal.scanner.Scanner -- Filtering out resource: db/migration/ (filename: )
+14:21:15.791 [pool-1-thread-2] DEBUG org.flywaydb.core.internal.scanner.Scanner -- Filtering out resource: db/migration/V4__Fingerprints.sql (filename: V4__Fingerprints.sql)
+14:21:15.791 [pool-1-thread-2] DEBUG org.flywaydb.core.internal.scanner.Scanner -- Filtering out resource: db/migration/V2__Server_discovery.sql (filename: V2__Server_discovery.sql)
+14:21:15.791 [pool-1-thread-2] DEBUG org.flywaydb.core.internal.scanner.Scanner -- Filtering out resource: db/migration/ (filename: )
+14:21:15.791 [pool-1-thread-2] DEBUG org.flywaydb.core.internal.scanner.Scanner -- Filtering out resource: db/migration/V3__Jar_symbols.sql (filename: V3__Jar_symbols.sql)
+14:21:15.791 [pool-1-thread-2] DEBUG org.flywaydb.core.internal.scanner.Scanner -- Filtering out resource: db/migration/V1__Create_tables.sql (filename: V1__Create_tables.sql)
+14:21:15.792 [pool-1-thread-2] DEBUG org.flywaydb.core.internal.scanner.Scanner -- Filtering out resource: db/migration/V4__Fingerprints.sql (filename: V4__Fingerprints.sql)
+14:21:15.792 [pool-1-thread-2] DEBUG org.flywaydb.core.internal.scanner.Scanner -- Filtering out resource: db/migration/V2__Server_discovery.sql (filename: V2__Server_discovery.sql)
+14:21:15.792 [pool-1-thread-2] DEBUG org.flywaydb.core.internal.scanner.Scanner -- Filtering out resource: db/migration/ (filename: )
+14:21:15.792 [pool-1-thread-2] DEBUG org.flywaydb.core.internal.scanner.Scanner -- Filtering out resource: db/migration/V3__Jar_symbols.sql (filename: V3__Jar_symbols.sql)
+14:21:15.792 [pool-1-thread-2] DEBUG org.flywaydb.core.internal.scanner.Scanner -- Filtering out resource: db/migration/V1__Create_tables.sql (filename: V1__Create_tables.sql)
+14:21:15.799 [pool-1-thread-2] INFO org.flywaydb.core.internal.command.DbValidate -- Successfully validated 4 migrations (execution time 00:00.017s)
+14:21:15.801 [pool-1-thread-2] DEBUG org.flywaydb.core.internal.command.DbSchemas -- Skipping creation of existing schema: "PUBLIC"
+14:21:15.803 [pool-1-thread-2] INFO org.flywaydb.core.internal.command.DbMigrate -- Current version of schema "PUBLIC": 4
+14:21:15.805 [pool-1-thread-2] INFO org.flywaydb.core.internal.command.DbMigrate -- Schema "PUBLIC" is up to date. No migration necessary.
+14:21:16.009 [pool-1-thread-2] DEBUG org.flywaydb.core.FlywayExecutor -- Memory usage: 58 of 102M
+2024.04.07 14:21:16 INFO  Attempting to connect to the build server...
+2024.04.07 14:21:16 WARN  No build session currently active to reload.
+2024.04.07 14:21:16 INFO  Running BSP server List(/home/yzy/.cache/scalacli/local-repo/bin/scala-cli/scala-cli, bsp, --json-options, /home/yzy/Desktop/wasim-cpp/.scala-build/ide-options-v2.json, /home/yzy/Desktop/wasim-cpp)
+2024.04.07 14:21:16 INFO  tracing is disabled for protocol BSP, to enable tracing of incoming and outgoing JSON messages create an empty file at /home/yzy/Desktop/wasim-cpp/.metals/bsp.trace.json or /home/yzy/.cache/metals/bsp.trace.json
+Apr 07, 2024 2:21:21 PM org.eclipse.lsp4j.jsonrpc.services.GenericEndpoint notify
+INFO: Unsupported notification method: $/setTrace
+2024.04.07 14:22:16 ERROR Timeout waiting for 'build/initialize' response
+2024.04.07 14:22:16 WARN  Retrying connection to the build server scala-cli
+2024.04.07 14:22:16 INFO  Running BSP server List(/home/yzy/.cache/scalacli/local-repo/bin/scala-cli/scala-cli, bsp, --json-options, /home/yzy/Desktop/wasim-cpp/.scala-build/ide-options-v2.json, /home/yzy/Desktop/wasim-cpp)
+2024.04.07 14:22:16 INFO  tracing is disabled for protocol BSP, to enable tracing of incoming and outgoing JSON messages create an empty file at /home/yzy/Desktop/wasim-cpp/.metals/bsp.trace.json or /home/yzy/.cache/metals/bsp.trace.json
+2024.04.07 14:23:16 ERROR Timeout waiting for 'build/initialize' response
+2024.04.07 14:23:16 WARN  Retrying connection to the build server scala-cli
+2024.04.07 14:23:16 INFO  Running BSP server List(/home/yzy/.cache/scalacli/local-repo/bin/scala-cli/scala-cli, bsp, --json-options, /home/yzy/Desktop/wasim-cpp/.scala-build/ide-options-v2.json, /home/yzy/Desktop/wasim-cpp)
+2024.04.07 14:23:16 INFO  tracing is disabled for protocol BSP, to enable tracing of incoming and outgoing JSON messages create an empty file at /home/yzy/Desktop/wasim-cpp/.metals/bsp.trace.json or /home/yzy/.cache/metals/bsp.trace.json
+2024.04.07 14:23:24 INFO  BSP server: Checking https://github.com/coursier/jvm-index/raw/master/index.json
+2024.04.07 14:23:24 INFO  BSP server: Checked https://github.com/coursier/jvm-index/raw/master/index.json
+2024.04.07 14:23:24 INFO  BSP server: Downloading https://github.com/coursier/jvm-index/raw/master/index.json
+2024.04.07 14:23:24 INFO  BSP server: Downloaded https://github.com/coursier/jvm-index/raw/master/index.json
+2024.04.07 14:23:26 INFO  time: Connected to build server in 2m10s
+2024.04.07 14:23:26 INFO  Connected to Build server: scala-cli v1.1.2
+2024.04.07 14:23:26 INFO  compiling wasim-cpp_bd2c96d2de (48 java sources)
+2024.04.07 14:23:26 WARN  javac exited with exit code 1
+2024.04.07 14:23:26 INFO  time: compiled wasim-cpp_bd2c96d2de in 0.45s
+2024.04.07 14:23:26 INFO  compiling wasim-cpp_bd2c96d2de (48 java sources)
+2024.04.07 14:23:26 WARN  Could not find java sources in /usr/lib/jvm/src.zip, /usr/lib/jvm/lib/src.zip, /usr/lib/jvm/java-11-openjdk-amd64/src.zip, /usr/lib/jvm/java-11-openjdk-amd64/lib/src.zip, /usr/lib/jvm/src.zip, /usr/lib/jvm/lib/src.zip, /usr/lib/jvm/java-11-openjdk-amd64/src.zip, /usr/lib/jvm/java-11-openjdk-amd64/lib/src.zip. Java symbols will not be available.
+2024.04.07 14:23:26 WARN  Could not find java sources in /usr/lib/jvm/src.zip, /usr/lib/jvm/lib/src.zip, /usr/lib/jvm/java-11-openjdk-amd64/src.zip, /usr/lib/jvm/java-11-openjdk-amd64/lib/src.zip, /usr/lib/jvm/src.zip, /usr/lib/jvm/lib/src.zip, /usr/lib/jvm/java-11-openjdk-amd64/src.zip, /usr/lib/jvm/java-11-openjdk-amd64/lib/src.zip. Java symbols will not be available.
+2024.04.07 14:23:26 WARN  Could not find java sources in /usr/lib/jvm/src.zip, /usr/lib/jvm/lib/src.zip, /usr/lib/jvm/java-11-openjdk-amd64/src.zip, /usr/lib/jvm/java-11-openjdk-amd64/lib/src.zip, /usr/lib/jvm/src.zip, /usr/lib/jvm/lib/src.zip, /usr/lib/jvm/java-11-openjdk-amd64/src.zip, /usr/lib/jvm/java-11-openjdk-amd64/lib/src.zip. Java symbols will not be available.
+2024.04.07 14:23:26 INFO  time: indexed workspace in 0.96s
+2024.04.07 14:23:26 WARN  javac exited with exit code 1
+2024.04.07 14:23:26 INFO  time: compiled wasim-cpp_bd2c96d2de in 0.51s
+Apr 07, 2024 2:33:30 PM org.eclipse.lsp4j.jsonrpc.services.GenericEndpoint notify
+INFO: Unsupported notification method: $/setTrace
+Apr 07, 2024 2:39:19 PM org.eclipse.lsp4j.jsonrpc.services.GenericEndpoint notify
+INFO: Unsupported notification method: $/setTrace
