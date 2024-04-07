@@ -1,5 +1,4 @@
-module singlecycle(clk,input_a, input_b, product, underflow, overflow);
-  input clk;
+module singlecycle(input_a, input_b, product, underflow, overflow, result);
   input[31:0] input_a, input_b;
   output underflow, overflow;
   output reg [31:0] product;
@@ -23,8 +22,8 @@ module singlecycle(clk,input_a, input_b, product, underflow, overflow);
   assign overflow = (exponent_a[7] & exponent_b[7]) & ~final_exponent[7];
   assign underflow = (~exponent_b[7] & ~exponent_a[7] & final_exponent[7]);
   assign error_check_exponent = underflow ? (overflow ? final_exponent : 8'b0) : (overflow ? 8'b11111111 : final_exponent);
-  product = (zero_a | zero_b) ? 32'b0 : {sign_final, error_check_exponent, final_mantissa};
-  always @(posedge clk) begin
+  assign product = (zero_a | zero_b) ? 32'b0 : {sign_final, error_check_exponent, final_mantissa};
+  always @(*) begin
       result <= product;
   end
     

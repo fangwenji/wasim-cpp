@@ -31,7 +31,6 @@ int main() {
   std::cout<<b->to_string()<<std::endl;
   std::cout<<ret->to_string()<<std::endl;
 
-  // //这部分可以实现unroll cycle
   // SymbolicExecutor executor(sts, solver);
 
   // /* initial state assignment */
@@ -64,14 +63,12 @@ int main() {
   auto check_a = solver->make_term(smt::Equal,a,in_a);
   solver->assert_formula(check_a);
   
-
   auto check_b = solver->make_term(smt::Equal,b,in_b);
   solver->assert_formula(check_b);
 
   auto ret_extended = solver->make_term(smt::Op(smt::PrimOp::Sign_Extend, 32), ret);
   std::cout<<ret_extended->get_sort()<<std::endl;
   std::cout<<in_ret->get_sort()<<std::endl;
-  
 
   auto check_ret = solver->make_term(smt::Equal,ret_extended,in_ret);
   Term not_equal = solver->make_term(Not, check_ret);

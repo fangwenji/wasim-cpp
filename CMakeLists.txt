@@ -261,6 +261,9 @@ target_link_libraries(testmul wasim-lib)
 add_executable(testunroll "apps/idpv/2cyclemultest.cpp")
 target_link_libraries(testunroll wasim-lib)
 
+add_executable(testvv "apps/idpv/12cycletest.cpp")
+target_link_libraries(testvv wasim-lib)
+
 # add_executable(independence_check_test "independence_check_test.cpp")
 # target_link_libraries(independence_check_test wasim)
 
