@@ -255,11 +255,11 @@ add_executable(test2 "apps/idpv/unroll-test.cpp")
 target_link_libraries(test2 wasim-lib)
 set(CMAKE_BUILD_TYPE "debug")
 
-add_executable(testmul "apps/idpv/mul32test.cpp")
-target_link_libraries(testmul wasim-lib)
+add_executable(testmul32 "apps/idpv/mul32test.cpp")
+target_link_libraries(testmul32 wasim-lib)
 
-add_executable(testunroll "apps/idpv/2cyclemultest.cpp")
-target_link_libraries(testunroll wasim-lib)
+add_executable(test2cycle "apps/idpv/2cyclemultest.cpp")
+target_link_libraries(test2cycle wasim-lib)
 
 add_executable(testvv "apps/idpv/12cycletest.cpp")
 target_link_libraries(testvv wasim-lib)

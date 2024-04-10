@@ -23,13 +23,13 @@ int main() {
   BTOR2Encoder btor_parser("../design/idpv-test/2cyclemul.btor2", sts); 
   std::cout << sts.trans()->to_string() << std::endl;
 
-  auto a = sts.lookup("A");
-  auto b = sts.lookup("B");
-  auto ret = sts.lookup("result");
+  auto v_a = sts.lookup("A");
+  auto v_b = sts.lookup("B");
+  auto v_ret = sts.lookup("result");
 
-  std::cout<<a->to_string()<<std::endl;
-  std::cout<<b->to_string()<<std::endl;
-  std::cout<<ret->to_string()<<std::endl;
+  std::cout<<v_a->to_string()<<std::endl;
+  std::cout<<v_b->to_string()<<std::endl;
+  std::cout<<v_ret->to_string()<<std::endl;
 
   // SymbolicExecutor executor(sts, solver);
 
@@ -52,25 +52,37 @@ int main() {
 
   smt::SmtLibReader smtlib_reader(solver);
   smtlib_reader.parse("../design/idpv-test/concat_error.smt2");
-  auto in_a = smtlib_reader.lookup_symbol("__mulsf3::a!0@1#1");
-  auto in_b = smtlib_reader.lookup_symbol("__mulsf3::b!0@1#1");
-  auto in_ret = smtlib_reader.lookup_symbol("__mulsf3::$tmp::return_value_mulsf3_classical!0@1#2");
+  auto c_a = smtlib_reader.lookup_symbol("__mulsf3::a!0@1#1");
+  auto c_b = smtlib_reader.lookup_symbol("__mulsf3::b!0@1#1");
+  auto c_ret = smtlib_reader.lookup_symbol("__mulsf3::$tmp::return_value_mulsf3_classical!0@1#2");
 
-  std::cout<<in_a->to_string()<<std::endl;
-  std::cout<<in_b->to_string()<<std::endl;
-  std::cout<<in_ret->to_string()<<std::endl;
+  std::cout<<c_a->to_string()<<std::endl;
+  std::cout<<c_b->to_string()<<std::endl;
+  std::cout<<c_ret->to_string()<<std::endl;
 
-  auto check_a = solver->make_term(smt::Equal,a,in_a);
+  auto check_a = solver->make_term(smt::Equal,v_a,c_a);
   solver->assert_formula(check_a);
+  auto r = solver->check_sat();
+    if(r.is_sat()){
+        std::cout<<"111"<<std::endl;
+    }
   
-  auto check_b = solver->make_term(smt::Equal,b,in_b);
+  auto check_b = solver->make_term(smt::Equal,v_b,c_b);
   solver->assert_formula(check_b);
+  auto r1 = solver->check_sat();
+    if(r.is_sat()){
+        std::cout<<"111"<<std::endl;
+    }
 
-  auto ret_extended = solver->make_term(smt::Op(smt::PrimOp::Sign_Extend, 32), ret);
-  std::cout<<ret_extended->get_sort()<<std::endl;
-  std::cout<<in_ret->get_sort()<<std::endl;
+  // auto ret_extended = solver->make_term(smt::Op(smt::PrimOp::Sign_Extend, 32), v_ret);
+  auto c_ret_32 = solver-> make_term(smt::Op(smt::PrimOp::Extract,31,0),c_ret);
 
-  auto check_ret = solver->make_term(smt::Equal,ret_extended,in_ret);
+  std::cout<<v_ret->get_sort()<<std::endl;
+  // std::cout<<ret_extended->get_sort()<<std::endl;
+  // std::cout<<c_ret->get_sort()<<std::endl;
+  std::cout<<c_ret_32->get_sort()<<std::endl;
+
+  auto check_ret = solver->make_term(smt::Equal,v_ret,c_ret_32);
   Term not_equal = solver->make_term(Not, check_ret);
   TermVec assmpt {not_equal};
   auto res = solver->check_sat_assuming(assmpt);
