@@ -1168,9 +1168,11 @@
 
 ; set_to true (equal)
 (define-fun |__mulsf3::a!0@1#1| () (_ BitVec 32) |main::1::a!0@1#2|)
+;(declare-fun |__mulsf3::a!0@1#1| () (_ BitVec 32))
 
 ; set_to true (equal)
 (define-fun |__mulsf3::b!0@1#1| () (_ BitVec 32) |main::1::b!0@1#2|)
+;(declare-fun |__mulsf3::b!0@1#1| () (_ BitVec 32))
 
 ; this is a model for typecast : f32_23 -> B32
 (define-fun float_bv.typecast_f32_23->B32 ((op0 (_ BitVec 32))) (_ BitVec 32) ((_ extract 31 0) op0))

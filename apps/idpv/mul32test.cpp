@@ -27,16 +27,25 @@ int main() {
     assignment_type initmul = {};
     auto initial_state = executor.convert(initmul);
     executor.init(initial_state);
-    executor.set_input(executor.convert({{"A","a"},{"B","b"}}),{});
+    // executor.set_input(executor.convert({{"A","a"},{"B","b"}}),{});
+    auto initial_input = executor.convert({{"A","a"},{"B","b"},{"enable",1},{"reset",0}});
+
+    auto v_a = initial_input.at(sts.lookup("A"));
+    auto v_b = initial_input.at(sts.lookup("B"));
+    std::cout <<"Vlg a expr: " << v_a ->to_string() << std::endl;
+    std::cout <<"Vlg b expr: " << v_b ->to_string() << std::endl;
+
+    executor.set_input(initial_input,{});
     executor.sim_one_step();
+
     executor.set_input(executor.convert({{"enable",1}}),{});
     executor.sim_one_step();
     auto s1 = executor.get_curr_state();
     std::cout<<s1.print()<<std::endl; 
-    auto v_a = s1.get_sv().at(sts.lookup("regA"));
-    auto v_b = s1.get_sv().at(sts.lookup("regB"));
+    // auto v_a = s1.get_sv().at(sts.lookup("regA"));
+    // auto v_b = s1.get_sv().at(sts.lookup("regB"));
     auto v_ret = s1.get_sv().at(sts.lookup("result"));
-    std::cout << v_ret ->to_string() << std::endl;
+    std::cout <<"Vlg expr: " << v_ret ->to_string() << std::endl;
 
     // std::cout << "---------------------------C++ smtlib2---------------------------" << std::endl;
 
@@ -46,26 +55,29 @@ int main() {
     auto c_b = smtlib_reader.lookup_symbol("__mulsf3::b!0@1#1");
     auto c_ret = smtlib_reader.lookup_symbol("__mulsf3::$tmp::return_value_mulsf3_classical!0@1#2");
 
+    std::cout << "C a: " << c_a->to_string() << std::endl;
+    std::cout << "C b: " << c_b->to_string() << std::endl;
+    std::cout << "C expr: " << c_ret->to_string() << std::endl;
+
     // std::cout << "------------------------equvi check------------------------------" << std::endl;
 
     auto check_a = solver->make_term(smt::Equal, v_a, c_a);
     solver->assert_formula(check_a);
     auto r = solver->check_sat();
     if(r.is_sat()){
-        std::cout<<"111"<<std::endl;
+        std::cout<<"a equal"<<std::endl;
     }
 
     auto check_b = solver->make_term(smt::Equal, v_b, c_b);
     solver->assert_formula(check_b);
     auto r1 = solver->check_sat();
     if(r1.is_sat()){
-        std::cout<<"111"<<std::endl;
+        std::cout<<"b equal"<<std::endl;
     }
 
     // auto ret_extended = solver->make_term(smt::Op(smt::PrimOp::Sign_Extend, 32), expr);
     auto c_ret_32 = solver-> make_term(smt::Op(smt::PrimOp::Extract,31,0),c_ret);
     std::cout<<v_ret->get_sort()<<std::endl;
-    // std::cout<<ret_extended->get_sort()<<std::endl;
     std::cout<<c_ret_32->get_sort()<<std::endl;
 
     auto check_ret = solver->make_term(smt::Equal, v_ret, c_ret_32);
@@ -76,8 +88,40 @@ int main() {
         std::cout << "always equal" << std::endl;
         
     } else if(res_ret.is_sat()){
+        std::cout<<solver->get_value(v_a)<<std::endl;
+        std::cout<<solver->get_value(v_b)<<std::endl;
+        std::cout<<solver->get_value(v_ret)<<std::endl;
+
         std::cout << "exist unequal" << std::endl;
     }
 
     return 0;
 }
+
+/*
+a
+11001110100000111111000000000001
+11001110100000111111000000000001
+-1106772096.0
+
+b
+01001110011111000001100000000001
+01001110011111000001100000000001
+1057357888.0
+
+output:
+11011101100000011110110010100000
+11011101100000011110110010100000
+v:−1170254205907107800
+c:-1170254068468154368.000000
+ 
+
+#b10111110100000000000000000000000
+#b10000000111111111111111111111111
+#b01111111111111111111111111111111
+−0.25
+−2.3509885615147286 x 10^-38
+6.805646932770577 x 10^38  obviously ridiculous
+
+
+*/
