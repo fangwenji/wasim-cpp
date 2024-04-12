@@ -91,8 +91,8 @@ int main() {
         std::cout<<"va: "<<solver->get_value(v_a)<<std::endl;
         std::cout<<"vb: "<<solver->get_value(v_b)<<std::endl;
         std::cout<<"vexpr: "<<solver->get_value(v_ret)<<std::endl;
-        std::cout<<"ca: "<<solver->get_value(c_ret_32)<<std::endl;
-        std::cout<<"cb: "<<solver->get_value(c_ret_32)<<std::endl;
+        std::cout<<"ca: "<<solver->get_value(c_a)<<std::endl;
+        std::cout<<"cb: "<<solver->get_value(c_b)<<std::endl;
         std::cout<<"cexpr:"<<solver->get_value(c_ret_32)<<std::endl;
 
 
@@ -141,9 +141,11 @@ change concat_error.smt2
 va: #b10111110100000000000000000000000
 vb: #b10000000111111111111111111111111
 vexpr: #b01111111111111111111111111111111
-ca: #b11111111111111111111111111111111
-cb: #b11111111111111111111111111111111
+ca: #b10111110100000000000000000000000
+cb: #b10000000111111111111111111111111
 cexpr:#b11111111111111111111111111111111
+
+101111111111110100000000000000000000000000000000000000000000000
 
 
 */
