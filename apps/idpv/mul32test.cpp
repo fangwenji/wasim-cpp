@@ -88,9 +88,13 @@ int main() {
         std::cout << "always equal" << std::endl;
         
     } else if(res_ret.is_sat()){
-        std::cout<<solver->get_value(v_a)<<std::endl;
-        std::cout<<solver->get_value(v_b)<<std::endl;
-        std::cout<<solver->get_value(v_ret)<<std::endl;
+        std::cout<<"va: "<<solver->get_value(v_a)<<std::endl;
+        std::cout<<"vb: "<<solver->get_value(v_b)<<std::endl;
+        std::cout<<"vexpr: "<<solver->get_value(v_ret)<<std::endl;
+        std::cout<<"ca: "<<solver->get_value(c_ret_32)<<std::endl;
+        std::cout<<"cb: "<<solver->get_value(c_ret_32)<<std::endl;
+        std::cout<<"cexpr:"<<solver->get_value(c_ret_32)<<std::endl;
+
 
         std::cout << "exist unequal" << std::endl;
     }
@@ -111,7 +115,7 @@ b
 
 output:
 11011101100000011110110010100000
-11011101100000011110110010100000
+11011101100000011110110010011111
 v:−1170254205907107800
 c:-1170254068468154368.000000
  
@@ -122,6 +126,24 @@ c:-1170254068468154368.000000
 −0.25
 −2.3509885615147286 x 10^-38
 6.805646932770577 x 10^38  obviously ridiculous
+
+
+va: #b11001110100000111111000000000001
+vb: #b01001110011111000001100000000001
+vexpr: #b11011101100000011110110010100000
+ca: #b11011101100000011110110010011111
+cb: #b11011101100000011110110010011111
+cexpr:#b11011101100000011110110010011111
+
+---------------------------------------
+change concat_error.smt2
+
+va: #b10111110100000000000000000000000
+vb: #b10000000111111111111111111111111
+vexpr: #b01111111111111111111111111111111
+ca: #b11111111111111111111111111111111
+cb: #b11111111111111111111111111111111
+cexpr:#b11111111111111111111111111111111
 
 
 */
