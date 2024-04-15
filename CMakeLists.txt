@@ -264,6 +264,12 @@ target_link_libraries(test2cycle wasim-lib)
 add_executable(testvv "apps/idpv/12cycletest.cpp")
 target_link_libraries(testvv wasim-lib)
 
+add_executable(testtop "apps/idpv/toptest.cpp")
+target_link_libraries(testtop wasim-lib)
+
+add_executable(testf32 "apps/idpv/f32multest.cpp")
+target_link_libraries(testf32 wasim-lib)
+
 # add_executable(independence_check_test "independence_check_test.cpp")
 # target_link_libraries(independence_check_test wasim)
 
