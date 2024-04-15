@@ -348,8 +348,7 @@
 (define-fun |memcpy::1::1::src_n!0@1#2[[3]]| () (_ BitVec 8) ((_ extract 31 24) |float32_val::f!0@1#1|))
 
 ; set_to true (equal)
-;(define-fun |float32_val::1::result!0@1#2..v| () (_ BitVec 32) ((concat (concat (|memcpy::1::1::src_n!0@1#2[[3]]|)(|memcpy::1::1::src_n!0@1#2[[2]]|) )(|memcpy::1::1::src_n!0@1#2[[1]]|) )(|memcpy::1::1::src_n!0@1#2[[0]]|)))
-(declare-fun |float32_val::1::result!0@1#2..v| () (_ BitVec 32))
+(define-fun |float32_val::1::result!0@1#2..v| () (_ BitVec 32) (concat (concat (concat |memcpy::1::1::src_n!0@1#2[[3]]| |memcpy::1::1::src_n!0@1#2[[2]]| ) |memcpy::1::1::src_n!0@1#2[[1]]| ) |memcpy::1::1::src_n!0@1#2[[0]]|))
 
 ; set_to true (equal)
 (define-fun |goto_symex::return_value::float32_val!0#1..v| () (_ BitVec 32) |float32_val::1::result!0@1#2..v|)
@@ -406,8 +405,7 @@
 (define-fun |memcpy::1::1::src_n!0@2#2[[3]]| () (_ BitVec 8) ((_ extract 31 24) |float32_val::f!0@2#1|))
 
 ; set_to true (equal)
-;(define-fun |float32_val::1::result!0@2#2..v| () (_ BitVec 32) (concat |memcpy::1::1::src_n!0@2#2[[3]]| |memcpy::1::1::src_n!0@2#2[[2]]| |memcpy::1::1::src_n!0@2#2[[1]]| |memcpy::1::1::src_n!0@2#2[[0]]|))
-(declare-fun |float32_val::1::result!0@2#2..v| () (_ BitVec 32))
+(define-fun |float32_val::1::result!0@2#2..v| () (_ BitVec 32) (concat (concat (concat |memcpy::1::1::src_n!0@2#2[[3]]| |memcpy::1::1::src_n!0@2#2[[2]]| ) |memcpy::1::1::src_n!0@2#2[[1]]| ) |memcpy::1::1::src_n!0@2#2[[0]]|))
 
 ; set_to true (equal)
 (define-fun |goto_symex::return_value::float32_val!0#2..v| () (_ BitVec 32) |float32_val::1::result!0@2#2..v|)
