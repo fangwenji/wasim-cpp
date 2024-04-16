@@ -1167,15 +1167,11 @@
 (define-fun |main::1::b!0@1#2| () (_ BitVec 32) (float_bv.floatbv_typecast_s32->f32_23 |main::$tmp::return_value_unknown$0!0@1#2| (_ bv0 32)))
 
 ; set_to true (equal)
-; (define-fun |__mulsf3::a!0@1#1| () (_ BitVec 32) |main::1::a!0@1#2|)
-
-; HZ: convert this to an arbitrary input
+;(define-fun |__mulsf3::a!0@1#1| () (_ BitVec 32) |main::1::a!0@1#2|)
 (declare-fun |__mulsf3::a!0@1#1| () (_ BitVec 32))
 
 ; set_to true (equal)
-; (define-fun |__mulsf3::b!0@1#1| () (_ BitVec 32) |main::1::b!0@1#2|)
-
-; HZ: convert this to an arbitrary input
+;(define-fun |__mulsf3::b!0@1#1| () (_ BitVec 32) |main::1::b!0@1#2|)
 (declare-fun |__mulsf3::b!0@1#1| () (_ BitVec 32))
 
 ; this is a model for typecast : f32_23 -> B32
