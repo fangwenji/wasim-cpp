@@ -19,11 +19,33 @@ int main() {
   solver->set_opt("produce-models", "true");
   solver->set_opt("produce-unsat-assumptions", "true");
 
-
   TransitionSystem sts(solver);
   BTOR2Encoder btor_parser("design/test/pipe-no-stall.btor2", sts);
 
   std::cout << sts.trans()->to_string() << std::endl;
+  
+  SymbolicExecutor sim(sts, solver);
+  
+  auto varmap = sim.convert( { {"wen_stage2","v"}, {"tag2", 1} } );
+
+  sim.init(varmap);
+
+  auto s = sim.get_curr_state();
+
+  std::cout << s.print() ;
+  std::cout << s.print_assumptions();
+
+  auto inputmap = sim.convert( {{"reg_init", 0}} );
+  sim.set_input(inputmap, {});
+  sim.sim_one_step();
+
+  auto s2 = sim.get_curr_state();
+  std::cout << s2.print();
+  std::cout << s2.print_assumptions();
+
+  sim.backtrack();
+  sim.undo_set_input();
+
 
   return 0;
 }
