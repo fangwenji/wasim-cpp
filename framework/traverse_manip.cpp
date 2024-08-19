@@ -3,7 +3,7 @@
 namespace wasim {
 
 void extend_branch_init(std::vector<std::vector<StateAsmpt>> & branch_list,
-                        SymbolicExecutor & executor,
+                        SymbolicSimulator & simulator,
                         TransitionSystem & sts,
                         std::unordered_set<std::string> base_sv,
                         std::string flag,
@@ -13,12 +13,12 @@ void extend_branch_init(std::vector<std::vector<StateAsmpt>> & branch_list,
 {
   auto branch_list_old(branch_list);
   branch_list.clear();
-  auto executor_temp(executor);
+  auto simulator_temp(simulator);
   smt::UnorderedTermSet base_variable;
   for (const auto n : base_sv) {
-    base_variable.insert(executor_temp.var(n));
+    base_variable.insert(simulator_temp.var(n));
   }
-  SymbolicTraverse traverse_temp(sts, executor_temp, solver, base_variable);
+  SymbolicTraverse traverse_temp(sts, simulator_temp, solver, base_variable);
   auto assumptions = flag_asmpt;
   traverse_temp.traverse(assumptions, order, {});
   cout << "number of state " << flag << ": 1-> "
@@ -29,7 +29,7 @@ void extend_branch_init(std::vector<std::vector<StateAsmpt>> & branch_list,
     state_vec_extend.push_back(nextstate);
     branch_list.push_back(state_vec_extend);
     nextstate.print();
-    if (nextstate.syntactically_contains_x(executor.get_Xs())) {
+    if (nextstate.syntactically_contains_x(simulator.get_Xs())) {
       assert(false);
     }
     // nextstate.print_assumptions();
@@ -40,7 +40,7 @@ void extend_branch_init(std::vector<std::vector<StateAsmpt>> & branch_list,
 
 void extend_branch_next_phase(
     std::vector<std::vector<StateAsmpt>> & branch_list,
-    SymbolicExecutor & executor,
+    SymbolicSimulator & simulator,
     TransitionSystem & sts,
     std::unordered_set<std::string> base_sv,
     std::string flag,
@@ -54,19 +54,19 @@ void extend_branch_next_phase(
   for (auto state_list_old : branch_list_old) {
     auto state_list(state_list_old);
     auto s = state_list.back();
-    auto executor_temp(executor);
-    auto d = executor_temp.convert(phase_marker);
+    auto simulator_temp(simulator);
+    auto d = simulator_temp.convert(phase_marker);
     std::swap(s.sv_, d);
     s.sv_.insert(d.begin(),
                  d.end());  // for the same variable, d will overwrite s
     // s.print();
     // s.print_assumptions();
-    executor_temp.set_current_state(s);
+    simulator_temp.set_current_state(s);
     smt::UnorderedTermSet base_variable;
     for (const auto n : base_sv) {
-      base_variable.insert(executor_temp.var(n));
+      base_variable.insert(simulator_temp.var(n));
     }
-    SymbolicTraverse traverse_temp(sts, executor_temp, solver, base_variable);
+    SymbolicTraverse traverse_temp(sts, simulator_temp, solver, base_variable);
     auto assumptions = flag_asmpt;
     // TODO: you should first set the state to s before this (due to API change of traverse_one_step
     traverse_temp.traverse_one_step(assumptions, order, { s });
@@ -89,7 +89,7 @@ void extend_branch_next_phase(
 
 void extend_branch_same_phase(
     std::vector<std::vector<StateAsmpt>> & branch_list,
-    SymbolicExecutor & executor,
+    SymbolicSimulator & simulator,
     TransitionSystem & sts,
     std::unordered_set<std::string> base_sv,
     std::string flag,
@@ -104,17 +104,17 @@ void extend_branch_same_phase(
     auto state_list(state_list_old);
     auto s = state_list.back();
     auto s_init(s);
-    auto executor_temp(executor);
-    auto d = executor_temp.convert(phase_marker);
+    auto simulator_temp(simulator);
+    auto d = simulator_temp.convert(phase_marker);
     std::swap(s.sv_, d);  // swap will only exchange the pointers
     s.sv_.insert(d.begin(),
                  d.end());  // for the same variable, d will overwrite s
-    executor_temp.set_current_state(s);
+    simulator_temp.set_current_state(s);
     smt::UnorderedTermSet base_variable;
     for (const auto n : base_sv) {
-      base_variable.insert(executor_temp.var(n));
+      base_variable.insert(simulator_temp.var(n));
     }
-    SymbolicTraverse traverse_temp(sts, executor_temp, solver, base_variable);
+    SymbolicTraverse traverse_temp(sts, simulator_temp, solver, base_variable);
     auto assumptions = flag_asmpt;
     traverse_temp.traverse(assumptions, order, { s_init });
     cout << "number of state " << flag << ": 1-> "

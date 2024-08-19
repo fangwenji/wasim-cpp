@@ -77,8 +77,8 @@ class PerStateStack
 {
  public:
   PerStateStack(const std::vector<TraverseBranchingNode> & branching_point,
-                const SymbolicExecutor & executor)
-      : solver_(executor.get_solver()), simulator_(executor), branching_point_(branching_point),
+                const SymbolicSimulator & simulator)
+      : solver_(simulator.get_solver()), simulator_(simulator), branching_point_(branching_point),
         ptr_(0), no_next_choice_(false)
   {  }
 
@@ -98,7 +98,7 @@ class PerStateStack
  protected:
 
   smt::SmtSolver solver_;
-  const SymbolicExecutor & simulator_;
+  const SymbolicSimulator & simulator_;
   // we only need convert (which is a const function anyway)
 
   std::vector<TraverseBranchingNode> stack_;
@@ -111,11 +111,11 @@ class SymbolicTraverse
 {
  public:
   SymbolicTraverse(const TransitionSystem & ts,
-                   SymbolicExecutor & executor,
+                   SymbolicSimulator & simulator,
                    smt::SmtSolver & s,
                    const smt::UnorderedTermSet & base_variable)
       : sts_(ts), solver_(s), 
-      executor_(executor), tracemgr_(ts, s),
+      simulator_(simulator), tracemgr_(ts, s),
       base_variable_(base_variable)
   {
     tracemgr_.record_base_var(base_variable);
@@ -138,7 +138,7 @@ class SymbolicTraverse
  protected:
   const TransitionSystem & sts_;
   smt::SmtSolver solver_;
-  SymbolicExecutor & executor_;
+  SymbolicSimulator & simulator_;
   TraceManager tracemgr_;
   smt::UnorderedTermSet base_variable_;
   smt::UnorderedTermMap s_concrete_;

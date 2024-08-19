@@ -24,7 +24,7 @@ int main() {
 
   std::cout << sts.trans()->to_string() << std::endl;
   
-  SymbolicExecutor sim(sts, solver);
+  SymbolicSimulator sim(sts, solver);
   
   auto varmap = sim.convert( { {"wen_stage2","v"}, {"tag2", 1} } );
 

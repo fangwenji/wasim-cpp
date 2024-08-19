@@ -91,7 +91,7 @@ namespace wasim {
   struct SolverRef;
   struct StateRef;
   struct TransSys;
-  struct SimExecutor;
+  struct Simsimulator;
 
 
   struct SolverRef {
@@ -509,7 +509,7 @@ namespace wasim {
     friend struct SolverRef;
     friend struct StateRef;
     friend struct TransSys;
-    friend struct SimExecutor;
+    friend struct Simsimulator;
     smt::SmtSolver solver;
     smt::Term node;
 
@@ -1097,7 +1097,7 @@ namespace wasim {
       sptr->update_sv().swap(newmap);
     }
     
-    friend struct SimExecutor;
+    friend struct Simsimulator;
 
     protected:
       smt::SmtSolver solver;
@@ -1306,18 +1306,18 @@ namespace wasim {
       return new TransSys(new TransitionSystem(*sptr));
     }
 
-      friend struct SimExecutor;
+      friend struct Simsimulator;
     protected:
       std::shared_ptr<TransitionSystem> sptr;
 
       TransSys(TransitionSystem * ts) : sptr(ts) { }
   }; // struct TransSys
 
-  /* TODO : executor */
-  struct SimExecutor {
+  /* TODO : simulator */
+  struct Simsimulator {
 
-    SimExecutor(TransSys * ts) {
-      sptr = std::make_shared<SymbolicExecutor>(*(ts->sptr), ts->sptr->get_solver());
+    Simsimulator(TransSys * ts) {
+      sptr = std::make_shared<SymbolicSimulator>(*(ts->sptr), ts->sptr->get_solver());
     }
 
     /// get the length of the trace
@@ -1475,7 +1475,7 @@ namespace wasim {
     SolverRef * get_solver() const { return new SolverRef(sptr->get_solver()); }
 
     protected:
-      std::shared_ptr<SymbolicExecutor> sptr;
+      std::shared_ptr<SymbolicSimulator> sptr;
   };
 
   /* TODO : tracemgr */
@@ -1739,28 +1739,28 @@ BOOST_PYTHON_MODULE(pywasim)
     .def("__copy__", &TransSys::clone, return_value_policy<manage_new_object>())
   ;
 
-  class_<SimExecutor>("SimExecutor", init<TransSys *>())
-    .def("tracelen", &SimExecutor::tracelen)
-    .def("all_assumptions", &SimExecutor::all_assumptions)
-    .def("all_assumption_interp", &SimExecutor::all_assumption_interp)
+  class_<Simsimulator>("Simsimulator", init<TransSys *>())
+    .def("tracelen", &Simsimulator::tracelen)
+    .def("all_assumptions", &Simsimulator::all_assumptions)
+    .def("all_assumption_interp", &Simsimulator::all_assumption_interp)
 
-    .def("var", &SimExecutor::var, return_value_policy<manage_new_object>())
-    .def("cur", &SimExecutor::cur, return_value_policy<manage_new_object>())
-    .def("print_current_step", &SimExecutor::print_current_step)
-    .def("print_current_step_assumptions", &SimExecutor::print_current_step_assumptions)
-    .def("convert", &SimExecutor::convert)
-    .def("backtrack", &SimExecutor::backtrack)
-    .def("init", &SimExecutor::init)
-    .def("set_current_state", &SimExecutor::set_current_state)
-    .def("set_input", &SimExecutor::set_input)
-    .def("undo_set_input", &SimExecutor::undo_set_input)
+    .def("var", &Simsimulator::var, return_value_policy<manage_new_object>())
+    .def("cur", &Simsimulator::cur, return_value_policy<manage_new_object>())
+    .def("print_current_step", &Simsimulator::print_current_step)
+    .def("print_current_step_assumptions", &Simsimulator::print_current_step_assumptions)
+    .def("convert", &Simsimulator::convert)
+    .def("backtrack", &Simsimulator::backtrack)
+    .def("init", &Simsimulator::init)
+    .def("set_current_state", &Simsimulator::set_current_state)
+    .def("set_input", &Simsimulator::set_input)
+    .def("undo_set_input", &Simsimulator::undo_set_input)
 
-    .def("interpret_state_expr_on_curr_frame", &SimExecutor::interpret_state_expr_on_curr_frame, return_value_policy<manage_new_object>() )
-    .def("sim_one_step", &SimExecutor::sim_one_step)
-    .def("get_Xs", &SimExecutor::get_Xs)
-    .def("get_curr_state", &SimExecutor::get_curr_state, return_value_policy<manage_new_object>())
-    .def("set_var", &SimExecutor::set_var, return_value_policy<manage_new_object>())
-    .def("get_solver", &SimExecutor::get_solver, return_value_policy<manage_new_object>())
+    .def("interpret_state_expr_on_curr_frame", &Simsimulator::interpret_state_expr_on_curr_frame, return_value_policy<manage_new_object>() )
+    .def("sim_one_step", &Simsimulator::sim_one_step)
+    .def("get_Xs", &Simsimulator::get_Xs)
+    .def("get_curr_state", &Simsimulator::get_curr_state, return_value_policy<manage_new_object>())
+    .def("set_var", &Simsimulator::set_var, return_value_policy<manage_new_object>())
+    .def("get_solver", &Simsimulator::get_solver, return_value_policy<manage_new_object>())
   ;
 
 

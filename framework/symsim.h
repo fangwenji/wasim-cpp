@@ -29,10 +29,10 @@ typedef std::variant<int, std::string> value_type;
 /// from string (variable name) to value
 typedef std::map<std::string, value_type> assignment_type;
 
-class SymbolicExecutor
+class SymbolicSimulator
 {
  private:
-  /// a class only used in symbolic executor
+  /// a class only used in symbolic simulator
   class ChoiceItem
   {
    public:
@@ -60,7 +60,7 @@ class SymbolicExecutor
  public:
   // we will keep a reference to ts
   // and a copy of the pointer to the solver
-  SymbolicExecutor(TransitionSystem & ts, const smt::SmtSolver & s)
+  SymbolicSimulator(TransitionSystem & ts, const smt::SmtSolver & s)
       : ts_(ts), solver_(s), invar_(ts.inputvars()), svar_(ts.statevars())
   {
   }

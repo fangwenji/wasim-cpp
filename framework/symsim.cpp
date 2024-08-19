@@ -6,9 +6,9 @@ using namespace std;
 
 namespace wasim {
 
-unsigned SymbolicExecutor::tracelen() const { return trace_.size(); }
+unsigned SymbolicSimulator::tracelen() const { return trace_.size(); }
 
-smt::TermVec SymbolicExecutor::all_assumptions() const
+smt::TermVec SymbolicSimulator::all_assumptions() const
 {
   smt::TermVec ret_vec;
   for (const auto & l : history_assumptions_) {
@@ -19,7 +19,7 @@ smt::TermVec SymbolicExecutor::all_assumptions() const
   return ret_vec;
 }
 
-std::vector<std::string> SymbolicExecutor::all_assumption_interp() const
+std::vector<std::string> SymbolicSimulator::all_assumption_interp() const
 {
   std::vector<std::string> ret_vec;
   for (const auto & l : history_assumptions_interp_) {
@@ -30,12 +30,12 @@ std::vector<std::string> SymbolicExecutor::all_assumption_interp() const
   return ret_vec;
 }
 
-smt::Term SymbolicExecutor::var(const std::string & n) const
+smt::Term SymbolicSimulator::var(const std::string & n) const
 {
   return ts_.named_terms().at(n);
 }
 
-smt::Term SymbolicExecutor::cur(const std::string & n) const
+smt::Term SymbolicSimulator::cur(const std::string & n) const
 {
   const auto & sv_mapping = trace_.back();
   smt::Term expr = var(n);
@@ -52,7 +52,7 @@ smt::Term SymbolicExecutor::cur(const std::string & n) const
   return expr;
 }
 
-void SymbolicExecutor::_check_only_invar(
+void SymbolicSimulator::_check_only_invar(
     const smt::UnorderedTermMap & vdict) const
 {
   for (const auto & v : vdict) {
@@ -62,7 +62,7 @@ void SymbolicExecutor::_check_only_invar(
   }
 }
 
-bool SymbolicExecutor::_expr_only_sv(const smt::Term & expr) const
+bool SymbolicSimulator::_expr_only_sv(const smt::Term & expr) const
 {
   smt::UnorderedTermSet var_set;
   smt::get_free_symbols(expr, var_set);
@@ -77,7 +77,7 @@ bool SymbolicExecutor::_expr_only_sv(const smt::Term & expr) const
   return true;
 }
 
-smt::UnorderedTermMap SymbolicExecutor::convert(
+smt::UnorderedTermMap SymbolicSimulator::convert(
     const assignment_type & vdict) const
 {
   smt::UnorderedTermMap retdict;
@@ -108,7 +108,7 @@ smt::UnorderedTermMap SymbolicExecutor::convert(
   return retdict;
 }
 
-void SymbolicExecutor::backtrack()
+void SymbolicSimulator::backtrack()
 {
   assert(history_choice_.size() != 0);
   trace_.pop_back();
@@ -117,7 +117,7 @@ void SymbolicExecutor::backtrack()
   history_choice_.back().UsedInSim_ = false;
 }
 
-void SymbolicExecutor::init(
+void SymbolicSimulator::init(
     const smt::UnorderedTermMap & var_assignment /*={}*/)
 {
   trace_.push_back(var_assignment);
@@ -140,7 +140,7 @@ void SymbolicExecutor::init(
   history_assumptions_interp_.push_back({ "init" });
 }
 
-void SymbolicExecutor::set_current_state(const StateAsmpt & s)
+void SymbolicSimulator::set_current_state(const StateAsmpt & s)
 {
   trace_.clear();
   trace_.push_back(s.get_sv());
@@ -156,7 +156,7 @@ void SymbolicExecutor::set_current_state(const StateAsmpt & s)
   history_choice_.clear();
 }
 
-void SymbolicExecutor::print_current_step() const
+void SymbolicSimulator::print_current_step() const
 {
   const auto & prev_sv = trace_.back();
   // cout << "sv  rhs" << endl;
@@ -170,7 +170,7 @@ void SymbolicExecutor::print_current_step() const
   }
 }
 
-void SymbolicExecutor::print_current_step_assumptions() const
+void SymbolicSimulator::print_current_step_assumptions() const
 {
   int i = 0;
   for (const auto & l : history_assumptions_) {
@@ -185,7 +185,7 @@ void SymbolicExecutor::print_current_step_assumptions() const
   }
 }
 
-void SymbolicExecutor::set_input(const smt::UnorderedTermMap & invar_assign,
+void SymbolicSimulator::set_input(const smt::UnorderedTermMap & invar_assign,
                                  const smt::TermVec & pre_assumptions)
 {
   if (history_choice_.size() != 0) {
@@ -248,7 +248,7 @@ void SymbolicExecutor::set_input(const smt::UnorderedTermMap & invar_assign,
   }
 }  // end of set_input
 
-void SymbolicExecutor::undo_set_input()
+void SymbolicSimulator::undo_set_input()
 {
   assert(history_choice_.size() != 0);
   const auto & c = history_choice_.back();  // avoid copy
@@ -261,7 +261,7 @@ void SymbolicExecutor::undo_set_input()
 }
 
 /// similar to cur(), but will check no reference to the input variables
-smt::Term SymbolicExecutor::interpret_state_expr_on_curr_frame(
+smt::Term SymbolicSimulator::interpret_state_expr_on_curr_frame(
     const smt::Term & expr) const
 {
   if (!_expr_only_sv(expr))
@@ -271,7 +271,7 @@ smt::Term SymbolicExecutor::interpret_state_expr_on_curr_frame(
 }
 
 /// similar to cur(), but will check no reference to the input variables
-smt::TermVec SymbolicExecutor::interpret_state_expr_on_curr_frame(
+smt::TermVec SymbolicSimulator::interpret_state_expr_on_curr_frame(
     const smt::TermVec & expr_list) const
 {
   smt::TermVec ret;
@@ -282,7 +282,7 @@ smt::TermVec SymbolicExecutor::interpret_state_expr_on_curr_frame(
   return ret;
 }
 
-void SymbolicExecutor::sim_one_step()
+void SymbolicSimulator::sim_one_step()
 {
   assert(history_choice_.size() != 0);
 
@@ -303,7 +303,7 @@ void SymbolicExecutor::sim_one_step()
   history_assumptions_interp_.push_back({});
 }
 
-// void SymbolicExecutor::sim_one_step_direct()
+// void SymbolicSimulator::sim_one_step_direct()
 // {
 //   const auto & prev_sv = trace_.back();
 //   smt::UnorderedTermMap svmap;
@@ -315,7 +315,7 @@ void SymbolicExecutor::sim_one_step()
 //   history_assumptions_interp_.push_back({});
 // }
 
-smt::Term SymbolicExecutor::new_var(int bitwdth,
+smt::Term SymbolicSimulator::new_var(int bitwdth,
                                     const std::string & vname /*"=var"*/,
                                     bool x /*=true*/)
 {
@@ -327,7 +327,7 @@ smt::Term SymbolicExecutor::new_var(int bitwdth,
   return symb;
 }
 
-StateAsmpt SymbolicExecutor::get_curr_state(const smt::TermVec & assumptions)
+StateAsmpt SymbolicSimulator::get_curr_state(const smt::TermVec & assumptions)
 {
   auto need_to_push_input = false;
   if ((history_choice_.size() == 0) || (history_choice_.back().UsedInSim_))
@@ -345,7 +345,7 @@ StateAsmpt SymbolicExecutor::get_curr_state(const smt::TermVec & assumptions)
   return ret;
 }
 
-smt::Term SymbolicExecutor::set_var(int bitwdth, std::string vname /*= "var"*/)
+smt::Term SymbolicSimulator::set_var(int bitwdth, std::string vname /*= "var"*/)
 {
   auto symb_sort = solver_->make_sort(smt::BV, bitwdth);
   auto symb = solver_->make_symbol(vname, symb_sort);
