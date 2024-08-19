@@ -227,17 +227,18 @@ void SymbolicExecutor::set_input(const smt::UnorderedTermMap & invar_assign,
     auto assumption = solver_->substitute(vect.first, submap);
     assmpt_vec.push_back(assumption);
   }
+  if (!assmpt_vec.empty()) {
+    smt::Term assmpt;
+    if (assmpt_vec.size() == 1) {
+      assmpt = assmpt_vec.back();
+    } else {
+      assmpt = solver_->make_term(smt::And, assmpt_vec);
+    }
 
-  smt::Term assmpt;
-  if (assmpt_vec.size() == 1) {
-    assmpt = assmpt_vec.back();
-  } else {
-    assmpt = solver_->make_term(smt::And, assmpt_vec);
-  }
-
-  history_assumptions_.back().push_back(assmpt);
-  history_assumptions_interp_.back().push_back(
+    history_assumptions_.back().push_back(assmpt);
+    history_assumptions_interp_.back().push_back(
       "ts.asmpt @" + (std::to_string(trace_.size() - 1)));
+  }
 
   for (const auto & vect : pre_assumptions) {
     auto assmpt_temp = solver_->substitute(vect, submap);
