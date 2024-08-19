@@ -32,4 +32,6 @@
     cd build
     make
     
+### Usage
 
+For a quick example of how to use the simulator, you may look at `apps/test.cpp`
