@@ -28,7 +28,7 @@
     ./contrib/setup-bison.sh
     ./contrib/setup-btor2tools.sh
     ./contrib/setup-smt-switch.sh
-    ./configure
+    ./configure.sh
     cd build
     make
     
