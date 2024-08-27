@@ -112,6 +112,9 @@ set(INCLUDE_DIRS
   "${PROJECT_SOURCE_DIR}/contrib/optionparser-1.7/src"
   "${PROJECT_SOURCE_DIR}/deps/btor2tools/src"
   "${PROJECT_SOURCE_DIR}/deps/glog/install/include/"
+  "${PROJECT_SOURCE_DIR}/deps/vexpparser/include/"
+  "${PROJECT_SOURCE_DIR}/deps/vexpparser/src"
+  "${PROJECT_SOURCE_DIR}/deps/vexpparser/build/src"
   "${SMT_SWITCH_DIR}/local/include"
   "${CMAKE_CURRENT_BINARY_DIR}"
   "${GMP_INCLUDE_DIR}"
@@ -147,11 +150,11 @@ target_link_libraries(wasim-lib PUBLIC "${SMT_SWITCH_DIR}/local/lib/libsmt-switc
 target_link_libraries(wasim-lib PUBLIC "${SMT_SWITCH_DIR}/local/lib/libsmt-switch-cvc5.a")
 target_link_libraries(wasim-lib PUBLIC "${SMT_SWITCH_DIR}/local/lib/libsmt-switch.a")
 target_link_libraries(wasim-lib PUBLIC "${PROJECT_SOURCE_DIR}/deps/btor2tools/build/lib/libbtor2parser.a")
+target_link_libraries(wasim-lib PUBLIC "${PROJECT_SOURCE_DIR}/deps/vexpparser/build/src/libvexpparser.a")
 target_link_libraries(wasim-lib PUBLIC "${GMPXX_LIBRARIES}")
 target_link_libraries(wasim-lib PUBLIC "${GMP_LIBRARIES}")
 target_link_libraries(wasim-lib PUBLIC pthread)
 target_link_libraries(wasim-lib PUBLIC Boost::system)
-
 # if (LIBRT)
 #   target_link_libraries(wasim-lib PUBLIC ${LIBRT})
 # endif()

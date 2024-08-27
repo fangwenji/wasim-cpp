@@ -47,8 +47,8 @@ string StateAsmpt::print_assumptions() const
 {
   stringstream ss;
   int idx = 0;
-  for (const auto & asmpt : asmpt_) {
-    ss << "A" << idx << ": " << assumption_interp_.at(idx) << std::endl;
+  for (const auto & asmpt : asmpt_) { //asmpt_[1] Segmentation fault
+    ss << "A" << idx << ": " << assumption_interp_.at(idx) << std::endl;  //Segmentation fault
     ss << "A" << idx << ": " << asmpt << std::endl;
     idx++;
   }

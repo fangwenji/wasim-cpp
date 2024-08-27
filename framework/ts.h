@@ -30,6 +30,8 @@
 #include <map>
 #include <vector>
 
+#include <regex>
+
 namespace wasim {
 
 class StateAsmpt
@@ -619,5 +621,6 @@ class TransitionSystem
   smt::TermVec propvec_;
 
 };
+
 
 }  // namespace wasim

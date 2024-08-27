@@ -209,7 +209,7 @@ void SymbolicExecutor::set_input(const smt::UnorderedTermMap & invar_assign,
     }
   }
   const auto & invar_assign_all = c.var_assign_;
-
+  
   unsigned len = history_assumptions_.back().size();
   c.record_prev_assumption_len(len);
 
@@ -219,7 +219,7 @@ void SymbolicExecutor::set_input(const smt::UnorderedTermMap & invar_assign,
 
   auto submap(prev_sv);  // copy here is needed anyway
   submap.insert(invar_assign_all.begin(), invar_assign_all.end());
-
+  
   // TODO: constraints here are different from those in COSA btor parser!
   // the second Boolean has no use in our case
   smt::TermVec assmpt_vec;
@@ -227,17 +227,19 @@ void SymbolicExecutor::set_input(const smt::UnorderedTermMap & invar_assign,
     auto assumption = solver_->substitute(vect.first, submap);
     assmpt_vec.push_back(assumption);
   }
-
-  smt::Term assmpt;
-  if (assmpt_vec.size() == 1) {
-    assmpt = assmpt_vec.back();
-  } else {
-    assmpt = solver_->make_term(smt::And, assmpt_vec);
+  
+  if (!assmpt_vec.empty()) {
+    smt::Term assmpt;
+    if (assmpt_vec.size() == 1) {
+      assmpt = assmpt_vec.back();
+    } else {
+      assmpt = solver_->make_term(smt::And, assmpt_vec);
+    }
+    
+    history_assumptions_.back().push_back(assmpt);
+    history_assumptions_interp_.back().push_back(
+        "ts.asmpt @" + (std::to_string(trace_.size() - 1)));
   }
-
-  history_assumptions_.back().push_back(assmpt);
-  history_assumptions_interp_.back().push_back(
-      "ts.asmpt @" + (std::to_string(trace_.size() - 1)));
 
   for (const auto & vect : pre_assumptions) {
     auto assmpt_temp = solver_->substitute(vect, submap);
@@ -331,12 +333,12 @@ StateAsmpt SymbolicExecutor::get_curr_state(const smt::TermVec & assumptions)
   auto need_to_push_input = false;
   if ((history_choice_.size() == 0) || (history_choice_.back().UsedInSim_))
     need_to_push_input = true;
-
+  
   if (need_to_push_input)
     set_input({}, assumptions);
   else if (assumptions.size() != 0)
     cout << "WARNING: assumptions are not used in get_curr_state" << endl;
-
+  
   StateAsmpt ret(trace_.back(), all_assumptions(), all_assumption_interp());
   if (need_to_push_input) {
     undo_set_input();
@@ -350,5 +352,134 @@ smt::Term SymbolicExecutor::set_var(int bitwdth, std::string vname /*= "var"*/)
   auto symb = solver_->make_symbol(vname, symb_sort);
   return symb;
 }
+
+//new for parse assertion out@2 == a@0 + b@1
+void AssTermParser::sim_and_get_term(wasim::SymbolicExecutor& sim, wasim::TransitionSystem& sts, bool& rst_en0){
+      int sim_cycle;
+      int sim_max_cycle = getMaxIndex();
+      const auto& vars = getVariables();
+      bool rst_en = 1;
+      
+      //get input var for make vdict
+      smt::UnorderedTermSet input_term_set = sts.inputvars();
+      smt::Term clk_term = sim.var("clk");
+      input_term_set.erase(clk_term);
+      
+      for (sim_cycle = 0; sim_cycle <= sim_max_cycle; sim_cycle ++)
+      {
+          std::cout << "--------------------------------------@" << sim_cycle << std::endl;
+          if(sim_cycle != 0)
+          {
+            sim.sim_one_step();
+          }
+          
+          
+          //make vdict for each input sim.convert
+          wasim::assignment_type input_vdict;
+          for(auto &input_var : input_term_set){
+            input_vdict[input_var -> to_string()] = input_var -> to_string() + std::to_string(sim_cycle);
+          }
+
+          if(rst_en0){
+            input_vdict["rst"] = 0;
+          }
+
+
+          auto inputmap = sim.convert(input_vdict); //{{"a", "a" + std::to_string(sim_cycle)}, {"b", "b" + std::to_string(sim_cycle)}}
+          sim.set_input(inputmap, {}); 
+
+          auto s = sim.get_curr_state();
+          std::cout << s.print();  //print state value
+          std::cout << s.print_assumptions(); //print state assumption
+
+          int j;
+          bool skip = false;
+          for(j = 0; j < vars.size(); j++)
+          { 
+            if(vars[j].index == sim_cycle)
+            { 
+              //get term form input var
+              for(const auto &input : inputmap) //  get the unod_map<term, term>, <term_name, term_symbolic_expression>
+              {
+                if( (input.first -> to_string()) == vars[j].name)
+                {
+                  // std::cout << "we got the symbolic term " << vars[j].fullname << ": " << input.second << std::endl;
+                  ass_termmap[vars[j].fullname] = input.second;
+                  skip = true;
+                  break;
+                }
+              }
+
+              if(skip){
+                skip = false;
+                continue;
+              }
+
+              //get term from sim var
+              auto out_term = sim.var(vars[j].name);  //get var term name
+              ass_termmap[vars[j].fullname] = sim.interpret_state_expr_on_curr_frame(out_term);
+            }
+          }
+      }
+    }
+
+  void AssTermParser::print_getterm(){
+    std::cout << "-----------------we got the symbolic term----------------" << std::endl;
+    std::cout << "---------------------------------------------------------" << std::endl;
+    std::cout << "term <-> symbolic term" << std::endl;
+    for(const auto &var_term : ass_termmap)  //ass_termmap
+    {
+      std::cout << var_term.first << " <-> " << var_term.second << std::endl;
+    }
+    std::cout << "---------------------------------------------------------" << std::endl;
+  }
+
+  int AssTermParser::get_max_width(){
+    int max_width = 0;
+
+    for(auto &map : ass_termmap){
+      if(max_width < (map.second -> get_sort() -> get_width()))
+      {
+        max_width = (map.second -> get_sort() -> get_width());
+      }
+    }
+
+    return max_width;
+  }
+
+  smt::UnorderedTermMap AssTermParser::create_substitution_map(smt::SmtSolver& solver){
+    smt::UnorderedTermMap substitution_map;
+    for(auto &var_struct : variables){
+      smt::Term origin_term = solver -> get_symbol(var_struct.fullname);
+      smt::Term sub_term = ass_termmap[var_struct.fullname];
+      substitution_map[origin_term] = sub_term;
+    }
+    return substitution_map;
+  }
+
+
+  void AssTermParser::parse(const std::string& input, wasim::SymbolicExecutor& sim) {
+        std::regex re(R"((\w+)@(\d+))");
+        std::smatch match;
+        std::string s = input;
+
+        while (std::regex_search(s, match, re)) {
+            std::string varName = match[1].str();
+            std::string varTermName = sim.var(varName) -> to_string();//
+            int index = std::stoi(match[2].str());
+            std::string fullname = varTermName + "@" + std::to_string(index); //varName
+
+            // create Variable
+            Variable var = { fullname, varTermName, index };  //varName
+            variables.push_back(var);
+
+            // update maxIndex
+            if (index > maxIndex) {
+                maxIndex = index;
+            }
+
+            s = match.suffix().str();
+        }
+  }
 
 }  // namespace wasim

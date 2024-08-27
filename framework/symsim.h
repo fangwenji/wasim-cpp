@@ -150,4 +150,39 @@ class SymbolicExecutor
   smt::SmtSolver get_solver() const { return solver_; }
 
 };
+
+//new for parse assertion out@2 == a@0 + b@1
+class AssTermParser {
+public:
+    
+    struct Variable {
+        std::string fullname; // "a@2"
+        std::string name;     // "a"
+        int index;            // 2
+    };
+
+    std::unordered_map<std::string, smt::Term> ass_termmap;
+
+
+    AssTermParser(const std::string& input, wasim::SymbolicExecutor& sim) {parse(input, sim);}
+
+    const std::vector<Variable>& getVariables() const {return variables;}
+
+    int getMaxIndex() const {return maxIndex;}
+
+    void sim_and_get_term(wasim::SymbolicExecutor& sim, wasim::TransitionSystem& sts,  bool& rst_en0);
+
+    void print_getterm();
+
+    int get_max_width();
+
+    smt::UnorderedTermMap create_substitution_map(smt::SmtSolver& solver);
+
+private:
+    std::vector<Variable> variables;
+    int maxIndex = 0;
+
+    void parse(const std::string& input, wasim::SymbolicExecutor& sim);
+};
+
 }  // namespace wasim
