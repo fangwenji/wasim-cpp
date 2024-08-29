@@ -13,13 +13,12 @@
 using namespace wasim;
 using namespace smt;
 
+//print ast tree architecture
 void traverse_and_print_ast(const verilog_expr::VExprAst::VExprAstPtr& node, int level = 0) {
     if (!node) {
         return;
     }
-    // 输出缩进以表示节点的层次结构
     std::string indent(level * 2, ' ');
-    // 输出节点的信息
     // std::cout << indent << "Node op: " << node -> get_op()<< std::endl;
     std::cout << indent << "Node : " << node << std::endl;
     // std::cout << indent << "Node Verilog: " << node->to_verilog() << std::endl;
@@ -55,13 +54,14 @@ verilog_expr::VExprAst::VExprAstPtr check_ast_soft(const verilog_expr::VExprAst:
               // std::cout << new_ast << std::endl;
               break;
             }
-       }
-      default:
+      }
+      default:{
             child_node_vec.push_back(check_ast_soft(node->get_child().at(0), sim, max_width));
             child_node_vec.push_back(check_ast_soft(node->get_child().at(1), sim, max_width));
             new_ast = node -> MakeCopyWithNewChild(child_node_vec);
             // std::cout << new_ast << std::endl;
             break;
+      }
     }
 
     return new_ast;
@@ -100,6 +100,41 @@ smt::Term ast2term(SmtSolver& solver, const verilog_expr::VExprAst::VExprAstPtr&
             Term left = ast2term(solver, node->get_child().at(0), sim);
             Term right = ast2term(solver, node->get_child().at(1), sim);
             result = solver->make_term(BVSub, left, right);
+            break;
+        }
+        // bit and
+        case verilog_expr::voperator::B_AND: {
+            Term left = ast2term(solver, node->get_child().at(0), sim);
+            Term right = ast2term(solver, node->get_child().at(1), sim);
+            result = solver->make_term(BVAnd, left, right);
+            break;
+        }
+        // bit or
+        case verilog_expr::voperator::B_OR: {
+            Term left = ast2term(solver, node->get_child().at(0), sim);
+            Term right = ast2term(solver, node->get_child().at(1), sim);
+            result = solver->make_term(BVOr, left, right);
+            break;
+        }
+        // bit xor
+        case verilog_expr::voperator::B_XOR: {
+            Term left = ast2term(solver, node->get_child().at(0), sim);
+            Term right = ast2term(solver, node->get_child().at(1), sim);
+            result = solver->make_term(BVXor, left, right);
+            break;
+        }
+        // logic and
+        case verilog_expr::voperator::L_AND: {
+            Term left = ast2term(solver, node->get_child().at(0), sim);
+            Term right = ast2term(solver, node->get_child().at(1), sim);
+            result = solver->make_term(And, left, right);
+            break;
+        }
+        // logic or
+        case verilog_expr::voperator::L_OR: {
+            Term left = ast2term(solver, node->get_child().at(0), sim);
+            Term right = ast2term(solver, node->get_child().at(1), sim);
+            result = solver->make_term(Or, left, right);
             break;
         }
         // AT @
@@ -166,7 +201,7 @@ int main() {
   solver->set_opt("produce-unsat-assumptions", "true");
 
   TransitionSystem sts(solver);
-  BTOR2Encoder btor_parser("/home/cwb/work_github/wasim-cpp/design/test/pipe-no-stall.btor2", sts); //design/test/adder.btor2
+  BTOR2Encoder btor_parser("/home/cwb/work_github/wasim-cpp/design/test/adder.btor2", sts); //design/test/adder.btor2
 
   std::cout << sts.trans()->to_string() << std::endl; //print smt 
 
@@ -177,11 +212,12 @@ int main() {
   sim.init();
 
     // assert parse
-  std::string my_assertion = "wen_stage2@2 == wen_stage1@0";
+  std::string my_assertion = "out@2 == a@0 + b@1";
 
   AssTermParser ass_parser(my_assertion, sim);        //parse assertion to get variables and max cycle
-  bool rst_en0 = 1;
-  ass_parser.sim_and_get_term(sim, sts, rst_en0);        //sim max cycle and get variables symbolic term
+
+  bool rst_en0 = 0;                                   //if input signal have not rst, give 0;  if 1 -> rst = 0, else 0 -> rst = rst1(symbolic)
+  ass_parser.sim_and_get_term(sim, sts, rst_en0);     //sim max cycle and get variables symbolic term
   ass_parser.print_getterm();                         //print we got the symbolic term
   int max_width = ass_parser.get_max_width();
 
@@ -198,7 +234,7 @@ int main() {
   }
   auto ass_ast = intp.GetAstRoot();
   std::cout << "vexpparser ast : " << ass_ast << std::endl;
-
+  // traverse_and_print_ast(ass_ast);  //can show ast architecture
 
 
     //make new ast tree
