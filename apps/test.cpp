@@ -51,16 +51,38 @@ verilog_expr::VExprAst::VExprAstPtr check_ast_soft(const verilog_expr::VExprAst:
               auto concat_width = max_width - var_sort_width; 
               verilog_expr::VExprAst::VExprAstPtr sub_node = node -> MakeBinaryAst(verilog_expr::voperator::CONCAT, node, node -> MakeConstant(0, 0, std::to_string(concat_width)));
               new_ast = sub_node;
-              // std::cout << new_ast << std::endl;
+              break;
+            }
+      }
+      case verilog_expr::voperator::MK_VAR: {
+
+            auto var_sort = sim.var(node -> to_verilog()) -> get_sort();
+            auto var_sort_width = var_sort -> get_width();
+            if(var_sort_width == max_width){
+              new_ast = node;
+              break;
+            }
+            else{
+              auto concat_width = max_width - var_sort_width; 
+              verilog_expr::VExprAst::VExprAstPtr sub_node = node -> MakeBinaryAst(verilog_expr::voperator::CONCAT, node, node -> MakeConstant(0, 0, std::to_string(concat_width)));
+              new_ast = sub_node;
               break;
             }
       }
       default:{
-            child_node_vec.push_back(check_ast_soft(node->get_child().at(0), sim, max_width));
-            child_node_vec.push_back(check_ast_soft(node->get_child().at(1), sim, max_width));
-            new_ast = node -> MakeCopyWithNewChild(child_node_vec);
-            // std::cout << new_ast << std::endl;
-            break;
+            if(node -> get_child_cnt() == 1)
+            {
+              child_node_vec.push_back(check_ast_soft(node->get_child().at(0), sim, max_width));
+              new_ast = node -> MakeCopyWithNewChild(child_node_vec);
+              break;
+            }
+            else if(node -> get_child_cnt() == 2)
+            {
+              child_node_vec.push_back(check_ast_soft(node->get_child().at(0), sim, max_width));
+              child_node_vec.push_back(check_ast_soft(node->get_child().at(1), sim, max_width));
+              new_ast = node -> MakeCopyWithNewChild(child_node_vec);
+              break;
+            }
       }
     }
 
@@ -102,39 +124,31 @@ smt::Term ast2term(SmtSolver& solver, const verilog_expr::VExprAst::VExprAstPtr&
             result = solver->make_term(BVSub, left, right);
             break;
         }
-        // bit and
+        // bit and &
         case verilog_expr::voperator::B_AND: {
             Term left = ast2term(solver, node->get_child().at(0), sim);
             Term right = ast2term(solver, node->get_child().at(1), sim);
             result = solver->make_term(BVAnd, left, right);
             break;
         }
-        // bit or
+        // bit or |
         case verilog_expr::voperator::B_OR: {
             Term left = ast2term(solver, node->get_child().at(0), sim);
             Term right = ast2term(solver, node->get_child().at(1), sim);
             result = solver->make_term(BVOr, left, right);
             break;
         }
-        // bit xor
+        // bit xor ^
         case verilog_expr::voperator::B_XOR: {
             Term left = ast2term(solver, node->get_child().at(0), sim);
             Term right = ast2term(solver, node->get_child().at(1), sim);
             result = solver->make_term(BVXor, left, right);
             break;
         }
-        // logic and
-        case verilog_expr::voperator::L_AND: {
+        // bit not ~
+        case verilog_expr::voperator::B_NEG: {
             Term left = ast2term(solver, node->get_child().at(0), sim);
-            Term right = ast2term(solver, node->get_child().at(1), sim);
-            result = solver->make_term(And, left, right);
-            break;
-        }
-        // logic or
-        case verilog_expr::voperator::L_OR: {
-            Term left = ast2term(solver, node->get_child().at(0), sim);
-            Term right = ast2term(solver, node->get_child().at(1), sim);
-            result = solver->make_term(Or, left, right);
+            result = solver->make_term(BVNot, left);
             break;
         }
         // AT @
@@ -177,7 +191,7 @@ smt::Term ast2term(SmtSolver& solver, const verilog_expr::VExprAst::VExprAstPtr&
         // mk_const
         case verilog_expr::voperator::MK_CONST: {
             // std::cout << node -> to_verilog() << std::endl;
-            Sort const_int = solver->make_sort(BV, 32); // there we use bv 32 substitude int, because boolector not support int type
+            Sort const_int = solver->make_sort(BV, 32); // there we use BV 32 substitude int, because boolector not support int type
             result = solver -> make_term(std::stoi(node -> to_verilog()), const_int);
             break;
         }
@@ -234,7 +248,7 @@ int main() {
   }
   auto ass_ast = intp.GetAstRoot();
   std::cout << "vexpparser ast : " << ass_ast << std::endl;
-  // traverse_and_print_ast(ass_ast);  //can show ast architecture
+  // traverse_and_print_ast(ass_ast);  // print ast architecture
 
 
     //make new ast tree
