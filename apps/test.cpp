@@ -28,8 +28,55 @@ void traverse_and_print_ast(const verilog_expr::VExprAst::VExprAstPtr& node, int
     }
 }
 
-verilog_expr::VExprAst::VExprAstPtr check_ast_soft(const verilog_expr::VExprAst::VExprAstPtr& node, wasim::SymbolicExecutor& sim, int& max_width){
-    
+// verilog_expr::VExprAst::VExprAstPtr check_ast(const verilog_expr::VExprAst::VExprAstPtr& node, wasim::SymbolicExecutor& sim)
+// {
+//   verilog_expr::VExprAst::VExprAstPtr new_ast;
+//   verilog_expr::VExprAst::VExprAstPtrVec child_node_vec;
+
+//     if (!node) {
+//       throw std::invalid_argument("Null AST node");
+//     }
+
+//     switch (node->get_op()) {
+
+//       case verilog_expr::voperator::L_EQ: {
+
+//             auto left = check_ast_soft(node->get_child().at(0), sim);
+//             auto right = check_ast_soft(node->get_child().at(1), sim);
+//             new_ast = node;
+//             break;
+//       }
+
+//       default:{
+//             if(node -> get_child_cnt() == 1)
+//             {
+//               check_ast(node->get_child().at(0), sim);
+//               new_ast = node;
+//               break;
+//             }
+//             else if(node -> get_child_cnt() == 2)
+//             {
+//               check_ast(node->get_child().at(0), sim);
+//               check_ast(node->get_child().at(1), sim);
+//               new_ast = node;
+//               break;
+//             }
+//             else if(node -> get_child_cnt() == 3)
+//             {
+//               check_ast(node->get_child().at(0), sim);
+//               check_ast(node->get_child().at(1), sim);
+//               check_ast(node->get_child().at(2), sim);
+//               new_ast = node;
+//               break;
+//             }
+//       }
+//     }
+
+//     return new_ast;
+// }
+
+verilog_expr::VExprAst::VExprAstPtr check_ast_soft(const verilog_expr::VExprAst::VExprAstPtr& node, wasim::SymbolicExecutor& sim, int& max_width)
+{
     verilog_expr::VExprAst::VExprAstPtr new_ast;
     verilog_expr::VExprAst::VExprAstPtrVec child_node_vec;
 
@@ -70,6 +117,11 @@ verilog_expr::VExprAst::VExprAstPtr check_ast_soft(const verilog_expr::VExprAst:
             }
       }
       default:{
+            if(node -> get_child_cnt() == 0)
+            {
+              new_ast = node;
+              break;
+            }
             if(node -> get_child_cnt() == 1)
             {
               child_node_vec.push_back(check_ast_soft(node->get_child().at(0), sim, max_width));
@@ -80,6 +132,14 @@ verilog_expr::VExprAst::VExprAstPtr check_ast_soft(const verilog_expr::VExprAst:
             {
               child_node_vec.push_back(check_ast_soft(node->get_child().at(0), sim, max_width));
               child_node_vec.push_back(check_ast_soft(node->get_child().at(1), sim, max_width));
+              new_ast = node -> MakeCopyWithNewChild(child_node_vec);
+              break;
+            }
+            else if(node -> get_child_cnt() == 3)
+            {
+              child_node_vec.push_back(check_ast_soft(node->get_child().at(0), sim, max_width));
+              child_node_vec.push_back(check_ast_soft(node->get_child().at(1), sim, max_width));
+              child_node_vec.push_back(check_ast_soft(node->get_child().at(2), sim, max_width));
               new_ast = node -> MakeCopyWithNewChild(child_node_vec);
               break;
             }
@@ -108,6 +168,19 @@ smt::Term ast2term(SmtSolver& solver, const verilog_expr::VExprAst::VExprAstPtr&
             // std::cout << left << std::endl;
             // std::cout << right << std::endl;
             result = solver->make_term(Equal, left, right);
+            break;
+        }
+        // ite ? :
+        case verilog_expr::voperator::TERNARY: {
+            if (node->get_child_cnt() != 3) {
+                throw std::runtime_error("node requires three childs");
+            }
+            Term left = ast2term(solver, node->get_child().at(0), sim);
+            Term mid = ast2term(solver, node->get_child().at(1), sim);
+            Term right = ast2term(solver, node->get_child().at(2), sim);
+            // std::cout << left << std::endl;
+            // std::cout << right << std::endl;
+            result = solver->make_term(Ite, left, mid, right);
             break;
         }
         // +
@@ -159,7 +232,8 @@ smt::Term ast2term(SmtSolver& solver, const verilog_expr::VExprAst::VExprAstPtr&
             // std::cout << "right :" << right << std::endl;
 
             //make sure not make same symbol
-            auto string_name = left -> to_string() + "@" + std::to_string(right -> to_int());
+            // auto string_name = left -> to_string() + "@" + std::to_string(right -> to_int());
+            auto string_name = node -> get_child().at(0) -> to_verilog() + "@" + std::to_string(right -> to_int());
             try{
                solver -> get_symbol(string_name);
             }
@@ -228,13 +302,11 @@ int main() {
     // assert parse
   std::string my_assertion = "out@2 == a@0 + b@1";
 
-  AssTermParser ass_parser(my_assertion, sim);        //parse assertion to get variables and max cycle
-
-  bool rst_en0 = 0;                                   //if input signal have not rst, give 0;  if 1 -> rst = 0, else 0 -> rst = rst1(symbolic)
-  ass_parser.sim_and_get_term(sim, sts, rst_en0);     //sim max cycle and get variables symbolic term
-  ass_parser.print_getterm();                         //print we got the symbolic term
-  int max_width = ass_parser.get_max_width();
-
+  // AssTermParser ass_parser(my_assertion, sim);        //parse assertion to get variables and max cycle
+  // bool rst_en0 = 0; //if input signal have not rst, give 0;  if 1 -> rst = 0, else 0 -> rst = rst1(symbolic)                       
+  // ass_parser.sim_and_get_term(sim, sts, rst_en0);     //sim max cycle and get variables symbolic term
+  // ass_parser.print_getterm();                         //print we got the symbolic term
+  // int max_width = ass_parser.get_max_width();
 
     //vexpparser (get the ast)
   Vexp::Interpreter intp;
@@ -246,13 +318,19 @@ int main() {
   } catch (verilog_expr::VexpException &e) {
     std::cout << "AST constructor error:" << e.msg_ << std::endl;
   }
-  auto ass_ast = intp.GetAstRoot();
-  std::cout << "vexpparser ast : " << ass_ast << std::endl;
+  auto assertion_ast = intp.GetAstRoot();
   // traverse_and_print_ast(ass_ast);  // print ast architecture
 
+    //get information from ast (get var, max cycle, term map)
+  AstParser test(assertion_ast, sim);
+  bool rst_en0 = 0;                             //if input signal have not rst, give 0;  if 1 -> rst = 0, else 0 -> rst = rst1(symbolic)
+  test.sim_and_get_term(sim, sts, rst_en0);
+  test.print_term_map();
 
     //make new ast tree
-  auto new_ass_ast = check_ast_soft(ass_ast, sim, max_width);
+  std::cout << "vexpparser ast : " << assertion_ast << std::endl;
+  int max_width = 5;
+  auto new_ass_ast = check_ast_soft(assertion_ast, sim, max_width);
   std::cout << "sort new ast : " << new_ass_ast << std::endl;
 
     //ast transformer to term
@@ -260,7 +338,7 @@ int main() {
   std::cout << "my assertion term (original term) :" << my_assertion_term << std::endl;
   
     //create substitution map
-  auto substitution_map = ass_parser.create_substitution_map(solver);
+  auto substitution_map = test.create_substitution_map(solver);
 
     //substitude term
   Term my_assertion_term_sub =  solver -> substitute(my_assertion_term, substitution_map);

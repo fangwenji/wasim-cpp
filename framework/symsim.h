@@ -13,6 +13,8 @@
 #include "term_manip.h"
 #include "ts.h"
 
+#include "vexpparser/interpreter.h"
+
 #include <functional>
 #include <iostream>
 #include <map>
@@ -183,6 +185,42 @@ private:
     int maxIndex = 0;
 
     void parse(const std::string& input, wasim::SymbolicExecutor& sim);
+};
+
+// parse ast to get var, max cycle, term map
+class AstParser {
+public:
+    
+    struct Variable {
+        std::string fullname; // "a@2"
+        std::string name;     // "a"
+        int cycle;            // 2
+        int width;            // get_width
+    };
+
+    std::unordered_map<std::string, smt::Term> ass_termmap;
+
+    AstParser(const verilog_expr::VExprAst::VExprAstPtr& ast, wasim::SymbolicExecutor& sim) {ast_get_info(ast, sim); parse_max_cycle();}
+
+    const std::vector<Variable>& get_var_vec() const {return var_struct_vec;}
+
+    int get_max_cycle() const {return max_cycle;}
+
+    void sim_and_get_term(wasim::SymbolicExecutor& sim, wasim::TransitionSystem& sts,  bool& rst_en0);
+
+    void print_term_map();
+
+    smt::UnorderedTermMap create_substitution_map(smt::SmtSolver& solver);
+
+
+private:
+    std::vector<Variable> var_struct_vec;
+
+    int max_cycle;
+
+    void parse_max_cycle();
+
+    verilog_expr::VExprAst::VExprAstPtr ast_get_info(const verilog_expr::VExprAst::VExprAstPtr& node, wasim::SymbolicExecutor& sim);
 };
 
 }  // namespace wasim
