@@ -28,52 +28,54 @@ void traverse_and_print_ast(const verilog_expr::VExprAst::VExprAstPtr& node, int
     }
 }
 
-// verilog_expr::VExprAst::VExprAstPtr check_ast(const verilog_expr::VExprAst::VExprAstPtr& node, wasim::SymbolicExecutor& sim)
-// {
-//   verilog_expr::VExprAst::VExprAstPtr new_ast;
-//   verilog_expr::VExprAst::VExprAstPtrVec child_node_vec;
+verilog_expr::VExprAst::VExprAstPtr get_local_max_width(const verilog_expr::VExprAst::VExprAstPtr& node, wasim::SymbolicExecutor& sim, std::vector<int>& width_vec){
+    
+    verilog_expr::VExprAst::VExprAstPtr new_ast;
+    verilog_expr::VExprAst::VExprAstPtrVec child_node_vec;
 
-//     if (!node) {
-//       throw std::invalid_argument("Null AST node");
-//     }
+    if (!node) {
+      throw std::invalid_argument("Null AST node");
+    }
 
-//     switch (node->get_op()) {
+    switch (node->get_op()) {
 
-//       case verilog_expr::voperator::L_EQ: {
+      case verilog_expr::voperator::AT: {
 
-//             auto left = check_ast_soft(node->get_child().at(0), sim);
-//             auto right = check_ast_soft(node->get_child().at(1), sim);
-//             new_ast = node;
-//             break;
-//       }
+            auto var_sort = sim.var(node -> get_child().at(0) -> to_verilog()) -> get_sort();
+            int width = var_sort -> get_width();
+            width_vec.push_back(width);
 
-//       default:{
-//             if(node -> get_child_cnt() == 1)
-//             {
-//               check_ast(node->get_child().at(0), sim);
-//               new_ast = node;
-//               break;
-//             }
-//             else if(node -> get_child_cnt() == 2)
-//             {
-//               check_ast(node->get_child().at(0), sim);
-//               check_ast(node->get_child().at(1), sim);
-//               new_ast = node;
-//               break;
-//             }
-//             else if(node -> get_child_cnt() == 3)
-//             {
-//               check_ast(node->get_child().at(0), sim);
-//               check_ast(node->get_child().at(1), sim);
-//               check_ast(node->get_child().at(2), sim);
-//               new_ast = node;
-//               break;
-//             }
-//       }
-//     }
+            new_ast = node;
+            break;
+      }
 
-//     return new_ast;
-// }
+      default:{
+            if(node -> get_child_cnt() == 1)
+            {
+              get_local_max_width(node->get_child().at(0), sim, width_vec);
+              new_ast = node;
+              break;
+            }
+            else if(node -> get_child_cnt() == 2)
+            {
+              get_local_max_width(node->get_child().at(0), sim, width_vec);
+              get_local_max_width(node->get_child().at(1), sim, width_vec);
+              new_ast = node;
+              break;
+            }
+            else if(node -> get_child_cnt() == 3)
+            {
+              get_local_max_width(node->get_child().at(0), sim, width_vec);
+              get_local_max_width(node->get_child().at(1), sim, width_vec);
+              get_local_max_width(node->get_child().at(2), sim, width_vec);
+              new_ast = node;
+              break;
+            }
+      }
+    }
+
+    return new_ast;
+}
 
 verilog_expr::VExprAst::VExprAstPtr check_ast_soft(const verilog_expr::VExprAst::VExprAstPtr& node, wasim::SymbolicExecutor& sim, int& max_width)
 {
@@ -278,6 +280,68 @@ smt::Term ast2term(SmtSolver& solver, const verilog_expr::VExprAst::VExprAstPtr&
     return result;
 }
 
+verilog_expr::VExprAst::VExprAstPtr check_ast(const verilog_expr::VExprAst::VExprAstPtr& node, wasim::SymbolicExecutor& sim)
+{
+  verilog_expr::VExprAst::VExprAstPtr new_ast;
+    verilog_expr::VExprAst::VExprAstPtrVec child_node_vec;
+
+    if (!node) {
+      throw std::invalid_argument("Null AST node");
+    }
+
+    switch (node->get_op()) {
+
+      case verilog_expr::voperator::L_EQ: {
+            std::vector<int> width_vec;
+            int local_max_width = 0;
+            get_local_max_width(node, sim, width_vec);
+            for(auto &width : width_vec)
+            {
+              if(local_max_width < width)
+              {
+                local_max_width = width;
+              }
+            }
+
+            new_ast = check_ast_soft(node, sim, local_max_width);
+            break;
+      }
+
+      default:{
+            if(node -> get_child_cnt() == 0)
+            {
+              new_ast = node;
+              break;
+            }
+            if(node -> get_child_cnt() == 1)
+            {
+              child_node_vec.push_back(check_ast(node->get_child().at(0), sim));
+              new_ast = node -> MakeCopyWithNewChild(child_node_vec);
+              break;
+            }
+            else if(node -> get_child_cnt() == 2)
+            {
+              child_node_vec.push_back(check_ast(node->get_child().at(0), sim));
+              child_node_vec.push_back(check_ast(node->get_child().at(1), sim));
+              new_ast = node -> MakeCopyWithNewChild(child_node_vec);
+              break;
+            }
+            else if(node -> get_child_cnt() == 3)
+            {
+              child_node_vec.push_back(check_ast(node->get_child().at(0), sim));
+              child_node_vec.push_back(check_ast(node->get_child().at(1), sim));
+              child_node_vec.push_back(check_ast(node->get_child().at(2), sim));
+              new_ast = node -> MakeCopyWithNewChild(child_node_vec);
+              break;
+            }
+      }
+    }
+
+    return new_ast;
+}
+
+
+
 int main() {
 
 
@@ -329,9 +393,14 @@ int main() {
 
     //make new ast tree
   std::cout << "vexpparser ast : " << assertion_ast << std::endl;
-  int max_width = 5;
-  auto new_ass_ast = check_ast_soft(assertion_ast, sim, max_width);
+  // new version local width
+  auto new_ass_ast = check_ast(assertion_ast, sim);
   std::cout << "sort new ast : " << new_ass_ast << std::endl;
+
+  // old version global width
+  // int max_width = 5;
+  // auto new_ass_ast = check_ast_soft(assertion_ast, sim, max_width);
+  // std::cout << "sort new ast : " << new_ass_ast << std::endl;
 
     //ast transformer to term
   Term my_assertion_term = ast2term(solver, new_ass_ast, sim);
