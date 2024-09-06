@@ -39,9 +39,19 @@ verilog_expr::VExprAst::VExprAstPtr get_local_max_width(const verilog_expr::VExp
 
     switch (node->get_op()) {
 
-      case verilog_expr::voperator::AT: {
+      // case verilog_expr::voperator::AT: {
 
-            auto var_sort = sim.var(node -> get_child().at(0) -> to_verilog()) -> get_sort();
+      //       auto var_sort = sim.var(node -> get_child().at(0) -> to_verilog()) -> get_sort();
+      //       int width = var_sort -> get_width();
+      //       width_vec.push_back(width);
+
+      //       new_ast = node;
+      //       break;
+      // }
+
+      case verilog_expr::voperator::MK_VAR: {
+
+            auto var_sort = sim.var(node -> to_verilog()) -> get_sort();
             int width = var_sort -> get_width();
             width_vec.push_back(width);
 
@@ -142,6 +152,66 @@ verilog_expr::VExprAst::VExprAstPtr check_ast_soft(const verilog_expr::VExprAst:
               child_node_vec.push_back(check_ast_soft(node->get_child().at(0), sim, max_width));
               child_node_vec.push_back(check_ast_soft(node->get_child().at(1), sim, max_width));
               child_node_vec.push_back(check_ast_soft(node->get_child().at(2), sim, max_width));
+              new_ast = node -> MakeCopyWithNewChild(child_node_vec);
+              break;
+            }
+      }
+    }
+
+    return new_ast;
+}
+
+verilog_expr::VExprAst::VExprAstPtr check_ast(const verilog_expr::VExprAst::VExprAstPtr& node, wasim::SymbolicExecutor& sim)
+{
+  verilog_expr::VExprAst::VExprAstPtr new_ast;
+    verilog_expr::VExprAst::VExprAstPtrVec child_node_vec;
+
+    if (!node) {
+      throw std::invalid_argument("Null AST node");
+    }
+
+    switch (node->get_op()) {
+
+      case verilog_expr::voperator::L_EQ: {
+            std::vector<int> width_vec;
+            int local_max_width = 0;
+            get_local_max_width(node, sim, width_vec);
+            for(auto &width : width_vec)
+            {
+              if(local_max_width < width)
+              {
+                local_max_width = width;
+              }
+            }
+
+            new_ast = check_ast_soft(node, sim, local_max_width);
+            break;
+      }
+
+      default:{
+            if(node -> get_child_cnt() == 0)
+            {
+              new_ast = node;
+              break;
+            }
+            if(node -> get_child_cnt() == 1)
+            {
+              child_node_vec.push_back(check_ast(node->get_child().at(0), sim));
+              new_ast = node -> MakeCopyWithNewChild(child_node_vec);
+              break;
+            }
+            else if(node -> get_child_cnt() == 2)
+            {
+              child_node_vec.push_back(check_ast(node->get_child().at(0), sim));
+              child_node_vec.push_back(check_ast(node->get_child().at(1), sim));
+              new_ast = node -> MakeCopyWithNewChild(child_node_vec);
+              break;
+            }
+            else if(node -> get_child_cnt() == 3)
+            {
+              child_node_vec.push_back(check_ast(node->get_child().at(0), sim));
+              child_node_vec.push_back(check_ast(node->get_child().at(1), sim));
+              child_node_vec.push_back(check_ast(node->get_child().at(2), sim));
               new_ast = node -> MakeCopyWithNewChild(child_node_vec);
               break;
             }
@@ -266,8 +336,19 @@ smt::Term ast2term(SmtSolver& solver, const verilog_expr::VExprAst::VExprAstPtr&
         }
         // mk_const
         case verilog_expr::voperator::MK_CONST: {
-            // std::cout << node -> to_verilog() << std::endl;
-            Sort const_int = solver->make_sort(BV, 32); // there we use BV 32 substitude int, because boolector not support int type
+            //new for different width
+            int n = std::stoi(node -> to_verilog());
+            int width = 0;
+            while (n > 0)
+            {
+                n >>= 1; 
+                width++;
+            }
+            if(width == 0)
+            {
+              width = 1;
+            }
+            Sort const_int = solver->make_sort(BV, width); // there we use BV 32 substitude int, because boolector not support int type
             result = solver -> make_term(std::stoi(node -> to_verilog()), const_int);
             break;
         }
@@ -278,66 +359,6 @@ smt::Term ast2term(SmtSolver& solver, const verilog_expr::VExprAst::VExprAstPtr&
     }
 
     return result;
-}
-
-verilog_expr::VExprAst::VExprAstPtr check_ast(const verilog_expr::VExprAst::VExprAstPtr& node, wasim::SymbolicExecutor& sim)
-{
-  verilog_expr::VExprAst::VExprAstPtr new_ast;
-    verilog_expr::VExprAst::VExprAstPtrVec child_node_vec;
-
-    if (!node) {
-      throw std::invalid_argument("Null AST node");
-    }
-
-    switch (node->get_op()) {
-
-      case verilog_expr::voperator::L_EQ: {
-            std::vector<int> width_vec;
-            int local_max_width = 0;
-            get_local_max_width(node, sim, width_vec);
-            for(auto &width : width_vec)
-            {
-              if(local_max_width < width)
-              {
-                local_max_width = width;
-              }
-            }
-
-            new_ast = check_ast_soft(node, sim, local_max_width);
-            break;
-      }
-
-      default:{
-            if(node -> get_child_cnt() == 0)
-            {
-              new_ast = node;
-              break;
-            }
-            if(node -> get_child_cnt() == 1)
-            {
-              child_node_vec.push_back(check_ast(node->get_child().at(0), sim));
-              new_ast = node -> MakeCopyWithNewChild(child_node_vec);
-              break;
-            }
-            else if(node -> get_child_cnt() == 2)
-            {
-              child_node_vec.push_back(check_ast(node->get_child().at(0), sim));
-              child_node_vec.push_back(check_ast(node->get_child().at(1), sim));
-              new_ast = node -> MakeCopyWithNewChild(child_node_vec);
-              break;
-            }
-            else if(node -> get_child_cnt() == 3)
-            {
-              child_node_vec.push_back(check_ast(node->get_child().at(0), sim));
-              child_node_vec.push_back(check_ast(node->get_child().at(1), sim));
-              child_node_vec.push_back(check_ast(node->get_child().at(2), sim));
-              new_ast = node -> MakeCopyWithNewChild(child_node_vec);
-              break;
-            }
-      }
-    }
-
-    return new_ast;
 }
 
 
@@ -364,7 +385,7 @@ int main() {
   sim.init();
 
     // assert parse
-  std::string my_assertion = "out@2 == a@0 + b@1";
+  std::string my_assertion = "(out@2 == a@0 + b@1) ? 1 : 0";
 
   // AssTermParser ass_parser(my_assertion, sim);        //parse assertion to get variables and max cycle
   // bool rst_en0 = 0; //if input signal have not rst, give 0;  if 1 -> rst = 0, else 0 -> rst = rst1(symbolic)                       
