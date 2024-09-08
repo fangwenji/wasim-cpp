@@ -387,12 +387,6 @@ int main() {
     // assert parse
   std::string my_assertion = "(out@2 == a@0 + b@1) ? 1 : 0";
 
-  // AssTermParser ass_parser(my_assertion, sim);        //parse assertion to get variables and max cycle
-  // bool rst_en0 = 0; //if input signal have not rst, give 0;  if 1 -> rst = 0, else 0 -> rst = rst1(symbolic)                       
-  // ass_parser.sim_and_get_term(sim, sts, rst_en0);     //sim max cycle and get variables symbolic term
-  // ass_parser.print_getterm();                         //print we got the symbolic term
-  // int max_width = ass_parser.get_max_width();
-
     //vexpparser (get the ast)
   Vexp::Interpreter intp;
   std::stringstream ss;
@@ -406,34 +400,29 @@ int main() {
   auto assertion_ast = intp.GetAstRoot();
   // traverse_and_print_ast(ass_ast);  // print ast architecture
 
+
+
     //get information from ast (get var, max cycle, term map)
   AstParser test(assertion_ast, sim);
   bool rst_en0 = 0;                             //if input signal have not rst, give 0;  if 1 -> rst = 0, else 0 -> rst = rst1(symbolic)
   test.sim_and_get_term(sim, sts, rst_en0);
   test.print_term_map();
 
-    //make new ast tree
   std::cout << "vexpparser ast : " << assertion_ast << std::endl;
-  // new version local width
+    // make new ast tree (new version local width
   auto new_ass_ast = check_ast(assertion_ast, sim);
   std::cout << "sort new ast : " << new_ass_ast << std::endl;
-
-  // old version global width
-  // int max_width = 5;
-  // auto new_ass_ast = check_ast_soft(assertion_ast, sim, max_width);
-  // std::cout << "sort new ast : " << new_ass_ast << std::endl;
 
     //ast transformer to term
   Term my_assertion_term = ast2term(solver, new_ass_ast, sim);
   std::cout << "my assertion term (original term) :" << my_assertion_term << std::endl;
-  
-    //create substitution map
+
+      //create substitution map
   auto substitution_map = test.create_substitution_map(solver);
 
     //substitude term
   Term my_assertion_term_sub =  solver -> substitute(my_assertion_term, substitution_map);
   std::cout << "my assertion term (substitude symbolic term) :" << my_assertion_term_sub << std::endl;
-
 
     //check sat
   Term not_assertion_term = solver -> make_term(Not,my_assertion_term_sub);
