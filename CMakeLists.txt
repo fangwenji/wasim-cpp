@@ -135,6 +135,7 @@ set(SOURCES
     "${PROJECT_SOURCE_DIR}/framework/sygus_simplify.cpp"
     "${PROJECT_SOURCE_DIR}/framework/state_simplify.cpp"
     "${PROJECT_SOURCE_DIR}/utils/logger.cpp"
+    "${PROJECT_SOURCE_DIR}/apps/astparser.cpp"
 )
 
 
