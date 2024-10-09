@@ -1,6 +1,6 @@
 #!/bin/bash
 
-VEXPPARSER_VERSION=17ca3ea74402df92701c55d3eef9b18726a1fec5
+VEXPPARSER_VERSION=834e901050300fdf038f48ad0415f9b0d37cc253
 
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 DEPS=$DIR/../deps
@@ -9,9 +9,9 @@ mkdir -p $DEPS
 
 if [ ! -d "$DEPS/vexpparser" ]; then
     cd $DEPS
-    git clone --depth 1 https://github.com/zhanghongce/vexpparser.git
+    git clone --depth 1 https://github.com/WBChe/vexpparser.git
     cd vexpparser
-    git checkout -f $BTOR2TOOLS_VERSION
+    git checkout -f $VEXPPARSER_VERSION
     mkdir -p build 
     cd build
     cmake .. 
@@ -21,7 +21,7 @@ else
 fi
 
 if [ -f $DEPS/vexpparser/build/src/libvexpparser.a ] ; then \
-    echo "It appears btor2tools was successfully built in $DEPS/vexpparser/build/src."
+    echo "It appears vexpparser was successfully built in $DEPS/vexpparser/build/src."
     echo "You may now build wasim with: ./configure.sh && cd build && make"
 else
     echo "Building vexpparser failed."
