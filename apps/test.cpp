@@ -21,7 +21,7 @@ int main() {
   solver->set_opt("produce-unsat-assumptions", "true");
 
   TransitionSystem sts(solver);
-  BTOR2Encoder btor_parser("/home/cwb/work_github/wasim-cpp/design/test/adder.btor2", sts); // //design/test/adder.btor2
+  BTOR2Encoder btor_parser("design/test/adder.btor2", sts);
 
   std::cout << sts.trans()->to_string() << std::endl; //print smt 
 
@@ -31,12 +31,14 @@ int main() {
   sim.init();
 
     // timed assertion
-  std::string my_assertion = "out@2 == a@0 + b@1";
+  std::string my_assertion = "out@2 == a@0 + b@1";  // var with bit width format: (out@2)[3:0]
 
   tac::TimedAssertionChecker test_tac(my_assertion, sts, sim, solver);
+
   bool rst_en0 = 0;    //if input signal have not rst, give 0;  if give 1 -> rst ≡ 0, if give 0 -> rst = rst1,2,3...(symbolic)
   test_tac.sim_max_step(rst_en0);
   test_tac.print_term_map();
+  test_tac.make_assertion_term();
   test_tac.assert_formula();
   test_tac.check_sat();
 

@@ -1,6 +1,6 @@
 #!/bin/bash
 
-VEXPPARSER_VERSION=834e901050300fdf038f48ad0415f9b0d37cc253
+VEXPPARSER_VERSION=101f9bfe6563da7879fdba8c267fc396ef741bef
 
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 DEPS=$DIR/../deps
@@ -9,7 +9,7 @@ mkdir -p $DEPS
 
 if [ ! -d "$DEPS/vexpparser" ]; then
     cd $DEPS
-    git clone --depth 1 https://github.com/WBChe/vexpparser.git
+    git clone https://github.com/WBChe/vexpparser.git
     cd vexpparser
     git checkout -f $VEXPPARSER_VERSION
     mkdir -p build 

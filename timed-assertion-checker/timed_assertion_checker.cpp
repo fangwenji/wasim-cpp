@@ -19,13 +19,35 @@ int get_max_width(const verilog_expr::VExprAst::VExprAstPtr& ast, wasim::Symboli
         node_stack.pop();
 
         switch (node->get_op()) {
+            case verilog_expr::voperator::AT: {
+                auto var_sort = sim.var(node -> get_child().at(0) -> to_verilog()) -> get_sort();
+                int width = var_sort -> get_width();
+                width_vec.push_back(width);
+                break;
+            }
             case verilog_expr::voperator::MK_VAR: {
                 auto var_sort = sim.var(node -> to_verilog()) -> get_sort();
                 int width = var_sort -> get_width();
                 width_vec.push_back(width);
                 break;
             }
-            
+            case verilog_expr::voperator::MK_CONST: {
+                auto current_const = verilog_expr::VExprAstConstant::cast_ptr(node);
+                auto const_value_tuple = current_const -> get_constant();
+                auto width = std::get<1>(const_value_tuple);
+                width_vec.push_back(width);
+                break;
+            }
+            case verilog_expr::voperator::INDEX: {
+                width_vec.push_back(1);
+                break;
+            }
+            case verilog_expr::voperator::RANGE_INDEX: {
+                auto msb = std::stoi(node -> get_child().at(1) -> to_verilog());
+                auto lsb = std::stoi(node -> get_child().at(2) -> to_verilog());
+                width_vec.push_back(msb - lsb + 1);
+                break;
+            }
             default: {
                 for (size_t i = 0; i < node -> get_child_cnt(); ++i) {
                     node_stack.push(node -> get_child().at(i));
@@ -33,6 +55,7 @@ int get_max_width(const verilog_expr::VExprAst::VExprAstPtr& ast, wasim::Symboli
                 break;
             }
         }
+        
     }
 
   for(auto &width : width_vec){
@@ -45,7 +68,7 @@ int get_max_width(const verilog_expr::VExprAst::VExprAstPtr& ast, wasim::Symboli
   return max_width;
 }
 
-verilog_expr::VExprAst::VExprAstPtr extend_width(const verilog_expr::VExprAst::VExprAstPtr& ast, wasim::SymbolicExecutor& sim, int& max_width)
+verilog_expr::VExprAst::VExprAstPtr set_extend_width(verilog_expr::VExprAst::VExprAstPtr& ast, wasim::SymbolicExecutor& sim, int& max_width)
 {
     if (!ast) {
         throw std::invalid_argument("Null AST node");
@@ -59,8 +82,6 @@ verilog_expr::VExprAst::VExprAstPtr extend_width(const verilog_expr::VExprAst::V
         node_stack.pop();
             switch (current_node->get_op()) {
                 case verilog_expr::voperator::AT: {
-                  verilog_expr::VExprAst::VExprAstPtrVec new_child;
-
                   auto var_sort = sim.var(current_node -> get_child().at(0) -> to_verilog()) -> get_sort();
                   auto var_sort_width = var_sort -> get_width();
                   if(var_sort_width == max_width){
@@ -68,19 +89,11 @@ verilog_expr::VExprAst::VExprAstPtr extend_width(const verilog_expr::VExprAst::V
                   }
                   else{
                     auto concat_width = max_width - var_sort_width; 
-                    auto child1 = current_node -> MakeBinaryAst(verilog_expr::voperator::AT, current_node -> get_child().at(0), current_node -> get_child().at(1));
-                    auto child2 = current_node -> MakeConstant(0, 0, std::to_string(concat_width));
-                    new_child.push_back(child1);
-                    new_child.push_back(child2);
-                    current_node -> UpdateAst(verilog_expr::voperator::CONCAT, new_child);
-                    
+                    current_node -> set_concat_width(concat_width);
                     break;
                   }
                 }
                 case verilog_expr::voperator::MK_VAR: {
-                  verilog_expr::VExprAst::VExprAstPtrVec new_child;
-
-                  std::cout << "make var :" << current_node << std::endl;
                   auto var_sort = sim.var(current_node -> to_verilog()) -> get_sort();
                   auto var_sort_width = var_sort -> get_width();
                   if(var_sort_width == max_width){
@@ -88,12 +101,43 @@ verilog_expr::VExprAst::VExprAstPtr extend_width(const verilog_expr::VExprAst::V
                   }
                   else{
                     auto concat_width = max_width - var_sort_width; 
-                    auto child1 = current_node -> MakeVar(current_node ->to_verilog());
-                    auto child2 = current_node -> MakeConstant(0, 0, std::to_string(concat_width));
-                    new_child.push_back(child1);
-                    new_child.push_back(child2);
-                    current_node -> UpdateAst(verilog_expr::voperator::CONCAT, new_child);
-                    
+                    current_node -> set_concat_width(concat_width);
+                    break;
+                  }
+                }
+                case verilog_expr::voperator::MK_CONST: {
+                  auto current_const = verilog_expr::VExprAstConstant::cast_ptr(current_node);
+                  auto const_value_tuple = current_const -> get_constant();
+                  auto width = std::get<1>(const_value_tuple);
+                  if(width == max_width){
+                    break;
+                  }
+                  else{
+                    auto concat_width = max_width - width;
+                    current_node -> set_concat_width(concat_width);
+                    break;
+                  }
+                }
+                case verilog_expr::voperator::INDEX: {
+                  if(max_width == 1){
+                    break;
+                  }
+                  else{
+                    auto concat_width = max_width - 1;
+                    current_node -> set_concat_width(concat_width);
+                    break;
+                  }
+                }
+                case verilog_expr::voperator::RANGE_INDEX: {
+                  auto msb = std::stoi(current_node -> get_child().at(1) -> to_verilog());
+                  auto lsb = std::stoi(current_node -> get_child().at(2) -> to_verilog());
+                  
+                  if(max_width == (msb - lsb + 1)){
+                    break;
+                  }
+                  else{
+                    auto concat_width = max_width - (msb - lsb + 1);
+                    current_node -> set_concat_width(concat_width);
                     break;
                   }
                 }
@@ -106,11 +150,11 @@ verilog_expr::VExprAst::VExprAstPtr extend_width(const verilog_expr::VExprAst::V
             }
             
     }
-
+    std::cout << "local AST set width extension : done" << std::endl;
     return ast;
 }
 
-verilog_expr::VExprAst::VExprAstPtr traverse_ast_and_extend_width(const verilog_expr::VExprAst::VExprAstPtr& node, wasim::SymbolicExecutor& sim)
+verilog_expr::VExprAst::VExprAstPtr traverse_ast_and_set_extend_width(verilog_expr::VExprAst::VExprAstPtr& node, wasim::SymbolicExecutor& sim)
 {
     if (!node) {
         throw std::invalid_argument("Null AST node");
@@ -135,7 +179,7 @@ verilog_expr::VExprAst::VExprAstPtr traverse_ast_and_extend_width(const verilog_
                   verilog_expr::VExprAst::VExprAstPtrVec new_child;
                   
                   int local_max_width = get_max_width(current_node, sim);
-                  extend_width(current_node, sim, local_max_width);
+                  set_extend_width(current_node, sim, local_max_width);
                   
                   break;
                 }
@@ -224,6 +268,22 @@ smt::Term ast2term(smt::SmtSolver& solver, const verilog_expr::VExprAst::VExprAs
                 }
                 // @
                 case verilog_expr::voperator::AT: {
+                    if( (current -> get_concat_width()) != 0){
+                        auto string_name = current->get_child().at(0)->to_verilog() + "@" + current->get_child().at(1)->to_verilog();
+                        try{
+                          solver -> get_symbol(string_name);
+                        }
+                        catch(const IncorrectUsageException &e){
+                          terms[current] = solver->make_symbol(string_name, terms[current->get_child().at(0)] -> get_sort());
+                        }
+                        terms[current] = solver -> get_symbol(string_name);
+
+                        smt::Sort concat_sort = solver -> make_sort(smt::BV, current -> get_concat_width());
+                        smt::Term concat_term = solver -> make_term(0, concat_sort);
+                        terms[current] = solver -> make_term(smt::Concat, concat_term, solver -> get_symbol(string_name));
+                        break;
+                    }
+                    
                     auto string_name = current->get_child().at(0)->to_verilog() + "@" + current->get_child().at(1)->to_verilog();
                     try{
                        solver -> get_symbol(string_name);
@@ -234,7 +294,7 @@ smt::Term ast2term(smt::SmtSolver& solver, const verilog_expr::VExprAst::VExprAs
                     terms[current] = solver -> get_symbol(string_name);
                     break;
                 }
-                // concat, expand width
+                // concat, extend width
                 case verilog_expr::voperator::CONCAT: {
                     smt::Term left = terms[current->get_child().at(0)];
                     smt::Term right = terms[current->get_child().at(1)];
@@ -244,21 +304,92 @@ smt::Term ast2term(smt::SmtSolver& solver, const verilog_expr::VExprAst::VExprAs
                     terms[current] = solver -> make_term(smt::Concat, concat_term, left);
                     break;
                 }
+                // index []
+                case verilog_expr::voperator::INDEX: {
+                    if( (current -> get_concat_width()) != 0){
+                        smt::Term left = terms[current->get_child().at(0)];
+                        smt::Term right = terms[current->get_child().at(1)];
+                        smt::Op extract_op = smt::Op(smt::Extract,  right -> to_int(),  right -> to_int());
+
+                        smt::Sort concat_sort = solver -> make_sort(smt::BV, current -> get_concat_width());
+                        smt::Term concat_term = solver -> make_term(0, concat_sort);
+                        terms[current] = solver -> make_term(smt::Concat, concat_term, solver -> make_term(extract_op, left));
+                        break;
+                    }
+                    smt::Term left = terms[current->get_child().at(0)];
+                    smt::Term right = terms[current->get_child().at(1)];
+                    smt::Op extract_op = smt::Op(smt::Extract,  right -> to_int(),  right -> to_int());
+                    terms[current] = solver -> make_term(extract_op, left);
+                    break;
+                }
+                // range index [msb:lsb]
+                case verilog_expr::voperator::RANGE_INDEX: {
+                    if( (current -> get_concat_width()) != 0){
+                        smt::Term left = terms[current->get_child().at(0)];
+                        smt::Term mid = terms[current->get_child().at(1)];
+                        smt::Term right = terms[current->get_child().at(2)];
+                        smt::Op extract_op = smt::Op(smt::Extract,  mid -> to_int(),  right -> to_int());
+
+                        smt::Sort concat_sort = solver -> make_sort(smt::BV, current -> get_concat_width());
+                        smt::Term concat_term = solver -> make_term(0, concat_sort);
+                        terms[current] = solver -> make_term(smt::Concat, concat_term, solver -> make_term(extract_op, left));
+                        break;
+                    }
+                    smt::Term left = terms[current->get_child().at(0)];
+                    smt::Term mid = terms[current->get_child().at(1)];
+                    smt::Term right = terms[current->get_child().at(2)];
+                    smt::Op extract_op = smt::Op(smt::Extract,  mid -> to_int(),  right -> to_int());
+                    terms[current] = solver -> make_term(extract_op, left);
+                    break;
+                }
                 // make var
                 case verilog_expr::voperator::MK_VAR: {
+                    if( (current -> get_concat_width()) != 0){
+                        smt::Sort concat_sort = solver -> make_sort(smt::BV, current -> get_concat_width());
+                        smt::Term concat_term = solver -> make_term(0, concat_sort);
+                        terms[current] = solver -> make_term(smt::Concat, concat_term, sim.var(current->to_verilog()));
+                        break;
+                    }
                     terms[current] = sim.var(current->to_verilog());
                     break;
                 }
                 // make const
                 case verilog_expr::voperator::MK_CONST: {
-                    int n = std::stoi(current->to_verilog());
-                    int width = 0;
-                    while (n > 0) {
-                        n >>= 1;
-                        width++;
+                    auto current_const = verilog_expr::VExprAstConstant::cast_ptr(current);
+                    auto const_value_tuple = current_const -> get_constant();
+
+                    auto base = std::get<0>(const_value_tuple);
+                    auto width = std::get<1>(const_value_tuple);
+                    auto value = std::get<2>(const_value_tuple);
+
+                    int const_value;
+
+                    switch(base){
+                      case 0:{
+                        width = 32;
+                        const_value = std::stoi(value);
+                        break;
+                      }
+                      case 2:{
+                        const_value = std::stoi(value, nullptr, 2);
+                        break;
+                      }
+                      case 10:{
+                        const_value = std::stoi(value, nullptr, 10);
+                        break;
+                      }
+                      case 16:{
+                        const_value = std::stoi(value, nullptr, 16);
+                        break;
+                      }
+                      default:{
+                        const_value = 0;
+                        break;
+                      }
                     }
-                    if (width == 0) width = 1;
-                    terms[current] = solver->make_term(std::stoi(current->to_verilog()), solver->make_sort(smt::BV, width));
+
+                    auto concat_width = current -> get_concat_width();
+                    terms[current] = solver->make_term(const_value, solver->make_sort(smt::BV, width + concat_width));
                     break;
                 }
                 // undefined operation
@@ -271,7 +402,7 @@ smt::Term ast2term(smt::SmtSolver& solver, const verilog_expr::VExprAst::VExprAs
 }
 
 //class TimedAssertionChecker
-void TimedAssertionChecker::parse_verilog(const std::string verilog_assertion){
+void TimedAssertionChecker::parse_verilog(const std::string& verilog_assertion){
   verilog_assertion_ = verilog_assertion;
   //deps from vexpparser
   Vexp::Interpreter intp;
@@ -316,7 +447,6 @@ void TimedAssertionChecker::parse_ast(const verilog_expr::VExprAst::VExprAstPtr&
                 var_struct_vec.push_back(var_struct);
                 break;
             }
-            
             default: {
                 for (size_t i = 0; i < node -> get_child_cnt(); ++i) {
                     node_stack.push(node -> get_child().at(i));
@@ -427,41 +557,46 @@ smt::UnorderedTermMap TimedAssertionChecker::create_substitution_map(){
   return substitution_map;
 }
 
-void TimedAssertionChecker::assert_formula(){
-  std::cout << "vexpparser ast : " << ast << std::endl;
+void TimedAssertionChecker::make_assertion_term(){
+  std::cout << "vexpparser AST : " << ast << std::endl;
     // make new ast tree (new version local width
-  auto new_ass_ast = traverse_ast_and_extend_width(ast, sim_);
-  std::cout << "sort new ast : " << new_ass_ast << std::endl;
+  auto my_ast = get_ast();
+  traverse_ast_and_set_extend_width(my_ast, sim_);
+  std::cout << "AST set width extension : done" << std::endl;
 
     //ast transformer to term
-  smt::Term my_assertion_term = ast2term(solver_, new_ass_ast, sim_);
-  std::cout << "my assertion term (original term) :" << my_assertion_term << std::endl;
+  assertion_term = ast2term(solver_, my_ast, sim_); //my_ast(set width extension)
+  std::cout << "my assertion term (original term) :" << assertion_term << std::endl;
 
     //create substitution map
   auto substitution_map = create_substitution_map();
 
     //substitude term
-  smt::Term my_assertion_term_sub =  solver_ -> substitute(my_assertion_term, substitution_map);
-  std::cout << "my assertion term (substitude symbolic term) :" << my_assertion_term_sub << std::endl;
+  assertion_term_sub =  solver_ -> substitute(assertion_term, substitution_map);
+  std::cout << "my assertion term (substitude symbolic term) :" << assertion_term_sub << std::endl;
+}
 
-    //check sat
-  smt::Term not_assertion_term = solver_ -> make_term(smt::PrimOp::Not,my_assertion_term_sub);
+void TimedAssertionChecker::assert_formula(){
+    //assert
+  smt::Term not_assertion_term = solver_ -> make_term(smt::PrimOp::Not, assertion_term_sub);
   solver_ -> assert_formula(not_assertion_term);
 
-  std::cout << "assert not my assertion term :" << not_assertion_term << std::endl;
+  std::cout << "assert formula (not my assertion term) : done" << std::endl;
 }
 
 void TimedAssertionChecker::check_sat(){
     std::cout << "term check sat result : " << solver_ -> check_sat() << std::endl;
-
+    std::cout << "---------------------------------------------------------" << std::endl;
     if( (solver_ -> check_sat()).result == smt::SAT )
     {
-      std::cout << "assert(" + verilog_assertion_ + ") : the equation isn't always correct and has counter-example" << std::endl;
+      std::cout << "X |"<< " assert(" + verilog_assertion_ + ") | the equation isn't always correct and has counter-example" << std::endl;
     }
     else if((solver_ -> check_sat()).result == smt::UNSAT )
     {
-      std::cout << "assert(" + verilog_assertion_ + ") : the equation is always correct" << std::endl;
+      std::cout << "√ |" << " assert(" + verilog_assertion_ + ") | the equation is always correct" << std::endl;
     }
 }
+
+
 
 }   //namespace tac

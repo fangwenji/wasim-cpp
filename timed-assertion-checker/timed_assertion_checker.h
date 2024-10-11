@@ -24,6 +24,27 @@ public:
     TimedAssertionChecker(const std::string verilog_assertion, wasim::TransitionSystem & ts, wasim::SymbolicExecutor& sim, smt::SmtSolver solver) :ts_(ts), sim_(sim), solver_(solver)
         {parse_verilog(verilog_assertion); parse_ast(ast); parse_max_cycle();}
 
+    //sim and catch var symbolic term
+    void sim_max_step(bool& rst_en0);
+
+    //after sim_max_step, print var <-> symbolic map 
+    void print_term_map();
+
+    //make assertion term
+    void make_assertion_term();
+
+    //ast->term and assert formula term
+    void assert_formula();
+    
+    //check sat
+    void check_sat();
+
+    //get assertion term
+    smt::Term get_assertion_term(){return assertion_term;}
+
+    //get substitution assertion term
+    smt::Term get_sub_assertion_term(){return assertion_term_sub;}
+
     //get ast
     verilog_expr::VExprAst::VExprAstPtr get_ast() const {return ast;}
 
@@ -32,18 +53,6 @@ public:
 
     //get max sim cycle
     int get_max_cycle() const {return max_cycle;}
-
-    //sim and catch var symbolic term
-    void sim_max_step(bool& rst_en0);
-
-    //after sim_max_step, print var <-> symbolic map 
-    void print_term_map();
-
-    //ast->term and assert formula term
-    void assert_formula();
-    
-    //check sat
-    void check_sat();
 
 protected:
     wasim::TransitionSystem & ts_;
@@ -55,9 +64,11 @@ private:
     verilog_expr::VExprAst::VExprAstPtr ast;
     std::vector<Variable> var_struct_vec;
     int max_cycle;
+    smt::Term assertion_term;
+    smt::Term assertion_term_sub;
 
     //parse verilog assertion
-    void parse_verilog(const std::string verilog_assertion);
+    void parse_verilog(const std::string& verilog_assertion);
 
     //parse to get variable struct
     void parse_ast(const verilog_expr::VExprAst::VExprAstPtr& ast);
