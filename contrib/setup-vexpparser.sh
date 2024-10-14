@@ -1,6 +1,6 @@
 #!/bin/bash
 
-VEXPPARSER_VERSION=101f9bfe6563da7879fdba8c267fc396ef741bef
+VEXPPARSER_VERSION=5493131f5c8f9aa95e0ff2768c33a91cae35f9f1
 
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 DEPS=$DIR/../deps
