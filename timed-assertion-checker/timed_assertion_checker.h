@@ -16,7 +16,6 @@ public:
         std::string fullname; // "a@2"
         std::string name;     // "a"
         int cycle;            // 2
-        int width;            // get_width
     };
     std::unordered_map<std::string, smt::Term> ass_termmap;
 
