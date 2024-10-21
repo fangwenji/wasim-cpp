@@ -540,24 +540,38 @@ smt::Term ast2term(smt::SmtSolver& solver, const verilog_expr::VExprAst::VExprAs
                 // <<
                 case verilog_expr::voperator::LSL: {
                     if ( (current -> get_target_width()) != (current -> get_node_width()) ){
+                      auto extarct_width = log2(current -> get_child().at(0) -> get_target_width());
+                      smt::Op extract_op = smt::Op(smt::Extract,  extarct_width - 1,  0);
+                      auto lsl_bit = solver -> make_term(extract_op, terms[current->get_child().at(1)]);
+                      auto curr_term = solver -> make_term(smt::BVShl, terms[current->get_child().at(0)], lsl_bit);
+
                       auto concat_width = (current -> get_target_width()) - (current -> get_node_width());
-                      auto curr_term = solver -> make_term(smt::BVShl, terms[current->get_child().at(0)], terms[current->get_child().at(1)]);
                       terms[current] = solver -> make_term(smt::Op(smt::Zero_Extend, concat_width), curr_term);
                     }
                     else{
-                      terms[current] = solver->make_term(smt::BVShl, terms[current->get_child().at(0)], terms[current->get_child().at(1)]);
+                      auto extarct_width = log2(current -> get_child().at(0) -> get_target_width());
+                      smt::Op extract_op = smt::Op(smt::Extract,  extarct_width - 1,  0);
+                      auto lsl_bit = solver -> make_term(extract_op, terms[current->get_child().at(1)]);
+                      terms[current] = solver->make_term(smt::BVShl, terms[current->get_child().at(0)], lsl_bit);
                     }
                     break;
                 }
                 // >>
                 case verilog_expr::voperator::LSR: {
                     if ( (current -> get_target_width()) != (current -> get_node_width()) ){
+                      auto extarct_width = log2(current -> get_child().at(0) -> get_target_width());
+                      smt::Op extract_op = smt::Op(smt::Extract,  extarct_width - 1,  0);
+                      auto lsr_bit = solver -> make_term(extract_op, terms[current->get_child().at(1)]);
+                      auto curr_term = solver -> make_term(smt::BVLshr, terms[current->get_child().at(0)], lsr_bit);
+
                       auto concat_width = (current -> get_target_width()) - (current -> get_node_width());
-                      auto curr_term = solver -> make_term(smt::BVLshr, terms[current->get_child().at(0)], terms[current->get_child().at(1)]);
                       terms[current] = solver -> make_term(smt::Op(smt::Zero_Extend, concat_width), curr_term);
                     }
                     else{
-                      terms[current] = solver->make_term(smt::BVLshr, terms[current->get_child().at(0)], terms[current->get_child().at(1)]);
+                      auto extarct_width = log2(current -> get_child().at(0) -> get_target_width());
+                      smt::Op extract_op = smt::Op(smt::Extract,  extarct_width - 1,  0);
+                      auto lsr_bit = solver -> make_term(extract_op, terms[current->get_child().at(1)]);
+                      terms[current] = solver->make_term(smt::BVLshr, terms[current->get_child().at(0)], lsr_bit);
                     }
                     break;
                 }
