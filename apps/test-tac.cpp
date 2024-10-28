@@ -32,8 +32,7 @@ int main() {
 
   tac::TimedAssertionChecker test_tac(my_assertion, sts, sim, solver);
 
-  bool rst_en0 = 0;    //if input signal have not rst, give 0;  if give 1 -> rst ≡ 0, if give 0 -> rst = rst1,2,3...(symbolic)
-  test_tac.sim_max_step(rst_en0);
+  test_tac.sim_max_step("rst",true,"clk");
   test_tac.print_term_map();
   test_tac.make_assertion_term();
   test_tac.assert_formula();

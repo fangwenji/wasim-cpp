@@ -982,15 +982,17 @@ void TimedAssertionChecker::parse_max_cycle()
     }
 }
 
-void TimedAssertionChecker::sim_max_step(bool& rst_en0)
+void TimedAssertionChecker::sim_max_step(const std::string &rst_sig_name, bool set_rst_to_0, const std::string & clk_sig_name)
 {
     int sim_cycle;
     const auto& vars = get_var_vec();
     
     //get input var for make vdict
     smt::UnorderedTermSet input_term_set = ts_.inputvars();
-    smt::Term clk_term = sim_.var("clk");
-    input_term_set.erase(clk_term);
+    if (clk_sig_name != "") {
+      smt::Term clk_term = sim_.var(clk_sig_name);
+      input_term_set.erase(clk_term);
+    }
     
     for (sim_cycle = 0; sim_cycle <= max_cycle; sim_cycle ++)
     {
@@ -1007,10 +1009,9 @@ void TimedAssertionChecker::sim_max_step(bool& rst_en0)
           input_vdict[input_var -> to_string()] = input_var -> to_string() + std::to_string(sim_cycle);
         }
 
-        if(rst_en0){
-          input_vdict["rst"] = 0;
+        if (rst_sig_name != "") {
+          input_vdict[rst_sig_name] = set_rst_to_0 ? 0 : 1;
         }
-
 
         auto inputmap = sim_.convert(input_vdict); //input_vdict = {{"a", "a" + std::to_string(sim_cycle)}, {"b", "b" + std::to_string(sim_cycle)}}
         sim_.set_input(inputmap, {}); 
