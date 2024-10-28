@@ -20,7 +20,7 @@ public:
     std::unordered_map<std::string, smt::Term> ass_termmap;
 
     // parse verilog -> ast, parse ast -> get var, max cycle from wasim 
-    TimedAssertionChecker(const std::string verilog_assertion, wasim::TransitionSystem & ts, wasim::SymbolicExecutor& sim, smt::SmtSolver solver) :ts_(ts), sim_(sim), solver_(solver)
+    TimedAssertionChecker(const std::string verilog_assertion, wasim::TransitionSystem & ts, wasim::SymbolicSimulator& sim, smt::SmtSolver solver) :ts_(ts), sim_(sim), solver_(solver)
         {parse_verilog(verilog_assertion); parse_ast(ast); parse_max_cycle();}
 
     //sim and catch var symbolic term
@@ -55,7 +55,7 @@ public:
 
 protected:
     wasim::TransitionSystem & ts_;
-    wasim::SymbolicExecutor& sim_;
+    wasim::SymbolicSimulator& sim_;
     smt::SmtSolver solver_;
 
 private:

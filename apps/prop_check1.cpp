@@ -41,7 +41,7 @@ int main()
   TransitionSystem sts(solver);
   BTOR2Encoder btor_parser(input_file, sts);
 
-  SymbolicExecutor executor(sts, solver);
+  SymbolicSimulator simulator(sts, solver);
 
   assignment_type init_map = { { "wen_stage1", "v1" },
                                { "wen_stage2", "v2" },
@@ -49,18 +49,18 @@ int main()
                                { "stage2", "b" },
                                { "stage3", "c" } };
 
-  auto map = executor.convert(init_map);
-  executor.init(map);
+  auto map = simulator.convert(init_map);
+  simulator.init(map);
   std::vector<StateAsmpt> state_list;
   std::vector<std::vector<StateAsmpt>> branch_list;
   StateRW staterw(solver);
   std::string out_dir = PROJECT_SOURCE_DIR "/output/c1/";
   branch_list = staterw.StateReadTree(out_dir, 345, 7);
 
-  auto tag2 = tobool(executor.var("tag2"), solver);
-  auto tag3 = tobool(executor.var("tag3"), solver);
-  auto reg_v = executor.var("reg_v");
-  auto reg_v_comp = executor.var("reg_v_comp");
+  auto tag2 = tobool(simulator.var("tag2"), solver);
+  auto tag3 = tobool(simulator.var("tag3"), solver);
+  auto reg_v = simulator.var("reg_v");
+  auto reg_v_comp = simulator.var("reg_v_comp");
 
   // InvGroup inv_group3(3, tag2, branch_list, solver);
   // inv_group3.branch2state();

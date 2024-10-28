@@ -5,7 +5,6 @@
 #include "framework/symsim.h"
 #include "framework/ts.h"
 #include "smt-switch/boolector_factory.h"
-#include "timed-assertion-checker/timed_assertion_checker.h"
 
 using namespace wasim;
 using namespace smt;
@@ -21,29 +20,33 @@ int main() {
   solver->set_opt("produce-unsat-assumptions", "true");
 
   TransitionSystem sts(solver);
-  BTOR2Encoder btor_parser("/home/cwb/work_github/wasim-cpp/design/test/adder.btor2", sts); //  design/test/adder.btor2
+  BTOR2Encoder btor_parser("design/test/pipe-no-stall.btor2", sts);
 
-  std::cout << sts.trans()->to_string() << std::endl; //print smt 
-
-  SymbolicExecutor sim(sts, solver);
+  std::cout << sts.trans()->to_string() << std::endl;
   
-  /*------------------------------simulation--------------------------------*/
-  sim.init();
+  SymbolicSimulator sim(sts, solver);
+  
+  auto varmap = sim.convert( { {"wen_stage2","v"}, {"tag2", 1} } );
 
-    // timed assertion
-  std::string my_assertion = "out@2 == a@0 + b@1";  // var with bit width format: (out@2)[3:0], (out@2)[0+:4]
+  sim.init(varmap);
 
-  tac::TimedAssertionChecker test_tac(my_assertion, sts, sim, solver);
+  auto s = sim.get_curr_state();
 
-  bool rst_en0 = 0;    //if input signal have not rst, give 0;  if give 1 -> rst ≡ 0, if give 0 -> rst = rst1,2,3...(symbolic)
-  test_tac.sim_max_step(rst_en0);
-  test_tac.print_term_map();
-  test_tac.make_assertion_term();
-  test_tac.assert_formula();
-  test_tac.check_sat();
+  std::cout << s.print() ;
+  std::cout << s.print_assumptions();
+
+  auto inputmap = sim.convert( {{"reg_init", 0}} );
+  sim.set_input(inputmap, {});
+  sim.sim_one_step();
+
+  auto s2 = sim.get_curr_state();
+  std::cout << s2.print();
+  std::cout << s2.print_assumptions();
+
+  sim.backtrack();
+  sim.undo_set_input();
+
 
   return 0;
-
 }
-
 

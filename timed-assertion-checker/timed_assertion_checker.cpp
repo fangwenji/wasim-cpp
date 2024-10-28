@@ -2,7 +2,7 @@
 
 namespace tac {
 
-verilog_expr::VExprAst::VExprAstPtr update_target_width(verilog_expr::VExprAst::VExprAstPtr& ast, wasim::SymbolicExecutor& sim)
+verilog_expr::VExprAst::VExprAstPtr update_target_width(verilog_expr::VExprAst::VExprAstPtr& ast, wasim::SymbolicSimulator& sim)
 {
     if (!ast) {
         throw std::invalid_argument("Null AST node");
@@ -175,7 +175,7 @@ verilog_expr::VExprAst::VExprAstPtr update_target_width(verilog_expr::VExprAst::
     return ast;
 }
 
-verilog_expr::VExprAst::VExprAstPtr set_node_width(verilog_expr::VExprAst::VExprAstPtr& node, wasim::SymbolicExecutor& sim)
+verilog_expr::VExprAst::VExprAstPtr set_node_width(verilog_expr::VExprAst::VExprAstPtr& node, wasim::SymbolicSimulator& sim)
 {
     if (!node) {
         throw std::invalid_argument("Null AST node");
@@ -447,7 +447,7 @@ verilog_expr::VExprAst::VExprAstPtr set_node_width(verilog_expr::VExprAst::VExpr
     return node;
 }
 
-smt::Term ast2term(smt::SmtSolver& solver, const verilog_expr::VExprAst::VExprAstPtr& node, wasim::SymbolicExecutor& sim) {
+smt::Term ast2term(smt::SmtSolver& solver, const verilog_expr::VExprAst::VExprAstPtr& node, wasim::SymbolicSimulator& sim) {
     if (!node) {
       throw std::invalid_argument("Null AST node");
     }

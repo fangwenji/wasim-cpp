@@ -40,7 +40,7 @@ int main()
   TransitionSystem sts(solver);
   BTOR2Encoder btor_parser(input_file, sts);
 
-  SymbolicExecutor executor(sts, solver);
+  SymbolicSimulator simulator(sts, solver);
 
   assignment_type init_map = { { "wen_stage1", "v1" },
                                { "wen_stage2", "v2" },
@@ -48,26 +48,26 @@ int main()
                                { "stage2", "b" },
                                { "stage3", "c" } };
 
-  auto map = executor.convert(init_map);
-  executor.init(map);
+  auto map = simulator.convert(init_map);
+  simulator.init(map);
   std::vector<StateAsmpt> state_list;
   std::vector<std::vector<StateAsmpt>> branch_list;
   StateRW staterw(solver);
   std::string out_dir = PROJECT_SOURCE_DIR "/output/c1/";
   branch_list = staterw.StateReadTree(out_dir, 345, 7);
 
-  auto tag0 = tobool(executor.var("tag0"), solver);
-  auto tag1 = tobool(executor.var("tag1"), solver);
-  auto tag2 = tobool(executor.var("tag2"), solver);
-  auto tag3 = tobool(executor.var("tag3"), solver);
-  auto wen_stage1 = executor.var("wen_stage1");
-  auto wen_stage2 = executor.var("wen_stage2");
-  auto stage1 = executor.var("stage1");
-  auto stage2 = executor.var("stage2");
-  auto stage3 = executor.var("stage3");
-  auto reg_v = executor.var("reg_v");
-  auto reg_v_comp = executor.var("reg_v_comp");
-  auto rst = executor.var("rst");
+  auto tag0 = tobool(simulator.var("tag0"), solver);
+  auto tag1 = tobool(simulator.var("tag1"), solver);
+  auto tag2 = tobool(simulator.var("tag2"), solver);
+  auto tag3 = tobool(simulator.var("tag3"), solver);
+  auto wen_stage1 = simulator.var("wen_stage1");
+  auto wen_stage2 = simulator.var("wen_stage2");
+  auto stage1 = simulator.var("stage1");
+  auto stage2 = simulator.var("stage2");
+  auto stage3 = simulator.var("stage3");
+  auto reg_v = simulator.var("reg_v");
+  auto reg_v_comp = simulator.var("reg_v_comp");
+  auto rst = simulator.var("rst");
 
   auto state_init = branch_list.at(0).at(0);
   // auto asmpt_init = solver->make_term(smt::And, state_init.asmpt_);

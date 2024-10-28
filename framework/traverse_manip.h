@@ -32,7 +32,7 @@ using namespace std;
 
 namespace wasim {
 void extend_branch_init(std::vector<std::vector<StateAsmpt>> & branch_list,
-                        SymbolicExecutor & executor,
+                        SymbolicSimulator & simulator,
                         TransitionSystem & sts,
                         std::unordered_set<std::string> base_sv,
                         std::string flag,
@@ -42,7 +42,7 @@ void extend_branch_init(std::vector<std::vector<StateAsmpt>> & branch_list,
 
 void extend_branch_next_phase(
     std::vector<std::vector<StateAsmpt>> & branch_list,
-    SymbolicExecutor & executor,
+    SymbolicSimulator & simulator,
     TransitionSystem & sts,
     std::unordered_set<std::string> base_sv,
     std::string flag,
@@ -53,7 +53,7 @@ void extend_branch_next_phase(
 
 void extend_branch_same_phase(
     std::vector<std::vector<StateAsmpt>> & branch_list,
-    SymbolicExecutor & executor,
+    SymbolicSimulator & simulator,
     TransitionSystem & sts,
     std::unordered_set<std::string> base_sv,
     std::string flag,

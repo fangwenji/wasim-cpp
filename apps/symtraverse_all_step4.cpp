@@ -15,7 +15,7 @@ using namespace std;
 using namespace chrono;
 
 smt::TermVec tag2asmpt_c3(std::string flag,
-                          SymbolicExecutor & executor,
+                          SymbolicSimulator & simulator,
                           smt::SmtSolver & solver)
 {
   smt::TermVec ret;
@@ -24,72 +24,72 @@ smt::TermVec tag2asmpt_c3(std::string flag,
   smt::Term rhs_0 = solver->make_term(0, solver->make_sort(smt::BV, 1));
   smt::Term rhs_1 = solver->make_term(1, solver->make_sort(smt::BV, 1));
   if (flag == "start-id") {
-    lhs0 = executor.var("rst");
+    lhs0 = simulator.var("rst");
     ret_term0 = solver->make_term(smt::Equal, lhs0, rhs_0);
     ret.push_back(ret_term0);
-    lhs1 = executor.var("dummy_reset");
+    lhs1 = simulator.var("dummy_reset");
     ret_term1 = solver->make_term(smt::Equal, lhs1, rhs_0);
     ret.push_back(ret_term1);
   } else if (flag == "id-id") {
-    lhs0 = executor.var("rst");
+    lhs0 = simulator.var("rst");
     ret_term0 = solver->make_term(smt::Equal, lhs0, rhs_0);
     ret.push_back(ret_term0);
-    lhs1 = executor.var("dummy_reset");
+    lhs1 = simulator.var("dummy_reset");
     ret_term1 = solver->make_term(smt::Equal, lhs1, rhs_0);
     ret.push_back(ret_term1);
-    lhs2 = executor.var("RTL_id_go");
+    lhs2 = simulator.var("RTL_id_go");
     ret_term2 = solver->make_term(smt::Equal, lhs2, rhs_0);
     cout << "ret_term2:" << ret_term2 << endl;
     ret.push_back(ret_term2);
   } else if (flag == "id-ex") {
-    lhs0 = executor.var("rst");
+    lhs0 = simulator.var("rst");
     ret_term0 = solver->make_term(smt::Equal, lhs0, rhs_0);
     ret.push_back(ret_term0);
-    lhs1 = executor.var("dummy_reset");
+    lhs1 = simulator.var("dummy_reset");
     ret_term1 = solver->make_term(smt::Equal, lhs1, rhs_0);
     ret.push_back(ret_term1);
-    lhs2 = executor.var("RTL_id_go");
+    lhs2 = simulator.var("RTL_id_go");
     ret_term2 = solver->make_term(smt::Equal, lhs2, rhs_1);
     ret.push_back(ret_term2);
   } else if (flag == "ex-ex") {
-    lhs0 = executor.var("rst");
+    lhs0 = simulator.var("rst");
     ret_term0 = solver->make_term(smt::Equal, lhs0, rhs_0);
     ret.push_back(ret_term0);
-    lhs1 = executor.var("dummy_reset");
+    lhs1 = simulator.var("dummy_reset");
     ret_term1 = solver->make_term(smt::Equal, lhs1, rhs_0);
     ret.push_back(ret_term1);
-    lhs2 = executor.var("RTL_ex_go");
+    lhs2 = simulator.var("RTL_ex_go");
     ret_term2 = solver->make_term(smt::Equal, lhs2, rhs_0);
     cout << "ret_term2:" << ret_term2 << endl;
     ret.push_back(ret_term2);
   } else if (flag == "ex-wb") {
-    lhs0 = executor.var("rst");
+    lhs0 = simulator.var("rst");
     ret_term0 = solver->make_term(smt::Equal, lhs0, rhs_0);
     ret.push_back(ret_term0);
-    lhs1 = executor.var("dummy_reset");
+    lhs1 = simulator.var("dummy_reset");
     ret_term1 = solver->make_term(smt::Equal, lhs1, rhs_0);
     ret.push_back(ret_term1);
-    lhs2 = executor.var("RTL_ex_go");
+    lhs2 = simulator.var("RTL_ex_go");
     ret_term2 = solver->make_term(smt::Equal, lhs2, rhs_1);
     ret.push_back(ret_term2);
   } else if (flag == "wb-wb") {
-    lhs0 = executor.var("rst");
+    lhs0 = simulator.var("rst");
     ret_term0 = solver->make_term(smt::Equal, lhs0, rhs_0);
     ret.push_back(ret_term0);
-    lhs1 = executor.var("dummy_reset");
+    lhs1 = simulator.var("dummy_reset");
     ret_term1 = solver->make_term(smt::Equal, lhs1, rhs_0);
     ret.push_back(ret_term1);
-    lhs2 = executor.var("RTL_wb_go");
+    lhs2 = simulator.var("RTL_wb_go");
     ret_term2 = solver->make_term(smt::Equal, lhs2, rhs_0);
     ret.push_back(ret_term2);
   } else if (flag == "wb-finish") {
-    lhs0 = executor.var("rst");
+    lhs0 = simulator.var("rst");
     ret_term0 = solver->make_term(smt::Equal, lhs0, rhs_0);
     ret.push_back(ret_term0);
-    lhs1 = executor.var("dummy_reset");
+    lhs1 = simulator.var("dummy_reset");
     ret_term1 = solver->make_term(smt::Equal, lhs1, rhs_0);
     ret.push_back(ret_term1);
-    lhs2 = executor.var("RTL_wb_go");
+    lhs2 = simulator.var("RTL_wb_go");
     ret_term2 = solver->make_term(smt::Equal, lhs2, rhs_1);
     ret.push_back(ret_term2);
   } else {
@@ -146,7 +146,7 @@ int main()
   auto t2 = solver->make_term(1);
   cout << t2->to_string() << endl;
 
-  SymbolicExecutor executor(sts, solver);
+  SymbolicSimulator simulator(sts, solver);
 
   assignment_type init_map = {
     { "RTL_if_id_inst", "inst_id" },   { "RTL_id_ex_operand1", "oper1" },
@@ -163,20 +163,20 @@ int main()
     { "__ILA_I_inst", "ila_inst" },
   };
 
-  auto map = executor.convert(init_map);
-  executor.init(map);
+  auto map = simulator.convert(init_map);
+  simulator.init(map);
   std::vector<StateAsmpt> state_list;
   std::vector<std::vector<StateAsmpt>> branch_list;
 
   // step: start
   cout << "step: start" << endl;
-  auto s_init = executor.get_curr_state();
+  auto s_init = simulator.get_curr_state();
   auto is_not_start0 =
       solver->make_term(smt::Equal,
-                        executor.var("__START__"),
+                        simulator.var("__START__"),
                         solver->make_term(0, solver->make_sort(smt::BV, 1)));
   auto is_not_start =
-      executor.interpret_state_expr_on_curr_frame(is_not_start0);
+      simulator.interpret_state_expr_on_curr_frame(is_not_start0);
   auto init_asmpt = s_init.asmpt_;
   auto r_t = is_sat_res(init_asmpt, solver);
   assert(not r_t.is_sat());
@@ -209,9 +209,9 @@ int main()
 
   // step: start-ex
   cout << "step: start --> id" << endl;
-  auto asmpt_start_id = tag2asmpt_c3("start-id", executor, solver);
+  auto asmpt_start_id = tag2asmpt_c3("start-id", simulator, solver);
   extend_branch_next_phase(branch_list,
-                           executor,
+                           simulator,
                            sts,
                            base_sv_start,
                            "start-id",
@@ -225,9 +225,9 @@ int main()
                            solver);
 
   cout << "step: id --> id" << endl;
-  auto asmpt_id_id = tag2asmpt_c3("id-id", executor, solver);
+  auto asmpt_id_id = tag2asmpt_c3("id-id", simulator, solver);
   extend_branch_same_phase(branch_list,
-                           executor,
+                           simulator,
                            sts,
                            base_sv_start,
                            "id-id",
@@ -249,9 +249,9 @@ int main()
   };
 
   cout << "step: id --> ex" << endl;
-  auto asmpt_id_ex = tag2asmpt_c3("id-ex", executor, solver);
+  auto asmpt_id_ex = tag2asmpt_c3("id-ex", simulator, solver);
   extend_branch_next_phase(branch_list,
-                           executor,
+                           simulator,
                            sts,
                            base_sv_id,
                            "id-ex",
@@ -265,9 +265,9 @@ int main()
                            solver);
 
   cout << "step: ex --> ex" << endl;
-  auto asmpt_ex_ex = tag2asmpt_c3("ex-ex", executor, solver);
+  auto asmpt_ex_ex = tag2asmpt_c3("ex-ex", simulator, solver);
   extend_branch_same_phase(branch_list,
-                           executor,
+                           simulator,
                            sts,
                            base_sv_id,
                            "ex-ex",
@@ -287,9 +287,9 @@ int main()
   };
 
   cout << "step: ex --> wb" << endl;
-  auto asmpt_ex_wb = tag2asmpt_c3("ex-wb", executor, solver);
+  auto asmpt_ex_wb = tag2asmpt_c3("ex-wb", simulator, solver);
   extend_branch_next_phase(branch_list,
-                           executor,
+                           simulator,
                            sts,
                            base_sv_wb,
                            "ex-wb",
@@ -303,9 +303,9 @@ int main()
                            solver);
 
   cout << "step: wb --> wb" << endl;
-  auto asmpt_wb_wb = tag2asmpt_c3("wb-wb", executor, solver);
+  auto asmpt_wb_wb = tag2asmpt_c3("wb-wb", simulator, solver);
   extend_branch_same_phase(branch_list,
-                           executor,
+                           simulator,
                            sts,
                            base_sv_wb,
                            "wb-wb",
@@ -323,9 +323,9 @@ int main()
                                                      "RTL_registers[2]",
                                                      "RTL_registers[3]" };
   cout << "step: wb --> finish" << endl;
-  auto asmpt_wb_finish = tag2asmpt_c3("wb-finish", executor, solver);
+  auto asmpt_wb_finish = tag2asmpt_c3("wb-finish", simulator, solver);
   extend_branch_next_phase(branch_list,
-                           executor,
+                           simulator,
                            sts,
                            base_sv_finish,
                            "wb-finish",

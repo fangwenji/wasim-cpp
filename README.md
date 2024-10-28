@@ -29,4 +29,8 @@
     ./contrib/setup-btor2tools.sh
     ./contrib/setup-smt-switch.sh
     ./contrib/setup-vexpparser.sh
+    cd build
+    make
+    
+### Usage
 
