@@ -112,6 +112,9 @@ set(INCLUDE_DIRS
   "${PROJECT_SOURCE_DIR}/contrib/optionparser-1.7/src"
   "${PROJECT_SOURCE_DIR}/deps/btor2tools/src"
   "${PROJECT_SOURCE_DIR}/deps/glog/install/include/"
+  "${PROJECT_SOURCE_DIR}/deps/vexpparser/include/"
+  "${PROJECT_SOURCE_DIR}/deps/vexpparser/src"
+  "${PROJECT_SOURCE_DIR}/deps/vexpparser/build/src"
   "${SMT_SWITCH_DIR}/local/include"
   "${CMAKE_CURRENT_BINARY_DIR}"
   "${GMP_INCLUDE_DIR}"
@@ -132,6 +135,7 @@ set(SOURCES
     "${PROJECT_SOURCE_DIR}/framework/sygus_simplify.cpp"
     "${PROJECT_SOURCE_DIR}/framework/state_simplify.cpp"
     "${PROJECT_SOURCE_DIR}/utils/logger.cpp"
+    "${PROJECT_SOURCE_DIR}/timed-assertion-checker/timed_assertion_checker.cpp"
 )
 
 
@@ -147,11 +151,11 @@ target_link_libraries(wasim-lib PUBLIC "${SMT_SWITCH_DIR}/local/lib/libsmt-switc
 target_link_libraries(wasim-lib PUBLIC "${SMT_SWITCH_DIR}/local/lib/libsmt-switch-cvc5.a")
 target_link_libraries(wasim-lib PUBLIC "${SMT_SWITCH_DIR}/local/lib/libsmt-switch.a")
 target_link_libraries(wasim-lib PUBLIC "${PROJECT_SOURCE_DIR}/deps/btor2tools/build/lib/libbtor2parser.a")
+target_link_libraries(wasim-lib PUBLIC "${PROJECT_SOURCE_DIR}/deps/vexpparser/build/src/libvexpparser.a")
 target_link_libraries(wasim-lib PUBLIC "${GMPXX_LIBRARIES}")
 target_link_libraries(wasim-lib PUBLIC "${GMP_LIBRARIES}")
 target_link_libraries(wasim-lib PUBLIC pthread)
 target_link_libraries(wasim-lib PUBLIC Boost::system)
-
 # if (LIBRT)
 #   target_link_libraries(wasim-lib PUBLIC ${LIBRT})
 # endif()
@@ -247,8 +251,11 @@ if(NOT TARGET uninstall)
 endif()
 
 
-add_executable(test1 "apps/test.cpp")
-target_link_libraries(test1 wasim-lib)
+add_executable(test "apps/test.cpp")
+target_link_libraries(test wasim-lib)
+
+add_executable(test-tac "apps/test-tac.cpp")
+target_link_libraries(test-tac wasim-lib)
 
 # add_executable(independence_check_test "independence_check_test.cpp")
 # target_link_libraries(independence_check_test wasim)
